@@ -37,4 +37,24 @@ public class UserController {
             return "500";
         }
     }
+
+    /*
+    @PostMapping(path = "/register-user")
+    public String registerUser(@ModelAttribute User user) {
+        try {
+            //TODO
+            User user = userService.findById(userId);
+
+            model.addAttribute("user", user);
+            return "profile";
+        } catch (ObjectNotFoundException e) {
+
+            model.addAttribute("error", e.getMessage());
+            return "404";
+        } catch (InternalServerException e) {
+            System.err.println(e.getMessage());
+            model.addAttribute("error", e.getMessage());
+            return "500";
+        }
+    }*/
 }

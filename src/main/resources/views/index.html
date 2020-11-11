@@ -9,6 +9,52 @@
 
 <h1>Welcome to Find me!</h1>
 
+<form id="registration-from">
+    <input name="firstName" required type="text">
+
+    <button type="submit"></button>
+</form>
+
+<button id="test-ajax">Click here!</button>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </body>
 <!--<footer>Footer</footer>-->
+
+<script>
+    //selector by id = #
+    //selector by class = .
+    // alert($("#test-ajax").text());
+
+    $("#test-ajax").click(function () {
+        $.ajax({
+            type: "GET",
+            url: "/test-ajax",
+            data: {},
+            success: function success() {
+                debugger;
+                alert("success!");
+            },
+            error: function error(xhr) {
+                debugger;
+                alert("error!")
+            }
+        });
+    });
+
+    $("#registration-form").submit(function (e) {
+        $.ajax({
+            type: "POST",
+            url: "register-user",
+            data: $('#registration-form').serialize(),
+            success: function success(data) {
+                //
+            },
+            error: function error(xhr) {
+                //
+            }
+        });
+    });
+</script>
+
 </html>
