@@ -1,6 +1,6 @@
 package com.findme.controller;
 
-import com.findme.models.User;
+import com.findme.model.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
