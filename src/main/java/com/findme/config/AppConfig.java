@@ -1,5 +1,10 @@
 package com.findme.config;
 
+import com.findme.controller.UserController;
+import com.findme.dao.UserDao;
+import com.findme.dao.UserDaoImpl;
+import com.findme.service.UserService;
+import com.findme.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -87,5 +92,20 @@ public class AppConfig implements WebMvcConfigurer {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(emf);
         return transactionManager;
+    }
+
+    @Bean
+    public UserDao userDao() {
+        return new UserDaoImpl();
+    }
+
+    @Bean
+    public UserService userService() {
+        return new UserServiceImpl(userDao());
+    }
+
+    @Bean
+    public UserController userController() {
+        return new UserController(userService());
     }
 }

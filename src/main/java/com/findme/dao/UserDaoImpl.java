@@ -30,7 +30,7 @@ public class UserDaoImpl implements UserDao {
             User user = em.find(User.class, id);
 
             if (user == null) {
-                throw new ObjectNotFoundException("Missing post with id " + id);
+                throw new ObjectNotFoundException("Missing user with id " + id);
             }
 
             return user;
