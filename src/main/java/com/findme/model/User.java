@@ -12,6 +12,7 @@ public class User {
     private String firstName;
     private String lastName;
     private String phone;
+    private String mail;
     //TODO from existed date
     private String country;
     private String city;
@@ -65,6 +66,15 @@ public class User {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    @Column(name = "MAIL")
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
     }
 
     @Column(name = "COUNTRY")
@@ -148,7 +158,7 @@ public class User {
         this.university = university;
     }
 
-    @Transient
+    @OneToMany(mappedBy = "userFrom")
     public List<Message> getMessagesSent() {
         return messagesSent;
     }
@@ -157,7 +167,7 @@ public class User {
         this.messagesSent = messagesSent;
     }
 
-    @Transient
+    @OneToMany(mappedBy = "userTo")
     public List<Message> getMessagesReceived() {
         return messagesReceived;
     }

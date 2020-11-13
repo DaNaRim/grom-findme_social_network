@@ -18,4 +18,9 @@ public class HomeController {
 
         return new ResponseEntity<>("trouble", HttpStatus.NOT_FOUND);
     }
+
+    @GetMapping(path = "/registration")
+    public String registration() {
+        return "registration";
+    }
 }

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Find me</title>
+</head>
+<body>
+
+<h1>Registration</h1>
+
+<form id="registration-from">
+    <p>firstName <input name="firstName" required type="text"></p>
+    <p>lastName <input name="lastName" required type="text"></p>
+    <p>phone <input name="phone" required type="text"></p>
+    <p>mail <input name="mail" required type="text"></p>
+    <p>country <input name="country" type="text"></p>
+    <p>city <input name="city" type="text"></p>
+    <p>age<input name="age" type="text"></p>
+    <p>relationshipStatus <input name="relationshipStatus" type="text"></p>
+    <p>religion <input name="religion" type="text"></p>
+    <p>school <input name="school" type="text"></p>
+    <p>university <input name="university" type="text"></p>
+
+    <button type="submit">Register</button>
+</form>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</body>
+
+<script>
+    $("#registration-form").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "/user-registration",
+            data: $('#registration-form').serialize(),
+            success: function success(data) {
+                alert('success');
+            },
+            error: function error(xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    });
+</script>

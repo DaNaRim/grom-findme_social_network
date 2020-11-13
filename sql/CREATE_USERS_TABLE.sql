@@ -4,6 +4,7 @@ CREATE TABLE USERS
     FIRST_NAME          VARCHAR(20)                    NOT NULL,
     LAST_NAME           VARCHAR(20)                    NOT NULL,
     PHONE               VARCHAR(20) UNIQUE             NOT NULL,
+    MAIL                VARCHAR(30) UNIQUE             NOT NULL,
     COUNTRY             VARCHAR(20),
     CITY                VARCHAR(20),
     AGE                 INT,

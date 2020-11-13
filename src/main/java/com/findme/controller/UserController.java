@@ -1,16 +1,16 @@
 package com.findme.controller;
 
-import com.findme.exception.InternalServerException;
+import com.findme.exception.BadRequestException;
 import com.findme.exception.ObjectNotFoundException;
 import com.findme.model.User;
 import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 public class UserController {
 
     private final UserService userService;
@@ -31,30 +31,26 @@ public class UserController {
 
             model.addAttribute("error", e.getMessage());
             return "404";
-        } catch (InternalServerException e) {
+        } catch (Exception e) {
             System.err.println(e.getMessage());
             model.addAttribute("error", e.getMessage());
             return "500";
         }
     }
 
-    /*
-    @PostMapping(path = "/register-user")
-    public String registerUser(@ModelAttribute User user) {
+    @PostMapping(path = "/user-registration")
+    public ResponseEntity<String> registerUser(@ModelAttribute User user) {
         try {
-            //TODO
-            User user = userService.findById(userId);
+            userService.registerUser(user);
 
-            model.addAttribute("user", user);
-            return "profile";
-        } catch (ObjectNotFoundException e) {
+            return new ResponseEntity<>("Registration success", HttpStatus.OK);
+        } catch (BadRequestException e) {
 
-            model.addAttribute("error", e.getMessage());
-            return "404";
-        } catch (InternalServerException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+
             System.err.println(e.getMessage());
-            model.addAttribute("error", e.getMessage());
-            return "500";
+            return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }*/
+    }
 }
