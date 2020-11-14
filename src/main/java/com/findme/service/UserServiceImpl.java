@@ -34,8 +34,9 @@ public class UserServiceImpl implements UserService {
     private void validateUser(User user) throws BadRequestException, InternalServerException {
 
         if (user.getFirstName() == null || user.getLastName() == null
-                || user.getPhone() == null || user.getMail() == null) {
-            throw new BadRequestException("firstName, lastName, phone and mail are required fields");
+                || user.getPhone() == null || user.getMail() == null
+                || user.getPassWord() == null) {
+            throw new BadRequestException("firstName, lastName, phone, mail and passWord are required fields");
         }
 
         if (user.getFirstName().length() > 20) {
@@ -50,13 +51,16 @@ public class UserServiceImpl implements UserService {
         if (user.getMail().length() > 30) {
             throw new BadRequestException("mail length must be <= 30");
         }
+        if (user.getPassWord().length() < 8 || user.getPassWord().length() > 30) {
+            throw new BadRequestException("passWord length must be > 8 and <= 30");
+        }
         if (user.getCountry() != null && user.getCountry().length() > 20) {
             throw new BadRequestException("country length must be <= 20");
         }
         if (user.getCity() != null && user.getCity().length() > 20) {
             throw new BadRequestException("city length must be <= 20");
         }
-        if (user.getAge() <= 0 || user.getAge() > 150) {
+        if (user.getAge() != null && (user.getAge() <= 0 || user.getAge() > 150)) {
             throw new BadRequestException("age filed incorrect");
         }
         if (user.getRelationshipStatus() != null && user.getRelationshipStatus().length() > 20) {

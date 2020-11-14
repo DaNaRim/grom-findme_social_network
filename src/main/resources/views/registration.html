@@ -8,11 +8,12 @@
 
 <h1>Registration</h1>
 
-<form id="registration-from">
+<form id="registration-form">
     <p>firstName <input name="firstName" required type="text"></p>
     <p>lastName <input name="lastName" required type="text"></p>
     <p>phone <input name="phone" required type="text"></p>
     <p>mail <input name="mail" required type="text"></p>
+    <p>passWord <input name="passWord" required type="text"></p>
     <p>country <input name="country" type="text"></p>
     <p>city <input name="city" type="text"></p>
     <p>age<input name="age" type="text"></p>
@@ -32,12 +33,12 @@
         e.preventDefault();
         $.ajax({
             type: "POST",
-            url: "/user-registration",
+            url: "userRegistration",
             data: $('#registration-form').serialize(),
-            success: function success(data) {
-                alert('success');
+            success: function (data) {
+                alert('Success');
             },
-            error: function error(xhr) {
+            error: function (xhr) {
                 alert(xhr.responseText);
             }
         });

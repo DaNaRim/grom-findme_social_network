@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.Date;
 
 @Transactional
 public class UserDaoImpl implements UserDao {
@@ -21,6 +22,8 @@ public class UserDaoImpl implements UserDao {
 
     public User save(User user) throws InternalServerException {
         try {
+            user.setDateLastActive(new Date());
+
             em.persist(user);
 
             return user;
@@ -66,11 +69,11 @@ public class UserDaoImpl implements UserDao {
 
     public void checkPhoneForUnique(String phone) throws BadRequestException, InternalServerException {
         try {
-            boolean check = (Boolean) em.createNativeQuery(CHECK_PHONE_FOR_UNIQUE_QUERY)
+            boolean isExist = (Boolean) em.createNativeQuery(CHECK_PHONE_FOR_UNIQUE_QUERY)
                     .setParameter("phone", phone)
                     .getSingleResult();
 
-            if (!check) {
+            if (isExist) {
                 throw new BadRequestException("user with this phone already exists");
             }
         } catch (HibernateException e) {
@@ -81,11 +84,11 @@ public class UserDaoImpl implements UserDao {
 
     public void checkMailForUnique(String mail) throws BadRequestException, InternalServerException {
         try {
-            boolean check = (Boolean) em.createNativeQuery(CHECK_MAIL_FOR_UNIQUE_QUERY)
+            boolean isExist = (Boolean) em.createNativeQuery(CHECK_MAIL_FOR_UNIQUE_QUERY)
                     .setParameter("mail", mail)
                     .getSingleResult();
 
-            if (!check) {
+            if (isExist) {
                 throw new BadRequestException("user with this mail already exists");
             }
         } catch (HibernateException e) {

@@ -13,6 +13,7 @@ public class User {
     private String lastName;
     private String phone;
     private String mail;
+    private String passWord;
     //TODO from existed date
     private String country;
     private String city;
@@ -33,6 +34,7 @@ public class User {
 //    private String[] interests;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }
@@ -41,7 +43,7 @@ public class User {
         this.id = id;
     }
 
-    @Column(name = "FIRST_NAME")
+    @Column(name = "FIRST_NAME", nullable = false)
     public String getFirstName() {
         return firstName;
     }
@@ -50,7 +52,7 @@ public class User {
         this.firstName = firstName;
     }
 
-    @Column(name = "LAST_NAME")
+    @Column(name = "LAST_NAME", nullable = false)
     public String getLastName() {
         return lastName;
     }
@@ -59,7 +61,7 @@ public class User {
         this.lastName = lastName;
     }
 
-    @Column(name = "PHONE")
+    @Column(name = "PHONE", nullable = false)
     public String getPhone() {
         return phone;
     }
@@ -68,13 +70,22 @@ public class User {
         this.phone = phone;
     }
 
-    @Column(name = "MAIL")
+    @Column(name = "MAIL", nullable = false)
     public String getMail() {
         return mail;
     }
 
     public void setMail(String mail) {
         this.mail = mail;
+    }
+
+    @Column(name = "PASSWORD", nullable = false)
+    public String getPassWord() {
+        return passWord;
+    }
+
+    public void setPassWord(String passWord) {
+        this.passWord = passWord;
     }
 
     @Column(name = "COUNTRY")
@@ -104,7 +115,7 @@ public class User {
         this.age = age;
     }
 
-    @Column(name = "DATE_REGISTERED")
+    @Column(name = "DATE_REGISTERED", insertable = false)
     public Date getDateRegistered() {
         return dateRegistered;
     }
@@ -113,7 +124,7 @@ public class User {
         this.dateRegistered = dateRegistered;
     }
 
-    @Column(name = "DATE_LAST_ACTIVE")
+    @Column(name = "DATE_LAST_ACTIVE", nullable = false)
     public Date getDateLastActive() {
         return dateLastActive;
     }
