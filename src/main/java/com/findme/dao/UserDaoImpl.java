@@ -2,7 +2,6 @@ package com.findme.dao;
 
 import com.findme.exception.BadRequestException;
 import com.findme.exception.InternalServerException;
-import com.findme.exception.ObjectNotFoundException;
 import com.findme.model.User;
 import org.hibernate.HibernateException;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +11,11 @@ import javax.persistence.PersistenceContext;
 import java.util.Date;
 
 @Transactional
-public class UserDaoImpl implements UserDao {
+public class UserDaoImpl extends Dao<User> implements UserDao {
+
+    public UserDaoImpl() {
+        super(User.class);
+    }
 
     @PersistenceContext
     private EntityManager em;
@@ -20,51 +23,11 @@ public class UserDaoImpl implements UserDao {
     private static final String CHECK_PHONE_FOR_UNIQUE_QUERY = "SELECT EXISTS(SELECT 1 FROM USERS WHERE PHONE = :phone)";
     private static final String CHECK_MAIL_FOR_UNIQUE_QUERY = "SELECT EXISTS(SELECT 1 FROM USERS WHERE MAIL = :mail)";
 
-    public User save(User user) throws InternalServerException {
-        try {
-            user.setDateLastActive(new Date());
+    @Override
+    public User save(User entity) throws InternalServerException {
+        entity.setDateLastActive(new Date());
 
-            em.persist(user);
-
-            return user;
-        } catch (HibernateException e) {
-            throw new InternalServerException("Something went wrong while trying to save user" + e.getMessage());
-        }
-    }
-
-    public User findById(long id) throws ObjectNotFoundException, InternalServerException {
-        try {
-            User user = em.find(User.class, id);
-
-            if (user == null) {
-                throw new ObjectNotFoundException("Missing user with id " + id);
-            }
-
-            return user;
-        } catch (HibernateException e) {
-            throw new InternalServerException("Something went wrong while trying to find user by id " + id + " : "
-                    + e.getMessage());
-        }
-    }
-
-    public User update(User user) throws InternalServerException {
-        try {
-            return em.merge(user);
-
-        } catch (HibernateException e) {
-            throw new InternalServerException("Something went wrong while trying to update user " + user.getId() + " : "
-                    + e.getMessage());
-        }
-    }
-
-    public void delete(User user) throws InternalServerException {
-        try {
-            em.remove(em.merge(user));
-
-        } catch (HibernateException e) {
-            throw new InternalServerException("Something went wrong while trying to delete user " + user.getId() + " : "
-                    + e.getMessage());
-        }
+        return super.save(entity);
     }
 
     public void checkPhoneForUnique(String phone) throws BadRequestException, InternalServerException {
