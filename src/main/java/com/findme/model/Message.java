@@ -15,6 +15,7 @@ public class Message {
     private User userTo;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }

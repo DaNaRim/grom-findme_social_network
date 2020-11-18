@@ -8,13 +8,15 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 public class Dao<T> {
+
     private final Class<T> tClass;
-    @PersistenceContext
-    private EntityManager em;
 
     public Dao(Class<T> tClass) {
         this.tClass = tClass;
     }
+
+    @PersistenceContext
+    private EntityManager em;
 
     public T save(T entity) throws InternalServerException {
         try {
@@ -55,8 +57,7 @@ public class Dao<T> {
             em.remove(em.merge(entity));
 
         } catch (HibernateException e) {
-            throw new InternalServerException("Something went wrong while trying to delete entity: "
-                    + e.getMessage());
+            throw new InternalServerException("Something went wrong while trying to delete entity: " + e.getMessage());
         }
     }
 }

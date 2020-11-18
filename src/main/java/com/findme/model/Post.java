@@ -15,6 +15,7 @@ public class Post {
     //TODO comments
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }

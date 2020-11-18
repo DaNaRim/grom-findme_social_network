@@ -7,10 +7,11 @@ import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@Controller
 public class UserController {
 
     private final UserService userService;
@@ -39,7 +40,8 @@ public class UserController {
     }
 
     @PostMapping(path = "/userRegistration")
-    public ResponseEntity<String> registerUser(@ModelAttribute User user) {
+    public @ResponseBody
+    ResponseEntity<String> registerUser(@ModelAttribute User user) {
         try {
             userService.registerUser(user);
 

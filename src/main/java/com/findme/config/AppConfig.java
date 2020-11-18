@@ -1,6 +1,8 @@
 package com.findme.config;
 
 import com.findme.controller.UserController;
+import com.findme.dao.PostDao;
+import com.findme.dao.PostDaoImpl;
 import com.findme.dao.UserDao;
 import com.findme.dao.UserDaoImpl;
 import com.findme.service.UserService;
@@ -107,5 +109,10 @@ public class AppConfig implements WebMvcConfigurer {
     @Bean
     public UserController userController() {
         return new UserController(userService());
+    }
+
+    @Bean
+    public PostDao postDao() {
+        return new PostDaoImpl();
     }
 }
