@@ -34,7 +34,7 @@ public class UserController {
             return "404";
         } catch (Exception e) {
             System.err.println(e.getMessage());
-            model.addAttribute("error", e.getMessage());
+            model.addAttribute("error", "Something went wrong");
             return "500";
         }
     }

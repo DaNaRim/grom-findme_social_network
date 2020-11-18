@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
 
             return userdao.save(user);
         } catch (BadRequestException e) {
-            throw new BadRequestException("Cant register user: " + e.getMessage());
+            throw new BadRequestException("Can`t register user: " + e.getMessage());
         }
     }
 
