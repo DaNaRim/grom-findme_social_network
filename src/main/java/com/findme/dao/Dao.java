@@ -16,7 +16,7 @@ public class Dao<T> {
     }
 
     @PersistenceContext
-    private EntityManager em;
+    protected EntityManager em;
 
     public T save(T entity) throws InternalServerException {
         try {

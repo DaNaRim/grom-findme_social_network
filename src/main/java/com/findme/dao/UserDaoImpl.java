@@ -6,8 +6,6 @@ import com.findme.model.User;
 import org.hibernate.HibernateException;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.Date;
 
 @Transactional
@@ -16,9 +14,6 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
     public UserDaoImpl() {
         super(User.class);
     }
-
-    @PersistenceContext
-    private EntityManager em;
 
     private static final String CHECK_PHONE_FOR_UNIQUE_QUERY = "SELECT EXISTS(SELECT 1 FROM USERS WHERE PHONE = :phone)";
     private static final String CHECK_MAIL_FOR_UNIQUE_QUERY = "SELECT EXISTS(SELECT 1 FROM USERS WHERE MAIL = :mail)";
