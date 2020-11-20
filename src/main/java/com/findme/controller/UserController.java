@@ -22,9 +22,11 @@ public class UserController {
     }
 
     @GetMapping(path = "/user/{userId}")
-    public String profile(Model model, @PathVariable long userId) {
+    public String profile(Model model, @PathVariable String userId) {
         try {
-            User user = userService.findById(userId);
+            long id = Long.parseLong(userId);
+
+            User user = userService.findById(id);
 
             model.addAttribute("user", user);
             return "profile";
@@ -32,6 +34,10 @@ public class UserController {
 
             model.addAttribute("error", e.getMessage());
             return "404";
+        } catch (NumberFormatException e) {
+
+            model.addAttribute("error", "Field filed incorrect");
+            return "400";
         } catch (Exception e) {
             System.err.println(e.getMessage());
             model.addAttribute("error", "Something went wrong");
