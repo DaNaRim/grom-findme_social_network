@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
+@RequestMapping(path = "/user")
 public class UserController {
 
     private final UserService userService;
@@ -21,7 +22,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping(path = "/user/{userId}")
+    @GetMapping(path = "/{userId}")
     public String profile(Model model, @PathVariable String userId) {
         try {
             long id = Long.parseLong(userId);
@@ -45,13 +46,18 @@ public class UserController {
         }
     }
 
+    @GetMapping(path = "/registration")
+    public String registrationForm() {
+        return "registration";
+    }
+
     @PostMapping(path = "/userRegistration")
     public @ResponseBody
     ResponseEntity<String> registerUser(@ModelAttribute User user) {
         try {
             userService.registerUser(user);
 
-            return new ResponseEntity<>("Registration success", HttpStatus.OK);
+            return new ResponseEntity<>("Registration success", HttpStatus.CREATED);
         } catch (BadRequestException e) {
 
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
