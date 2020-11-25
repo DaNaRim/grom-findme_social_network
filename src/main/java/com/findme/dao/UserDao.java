@@ -17,7 +17,5 @@ public interface UserDao {
 
     void delete(User user) throws InternalServerException;
 
-    void checkPhoneForUnique(String phone) throws BadRequestException, InternalServerException;
-
-    void checkMailForUnique(String mail) throws BadRequestException, InternalServerException;
+    void checkPhoneAndMailForUnique(String phone, String mail) throws BadRequestException, InternalServerException;
 }

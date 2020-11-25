@@ -15,8 +15,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
         super(User.class);
     }
 
-    private static final String CHECK_PHONE_FOR_UNIQUE_QUERY = "SELECT EXISTS(SELECT 1 FROM USERS WHERE PHONE = :phone)";
-    private static final String CHECK_MAIL_FOR_UNIQUE_QUERY = "SELECT EXISTS(SELECT 1 FROM USERS WHERE MAIL = :mail)";
+    private static final String CHECK_PHONE_AND_MAIL_FOR_UNIQUE_QUERY = "SELECT EXISTS(SELECT 1 FROM USERS WHERE PHONE = :phone OR MAIL = :mail)";
 
     @Override
     public User save(User entity) throws InternalServerException {
@@ -25,33 +24,20 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
         return super.save(entity);
     }
 
-    public void checkPhoneForUnique(String phone) throws BadRequestException, InternalServerException {
+    public void checkPhoneAndMailForUnique(String phone, String mail)
+            throws BadRequestException, InternalServerException {
         try {
-            boolean isExist = (Boolean) em.createNativeQuery(CHECK_PHONE_FOR_UNIQUE_QUERY)
+            boolean isExist = (Boolean) em.createNativeQuery(CHECK_PHONE_AND_MAIL_FOR_UNIQUE_QUERY)
                     .setParameter("phone", phone)
-                    .getSingleResult();
-
-            if (isExist) {
-                throw new BadRequestException("user with this phone already exists");
-            }
-        } catch (HibernateException e) {
-            throw new InternalServerException("Something went wrong while trying to check phone " + phone
-                    + " for unique: " + e.getMessage());
-        }
-    }
-
-    public void checkMailForUnique(String mail) throws BadRequestException, InternalServerException {
-        try {
-            boolean isExist = (Boolean) em.createNativeQuery(CHECK_MAIL_FOR_UNIQUE_QUERY)
                     .setParameter("mail", mail)
                     .getSingleResult();
 
             if (isExist) {
-                throw new BadRequestException("user with this mail already exists");
+                throw new BadRequestException("mail or phone is busy");
             }
         } catch (HibernateException e) {
-            throw new InternalServerException("Something went wrong while trying to check mail " + mail
-                    + " for unique: " + e.getMessage());
+            throw new InternalServerException("Something went wrong while trying to check phone " + phone
+                    + " and mail " + mail + " for unique: " + e.getMessage());
         }
     }
 }

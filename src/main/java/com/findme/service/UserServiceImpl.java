@@ -38,45 +38,27 @@ public class UserServiceImpl implements UserService {
                 || user.getPassWord() == null) {
             throw new BadRequestException("firstName, lastName, phone, mail and passWord are required fields");
         }
-
-        if (user.getFirstName().length() > 20) {
-            throw new BadRequestException("firstName length must be <= 20");
+        if (user.getFirstName().length() > 30
+                || user.getLastName().length() > 30
+                || user.getPhone().length() > 30
+                || user.getMail().length() > 30
+                || user.getPassWord().length() > 30
+                || user.getCountry() != null && user.getCountry().length() > 30
+                || user.getCity() != null && user.getCity().length() > 30
+                || user.getRelationshipStatus() != null && user.getRelationshipStatus().length() > 30
+                || user.getReligion() != null && user.getReligion().length() > 30
+                || user.getSchool() != null && user.getSchool().length() > 30
+                || user.getUniversity() != null && user.getUniversity().length() > 30
+        ) {
+            throw new BadRequestException("fields length must be <= 30");
         }
-        if (user.getLastName().length() > 20) {
-            throw new BadRequestException("lastName length must be <= 20");
-        }
-        if (user.getPhone().length() > 20) {
-            throw new BadRequestException("phone length must be <= 20");
-        }
-        if (user.getMail().length() > 30) {
-            throw new BadRequestException("mail length must be <= 30");
-        }
-        if (user.getPassWord().length() < 8 || user.getPassWord().length() > 30) {
-            throw new BadRequestException("passWord length must be > 8 and <= 30");
-        }
-        if (user.getCountry() != null && user.getCountry().length() > 20) {
-            throw new BadRequestException("country length must be <= 20");
-        }
-        if (user.getCity() != null && user.getCity().length() > 20) {
-            throw new BadRequestException("city length must be <= 20");
+        if (user.getPassWord().length() < 8) {
+            throw new BadRequestException("passWord length must be > 8");
         }
         if (user.getAge() != null && (user.getAge() <= 0 || user.getAge() > 150)) {
             throw new BadRequestException("age filed incorrect");
         }
-        if (user.getRelationshipStatus() != null && user.getRelationshipStatus().length() > 20) {
-            throw new BadRequestException("relationshipStatus length must be <= 20");
-        }
-        if (user.getReligion() != null && user.getReligion().length() > 20) {
-            throw new BadRequestException("religion length must be <= 20");
-        }
-        if (user.getSchool() != null && user.getSchool().length() > 30) {
-            throw new BadRequestException("school length must be <= 30");
-        }
-        if (user.getUniversity() != null && user.getUniversity().length() > 30) {
-            throw new BadRequestException("university length must be <= 30");
-        }
 
-        userdao.checkPhoneForUnique(user.getPhone());
-        userdao.checkMailForUnique(user.getMail());
+        userdao.checkPhoneAndMailForUnique(user.getPhone(), user.getMail());
     }
 }
