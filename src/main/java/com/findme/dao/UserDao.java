@@ -1,6 +1,5 @@
 package com.findme.dao;
 
-import com.findme.exception.BadRequestException;
 import com.findme.exception.InternalServerException;
 import com.findme.exception.ObjectNotFoundException;
 import com.findme.model.User;
@@ -17,5 +16,5 @@ public interface UserDao {
 
     void delete(User user) throws InternalServerException;
 
-    void checkPhoneAndMailForUnique(String phone, String mail) throws BadRequestException, InternalServerException;
+    boolean areThePhoneAndMailBusy(String phone, String mail) throws InternalServerException;
 }

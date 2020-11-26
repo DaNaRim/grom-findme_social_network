@@ -59,6 +59,8 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException("age filed incorrect");
         }
 
-        userdao.checkPhoneAndMailForUnique(user.getPhone(), user.getMail());
+        if (userdao.areThePhoneAndMailBusy(user.getPhone(), user.getMail())) {
+            throw new BadRequestException("mail or phone is busy");
+        }
     }
 }

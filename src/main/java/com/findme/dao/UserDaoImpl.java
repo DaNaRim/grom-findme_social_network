@@ -1,6 +1,5 @@
 package com.findme.dao;
 
-import com.findme.exception.BadRequestException;
 import com.findme.exception.InternalServerException;
 import com.findme.model.User;
 import org.hibernate.HibernateException;
@@ -15,7 +14,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
         super(User.class);
     }
 
-    private static final String CHECK_PHONE_AND_MAIL_FOR_UNIQUE_QUERY = "SELECT EXISTS(SELECT 1 FROM USERS WHERE PHONE = :phone OR MAIL = :mail)";
+    private static final String ARE_THE_PHONE_AND_MAIL_BUSY_QUERY = "SELECT EXISTS(SELECT 1 FROM USERS WHERE PHONE = :phone OR MAIL = :mail)";
 
     @Override
     public User save(User entity) throws InternalServerException {
@@ -24,20 +23,16 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
         return super.save(entity);
     }
 
-    public void checkPhoneAndMailForUnique(String phone, String mail)
-            throws BadRequestException, InternalServerException {
+    public boolean areThePhoneAndMailBusy(String phone, String mail) throws InternalServerException {
         try {
-            boolean isExist = (Boolean) em.createNativeQuery(CHECK_PHONE_AND_MAIL_FOR_UNIQUE_QUERY)
+            return (Boolean) em.createNativeQuery(ARE_THE_PHONE_AND_MAIL_BUSY_QUERY)
                     .setParameter("phone", phone)
                     .setParameter("mail", mail)
                     .getSingleResult();
 
-            if (isExist) {
-                throw new BadRequestException("mail or phone is busy");
-            }
         } catch (HibernateException e) {
             throw new InternalServerException("Something went wrong while trying to check phone " + phone
-                    + " and mail " + mail + " for unique: " + e.getMessage());
+                    + " and mail " + mail + " for availability: " + e.getMessage());
         }
     }
 }
