@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
+
 @Controller
 @RequestMapping(path = "/user")
 public class UserController {
@@ -67,4 +69,59 @@ public class UserController {
             return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping(path = "/login")
+    public String loginForm() {
+        return "login";
+    }
+
+    @PostMapping(path = "/userLogin")
+    public @ResponseBody
+    ResponseEntity<String> loginUser(HttpSession session,
+                                     @RequestParam("mail") String mail,
+                                     @RequestParam("password") String password) {
+        try {
+            if (session.getAttribute("user") != null) {
+                throw new BadRequestException("You`re already log in");
+            }
+
+            User user = userService.loginUser(mail, password);
+
+            session.setAttribute("user", user);
+
+            return new ResponseEntity<>("Login success", HttpStatus.OK);
+        } catch (ObjectNotFoundException e) {
+
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (BadRequestException e) {
+
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+
+            System.err.println(e.getMessage());
+            return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping(path = "/userLogout")
+    public @ResponseBody
+    ResponseEntity<String> logoutUser(HttpSession session) {
+        try {
+            if (session.getAttribute("user") == null) {
+                throw new BadRequestException("You`re not log in");
+            }
+
+            session.removeAttribute("user");
+
+            return new ResponseEntity<>("Logout success", HttpStatus.OK);
+        } catch (BadRequestException e) {
+
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+
+            System.err.println(e.getMessage());
+            return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

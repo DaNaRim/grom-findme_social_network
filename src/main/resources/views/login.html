@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FindMe</title>
+</head>
+<body>
+<h1>Login</h1>
+
+<form id="login-form">
+    <p>mail <input name="mail" required type="text"></p>
+    <p>password <input name="password" required type="password"></p>
+
+    <button type="submit">Login</button>
+</form>
+
+<form id="logout">
+    <button type="submit">Logout</button>
+</form>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</body>
+
+<script>
+    $("#login-form").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "userLogin",
+            data: $('#login-form').serialize(),
+            success: function () {
+                alert("Login Success");
+            },
+            error: function (xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    });
+
+    $("#logout").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "userLogout",
+            success: function () {
+                alert("Logout Success");
+            },
+            error: function (xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    });
+</script>
+</html>

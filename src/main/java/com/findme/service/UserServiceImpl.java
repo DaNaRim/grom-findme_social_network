@@ -30,19 +30,33 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    public User loginUser(String mail, String password)
+            throws ObjectNotFoundException, BadRequestException, InternalServerException {
+        try {
+            User user = userdao.findByMail(mail);
+
+            if (!user.getPassword().equals(password)) {
+                throw new BadRequestException("Wrong password");
+            }
+
+            return user;
+        } catch (BadRequestException e) {
+            throw new BadRequestException("Can`t login user: " + e.getMessage());
+        }
+    }
 
     private void validateUser(User user) throws BadRequestException, InternalServerException {
 
         if (user.getFirstName() == null || user.getLastName() == null
                 || user.getPhone() == null || user.getMail() == null
-                || user.getPassWord() == null) {
-            throw new BadRequestException("firstName, lastName, phone, mail and passWord are required fields");
+                || user.getPassword() == null) {
+            throw new BadRequestException("firstName, lastName, phone, mail and password are required fields");
         }
         if (user.getFirstName().length() > 30
                 || user.getLastName().length() > 30
                 || user.getPhone().length() > 30
                 || user.getMail().length() > 30
-                || user.getPassWord().length() > 30
+                || user.getPassword().length() > 30
                 || user.getCountry() != null && user.getCountry().length() > 30
                 || user.getCity() != null && user.getCity().length() > 30
                 || user.getRelationshipStatus() != null && user.getRelationshipStatus().length() > 30
@@ -52,8 +66,8 @@ public class UserServiceImpl implements UserService {
         ) {
             throw new BadRequestException("fields length must be <= 30");
         }
-        if (user.getPassWord().length() < 8) {
-            throw new BadRequestException("passWord length must be > 8");
+        if (user.getPassword().length() < 8) {
+            throw new BadRequestException("password length must be > 8");
         }
         if (user.getAge() != null && (user.getAge() <= 0 || user.getAge() > 150)) {
             throw new BadRequestException("age filed incorrect");

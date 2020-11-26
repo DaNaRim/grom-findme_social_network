@@ -13,7 +13,7 @@ public class User {
     private String lastName;
     private String phone;
     private String mail;
-    private String passWord;
+    private String password;
     //TODO from existed date
     private String country;
     private String city;
@@ -80,12 +80,12 @@ public class User {
     }
 
     @Column(name = "PASSWORD", nullable = false)
-    public String getPassWord() {
-        return passWord;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPassWord(String passWord) {
-        this.passWord = passWord;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Column(name = "COUNTRY")

@@ -16,5 +16,7 @@ public interface UserDao {
 
     void delete(User user) throws InternalServerException;
 
+    User findByMail(String mail) throws ObjectNotFoundException, InternalServerException;
+
     boolean areThePhoneAndMailBusy(String phone, String mail) throws InternalServerException;
 }
