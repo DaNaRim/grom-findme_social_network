@@ -3,7 +3,7 @@ package com.findme.service;
 import com.findme.dao.UserDao;
 import com.findme.exception.BadRequestException;
 import com.findme.exception.InternalServerException;
-import com.findme.exception.ObjectNotFoundException;
+import com.findme.exception.NotFoundException;
 import com.findme.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,8 +16,14 @@ public class UserServiceImpl implements UserService {
         this.userdao = userdao;
     }
 
-    public User findById(long id) throws ObjectNotFoundException, InternalServerException {
-        return userdao.findById(id);
+    public User findById(long id) throws NotFoundException, InternalServerException {
+        User user = userdao.findById(id);
+
+        if (user == null) {
+            throw new NotFoundException("Missing user with id " + id);
+        }
+
+        return user;
     }
 
     public User registerUser(User user) throws BadRequestException, InternalServerException {
@@ -31,7 +37,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public User loginUser(String mail, String password)
-            throws ObjectNotFoundException, BadRequestException, InternalServerException {
+            throws NotFoundException, BadRequestException, InternalServerException {
         try {
             User user = userdao.findByMail(mail);
 

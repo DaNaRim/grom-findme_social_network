@@ -1,7 +1,7 @@
 package com.findme.controller;
 
 import com.findme.exception.BadRequestException;
-import com.findme.exception.ObjectNotFoundException;
+import com.findme.exception.NotFoundException;
 import com.findme.model.User;
 import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class UserController {
 
             model.addAttribute("user", user);
             return "profile";
-        } catch (ObjectNotFoundException e) {
+        } catch (NotFoundException e) {
 
             model.addAttribute("error", e.getMessage());
             return "404";
@@ -90,7 +90,7 @@ public class UserController {
             session.setAttribute("user", user);
 
             return new ResponseEntity<>("Login success", HttpStatus.OK);
-        } catch (ObjectNotFoundException e) {
+        } catch (NotFoundException e) {
 
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (BadRequestException e) {

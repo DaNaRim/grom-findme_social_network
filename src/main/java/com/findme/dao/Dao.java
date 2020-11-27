@@ -1,7 +1,6 @@
 package com.findme.dao;
 
 import com.findme.exception.InternalServerException;
-import com.findme.exception.ObjectNotFoundException;
 import org.hibernate.HibernateException;
 
 import javax.persistence.EntityManager;
@@ -28,15 +27,10 @@ public class Dao<T> {
         }
     }
 
-    public T findById(long id) throws ObjectNotFoundException, InternalServerException {
+    public T findById(long id) throws InternalServerException {
         try {
-            T entity = em.find(this.tClass, id);
+            return em.find(this.tClass, id);
 
-            if (entity == null) {
-                throw new ObjectNotFoundException("Missing entity with id " + id);
-            }
-
-            return entity;
         } catch (HibernateException e) {
             throw new InternalServerException("Something went wrong while trying to find entity by id: "
                     + e.getMessage());

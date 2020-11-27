@@ -1,7 +1,6 @@
 package com.findme.dao;
 
 import com.findme.exception.InternalServerException;
-import com.findme.exception.ObjectNotFoundException;
 import com.findme.model.Post;
 import org.springframework.stereotype.Repository;
 
@@ -10,7 +9,7 @@ public interface PostDao {
 
     Post save(Post post) throws InternalServerException;
 
-    Post findById(long id) throws ObjectNotFoundException, InternalServerException;
+    Post findById(long id) throws InternalServerException;
 
     Post update(Post post) throws InternalServerException;
 
