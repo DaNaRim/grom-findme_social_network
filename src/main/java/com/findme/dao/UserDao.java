@@ -1,7 +1,6 @@
 package com.findme.dao;
 
 import com.findme.exception.InternalServerException;
-import com.findme.exception.NotFoundException;
 import com.findme.model.User;
 import org.springframework.stereotype.Repository;
 
@@ -16,7 +15,7 @@ public interface UserDao {
 
     void delete(User user) throws InternalServerException;
 
-    User findByMail(String mail) throws NotFoundException, InternalServerException;
+    User findByMail(String mail) throws InternalServerException;
 
     boolean areThePhoneAndMailBusy(String phone, String mail) throws InternalServerException;
 }

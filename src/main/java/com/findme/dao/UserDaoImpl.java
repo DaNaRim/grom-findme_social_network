@@ -1,7 +1,6 @@
 package com.findme.dao;
 
 import com.findme.exception.InternalServerException;
-import com.findme.exception.NotFoundException;
 import com.findme.model.User;
 import org.hibernate.HibernateException;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,14 +25,14 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
         return super.save(entity);
     }
 
-    public User findByMail(String mail) throws NotFoundException, InternalServerException {
+    public User findByMail(String mail) throws InternalServerException {
         try {
             return (User) em.createNativeQuery(FIND_BY_MAIL_QUERY, User.class)
                     .setParameter("mail", mail)
                     .getSingleResult();
 
         } catch (NoResultException e) {
-            throw new NotFoundException("Missing user with mail " + mail);
+            return null;
         } catch (HibernateException e) {
             throw new InternalServerException("Something went wrong while trying to find user by mail: "
                     + e.getMessage());

@@ -41,6 +41,9 @@ public class UserServiceImpl implements UserService {
         try {
             User user = userdao.findByMail(mail);
 
+            if (user == null) {
+                throw new NotFoundException("Missing user with mail " + mail);
+            }
             if (!user.getPassword().equals(password)) {
                 throw new BadRequestException("Wrong password");
             }
