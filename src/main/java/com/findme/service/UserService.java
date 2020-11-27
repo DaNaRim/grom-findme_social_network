@@ -13,5 +13,7 @@ public interface UserService {
 
     User registerUser(User user) throws BadRequestException, InternalServerException;
 
-    User loginUser(String mail, String password) throws BadRequestException, InternalServerException, NotFoundException;
+    User loginUser(String mail, String password) throws NotFoundException, BadRequestException, InternalServerException;
+
+    void updateDateLastActive(User user) throws InternalServerException;
 }

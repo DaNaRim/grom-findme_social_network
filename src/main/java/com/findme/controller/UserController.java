@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.Date;
 
 @Controller
 @RequestMapping(path = "/user")
@@ -87,6 +88,9 @@ public class UserController {
 
             User user = userService.loginUser(mail, password);
 
+            userService.updateDateLastActive(user);
+            user.setDateLastActive(new Date());
+
             session.setAttribute("user", user);
 
             return new ResponseEntity<>("Login success", HttpStatus.OK);
@@ -107,9 +111,13 @@ public class UserController {
     public @ResponseBody
     ResponseEntity<String> logoutUser(HttpSession session) {
         try {
-            if (session.getAttribute("user") == null) {
+            User user = (User) session.getAttribute("user");
+
+            if (user == null) {
                 throw new BadRequestException("You`re not log in");
             }
+
+            userService.updateDateLastActive(user);
 
             session.removeAttribute("user");
 

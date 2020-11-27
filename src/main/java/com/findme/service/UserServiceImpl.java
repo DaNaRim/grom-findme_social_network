@@ -54,6 +54,10 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    public void updateDateLastActive(User user) throws InternalServerException {
+        userdao.updateDateLastActive(user);
+    }
+
     private void validateUser(User user) throws BadRequestException, InternalServerException {
 
         if (user.getFirstName() == null || user.getLastName() == null

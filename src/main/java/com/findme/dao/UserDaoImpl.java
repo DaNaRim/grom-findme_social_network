@@ -39,6 +39,17 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
         }
     }
 
+    public void updateDateLastActive(User user) throws InternalServerException {
+        try {
+            user.setDateLastActive(new Date());
+
+            em.merge(user);
+        } catch (HibernateException e) {
+            throw new InternalServerException("Something went wrong while trying to update date last active: "
+                    + e.getMessage());
+        }
+    }
+
     public boolean areThePhoneAndMailBusy(String phone, String mail) throws InternalServerException {
         try {
             return (Boolean) em.createNativeQuery(ARE_THE_PHONE_AND_MAIL_BUSY_QUERY)
@@ -47,8 +58,8 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
                     .getSingleResult();
 
         } catch (HibernateException e) {
-            throw new InternalServerException("Something went wrong while trying to check phone " + phone
-                    + " and mail " + mail + " for availability: " + e.getMessage());
+            throw new InternalServerException("Something went wrong while trying to check phone and mail " +
+                    "for availability: " + e.getMessage());
         }
     }
 }
