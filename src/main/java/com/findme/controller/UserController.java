@@ -12,7 +12,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import java.util.Date;
 
 @Controller
 @RequestMapping(path = "/user")
@@ -76,22 +75,21 @@ public class UserController {
         return "login";
     }
 
-    @PostMapping(path = "/userLogin")
+    @PostMapping(path = "/login")
     public @ResponseBody
-    ResponseEntity<String> loginUser(HttpSession session,
-                                     @RequestParam("mail") String mail,
-                                     @RequestParam("password") String password) {
+    ResponseEntity<String> login(@RequestParam String mail,
+                                 @RequestParam String password,
+                                 HttpSession session) {
         try {
-            if (session.getAttribute("user") != null) {
+            if (session.getAttribute("userId") != null) {
                 throw new BadRequestException("You`re already log in");
             }
 
-            User user = userService.loginUser(mail, password);
+            User user = userService.login(mail, password);
 
             userService.updateDateLastActive(user);
-            user.setDateLastActive(new Date());
 
-            session.setAttribute("user", user);
+            session.setAttribute("userId", user.getId());
 
             return new ResponseEntity<>("Login success", HttpStatus.OK);
         } catch (NotFoundException e) {
@@ -107,19 +105,18 @@ public class UserController {
         }
     }
 
-    @PostMapping(path = "/userLogout")
+    @PostMapping(path = "/logout")
     public @ResponseBody
-    ResponseEntity<String> logoutUser(HttpSession session) {
+    ResponseEntity<String> logout(HttpSession session) {
         try {
-            User user = (User) session.getAttribute("user");
-
-            if (user == null) {
+            if (session.getAttribute("userId") == null) {
                 throw new BadRequestException("You`re not log in");
             }
 
+            User user = userService.findById((long) session.getAttribute("userId"));
             userService.updateDateLastActive(user);
 
-            session.removeAttribute("user");
+            session.removeAttribute("userId");
 
             return new ResponseEntity<>("Logout success", HttpStatus.OK);
         } catch (BadRequestException e) {

@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public User loginUser(String mail, String password)
+    public User login(String mail, String password)
             throws NotFoundException, BadRequestException, InternalServerException {
         try {
             User user = userdao.findByMail(mail);
