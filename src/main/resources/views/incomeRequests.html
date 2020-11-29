@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Your outcome fried requests</h1>
+
+<tr th:each="request : ${incomeRequests}">
+    <td><span th:text="${request.userTo.firstName}"> firstName </span></td>
+    <td><span th:text="${request.userTo.lastName}"> lastName </span></td>
+</tr>
+</body>
+</html>

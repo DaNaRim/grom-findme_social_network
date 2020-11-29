@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Your income fried requests</h1>
+
+<tr th:each="request : ${incomeRequests}">
+    <td><span th:text="${request.userFrom.firstName}"> firstName </span></td>
+    <td><span th:text="${request.userFrom.lastName}"> lastName </span></td>
+</tr>
+
+<form id="accept">
+    <button type="submit">accept</button>
+</form>
+<form id="reject">
+    <button type="submit">reject</button>
+</form>
+</body>
+
+<script>
+    $("#accept").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "relationship/add",
+            data: {
+                userFromId: request.userTo.id,
+                userToId: request.userFrom.id
+            },
+            success: function () {
+                alert("Friend " + request.userFrom.firstName + " added");
+            },
+            error: function (xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    });
+    $("#accept").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: "PUT",
+            url: "relationship/update",
+            data: {
+                userFromId: request.userFrom.id,
+                userToId: request.userTo.id
+            },
+            success: function () {
+                alert("Friend " + request.userFrom.firstName + " added");
+            },
+            error: function (xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    });
+
+    $("#login-form").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "login",
+            data: $('#login-form').serialize(),
+            success: function () {
+                alert("Login Success");
+            },
+            error: function (xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    });
+</script>
+
+</html>
