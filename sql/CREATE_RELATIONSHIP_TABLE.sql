@@ -10,4 +10,4 @@ CREATE TABLE RELATIONSHIP
                           'REQUEST_REJECTED',
                           'FRIENDS')),
     DATE_MODIFY TIMESTAMP            NOT NULL
-);
+)
