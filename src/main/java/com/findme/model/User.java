@@ -21,8 +21,7 @@ public class User {
     private Integer age;
     private Date dateRegistered;
     private Date dateLastActive;
-    //TODO enum
-    private String relationshipStatus;
+    private String relationshipStatus; //TODO remove
     private String religion;
     //TODO from existed date
     private String school;
