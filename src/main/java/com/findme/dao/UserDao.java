@@ -17,7 +17,7 @@ public interface UserDao {
 
     User findByMail(String mail) throws InternalServerException;
 
-    void updateDateLastActive(User user) throws InternalServerException;
+    void updateDateLastActive(long userId) throws InternalServerException;
 
     boolean areThePhoneAndMailBusy(String phone, String mail) throws InternalServerException;
 }

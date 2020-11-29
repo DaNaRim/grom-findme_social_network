@@ -2,6 +2,7 @@ package com.findme.controller;
 
 import com.findme.exception.BadRequestException;
 import com.findme.exception.NotFoundException;
+import com.findme.exception.UnauthorizedException;
 import com.findme.model.User;
 import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,13 +82,7 @@ public class UserController {
                                  @RequestParam String password,
                                  HttpSession session) {
         try {
-            if (session.getAttribute("userId") != null) {
-                throw new BadRequestException("You`re already log in");
-            }
-
-            User user = userService.login(mail, password);
-
-            userService.updateDateLastActive(user);
+            User user = userService.login(mail, password, session);
 
             session.setAttribute("userId", user.getId());
 
@@ -105,23 +100,18 @@ public class UserController {
         }
     }
 
-    @PostMapping(path = "/logout")
+    @GetMapping(path = "/logout")
     public @ResponseBody
     ResponseEntity<String> logout(HttpSession session) {
         try {
-            if (session.getAttribute("userId") == null) {
-                throw new BadRequestException("You`re not log in");
-            }
-
-            User user = userService.findById((long) session.getAttribute("userId"));
-            userService.updateDateLastActive(user);
+            userService.logout(session);
 
             session.removeAttribute("userId");
 
             return new ResponseEntity<>("Logout success", HttpStatus.OK);
-        } catch (BadRequestException e) {
+        } catch (UnauthorizedException e) {
 
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
 
             System.err.println(e.getMessage());

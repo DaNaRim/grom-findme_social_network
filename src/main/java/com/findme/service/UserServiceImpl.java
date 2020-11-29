@@ -4,8 +4,11 @@ import com.findme.dao.UserDao;
 import com.findme.exception.BadRequestException;
 import com.findme.exception.InternalServerException;
 import com.findme.exception.NotFoundException;
+import com.findme.exception.UnauthorizedException;
 import com.findme.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.servlet.http.HttpSession;
 
 public class UserServiceImpl implements UserService {
 
@@ -27,35 +30,42 @@ public class UserServiceImpl implements UserService {
     }
 
     public User registerUser(User user) throws BadRequestException, InternalServerException {
-        try {
-            validateUser(user);
+        validateUser(user);
 
-            return userdao.save(user);
-        } catch (BadRequestException e) {
-            throw new BadRequestException("Can`t register user: " + e.getMessage());
-        }
+        return userdao.save(user);
     }
 
-    public User login(String mail, String password)
+    public User login(String mail, String password, HttpSession session)
             throws NotFoundException, BadRequestException, InternalServerException {
-        try {
-            User user = userdao.findByMail(mail);
 
-            if (user == null) {
-                throw new NotFoundException("Missing user with mail " + mail);
-            }
-            if (!user.getPassword().equals(password)) {
-                throw new BadRequestException("Wrong password");
-            }
-
-            return user;
-        } catch (BadRequestException e) {
-            throw new BadRequestException("Can`t login user: " + e.getMessage());
+        if (session.getAttribute("userId") != null) {
+            throw new BadRequestException("You`re already log in");
         }
+
+        User user = userdao.findByMail(mail);
+
+        if (user == null) {
+            throw new NotFoundException("Missing user with mail " + mail);
+        }
+        if (!user.getPassword().equals(password)) {
+            throw new BadRequestException("Wrong password");
+        }
+
+        updateDateLastActive(user.getId());
+
+        return user;
     }
 
-    public void updateDateLastActive(User user) throws InternalServerException {
-        userdao.updateDateLastActive(user);
+    public void logout(HttpSession session) throws UnauthorizedException, InternalServerException {
+        if (session.getAttribute("userId") == null) {
+            throw new UnauthorizedException("You`re not log in");
+        }
+
+        updateDateLastActive((long) session.getAttribute("userId"));
+    }
+
+    public void updateDateLastActive(long userId) throws InternalServerException {
+        userdao.updateDateLastActive(userId);
     }
 
     private void validateUser(User user) throws BadRequestException, InternalServerException {

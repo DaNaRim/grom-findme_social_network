@@ -39,8 +39,9 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
         }
     }
 
-    public void updateDateLastActive(User user) throws InternalServerException {
+    public void updateDateLastActive(long userId) throws InternalServerException {
         try {
+            User user = findById(userId);
             user.setDateLastActive(new Date());
 
             em.merge(user);
