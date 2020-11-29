@@ -23,7 +23,7 @@ public class Dao<T> {
 
             return entity;
         } catch (HibernateException e) {
-            throw new InternalServerException("Something went wrong while trying to save entity " + e.getMessage());
+            throw new InternalServerException("Dao.save failed: " + e.getMessage());
         }
     }
 
@@ -32,8 +32,7 @@ public class Dao<T> {
             return em.find(this.tClass, id);
 
         } catch (HibernateException e) {
-            throw new InternalServerException("Something went wrong while trying to find entity by id: "
-                    + e.getMessage());
+            throw new InternalServerException("Dao.findById failed: " + e.getMessage());
         }
     }
 
@@ -42,7 +41,7 @@ public class Dao<T> {
             return em.merge(entity);
 
         } catch (HibernateException e) {
-            throw new InternalServerException("Something went wrong while trying to update entity: " + e.getMessage());
+            throw new InternalServerException("Dao.update failed: " + e.getMessage());
         }
     }
 
@@ -51,7 +50,7 @@ public class Dao<T> {
             em.remove(em.merge(entity));
 
         } catch (HibernateException e) {
-            throw new InternalServerException("Something went wrong while trying to delete entity: " + e.getMessage());
+            throw new InternalServerException("Dao.delete failed: " + e.getMessage());
         }
     }
 }

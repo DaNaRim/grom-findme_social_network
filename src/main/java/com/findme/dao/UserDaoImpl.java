@@ -34,8 +34,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
         } catch (NoResultException e) {
             return null;
         } catch (HibernateException e) {
-            throw new InternalServerException("Something went wrong while trying to find user by mail: "
-                    + e.getMessage());
+            throw new InternalServerException("UserDaoImpl.findByMail failed: " + e.getMessage());
         }
     }
 
@@ -46,8 +45,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
 
             em.merge(user);
         } catch (HibernateException e) {
-            throw new InternalServerException("Something went wrong while trying to update date last active: "
-                    + e.getMessage());
+            throw new InternalServerException("UserDaoImpl.updateDateLastActive failed: " + e.getMessage());
         }
     }
 
@@ -59,8 +57,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
                     .getSingleResult();
 
         } catch (HibernateException e) {
-            throw new InternalServerException("Something went wrong while trying to check phone and mail " +
-                    "for availability: " + e.getMessage());
+            throw new InternalServerException("UserDaoImpl.areThePhoneAndMailBusy failed: " + e.getMessage());
         }
     }
 }
