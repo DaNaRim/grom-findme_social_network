@@ -18,7 +18,7 @@ public interface RelationshipDao {
 
     RelationshipStatus getCurrentStatus(long userFromId, long userToId) throws InternalServerException;
 
-    boolean isRelationshipExists(long userFromId, long userToId) throws InternalServerException;
+    Relationship findByUsers(long userFromId, long userToId) throws InternalServerException;
 
     List<Relationship> getIncomeRequests(long userId) throws InternalServerException;
 

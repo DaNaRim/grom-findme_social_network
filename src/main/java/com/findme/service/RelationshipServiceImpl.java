@@ -26,6 +26,7 @@ public class RelationshipServiceImpl implements RelationshipService {
             throws ServiceException, InternalServerException {
 
         Relationship relationship = validateAddRelationship(userFromId, userToId);
+
         relationship = relationshipDao.save(relationship);
 
         userService.updateDateLastActive(userFromId);
@@ -74,45 +75,54 @@ public class RelationshipServiceImpl implements RelationshipService {
 
         RelationshipStatus currentStatus = relationshipDao.getCurrentStatus(userFromId, userToId);
 
-        if (currentStatus != RelationshipStatus.NEVER_FRIENDS) {
+        if (currentStatus != RelationshipStatus.NEVER_FRIENDS
+                && currentStatus != RelationshipStatus.NOT_FRIENDS) {
             throw new BadRequestException("Relationship already exists");
         }
-
-        relationship.setStatus(RelationshipStatus.REQUEST_HAS_BEEN_SENT);
         return relationship;
     }
 
     private Relationship validateUpdateRelationship(long userFromId, long userToId, RelationshipStatus status)
             throws ServiceException, InternalServerException {
 
-        Relationship relationship = validateRelationship(userFromId, userToId);
+        validateRelationship(userFromId, userToId);
 
-        if (!relationshipDao.isRelationshipExists(userFromId, userToId)) {
+        Relationship relationshipFrom = relationshipDao.findByUsers(userFromId, userToId);
 
-            if (!relationshipDao.isRelationshipExists(userToId, userFromId)) {
-                throw new NotFoundException("You have no relationship to renew");
-            }
+        if (relationshipFrom == null) {
+            throw new BadRequestException("Relationship is not created. Can`t update");
+        }
+        if (relationshipFrom.getStatus() == RelationshipStatus.REQUEST_REJECTED) {
+            throw new BadRequestException("Can`t reject your own request");
+        }
 
-        } else {
-            RelationshipStatus currentStatus = relationshipDao.getCurrentStatus(userFromId, userToId);
+        RelationshipStatus currentStatus = relationshipFrom.getStatus();
 
-            if (currentStatus == RelationshipStatus.REQUEST_REJECTED) {
-                throw new NoAccessException("user has rejected your request");
-            }
-            if (currentStatus == status) {
-                throw new BadRequestException("Can`t update to the same status");
-            }
+        if (currentStatus == status) {
+            throw new BadRequestException("Can`t update to the same status");
+        }
+        if (currentStatus == RelationshipStatus.REQUEST_REJECTED) {
+            throw new NoAccessException("Can`t update relationship because user has rejected your request");
+        }
+
+        Relationship relationshipTo = relationshipDao.findByUsers(userToId, userFromId);
+
+        if (relationshipFrom.getStatus() == RelationshipStatus.FRIENDS
+                && relationshipTo.getStatus() != RelationshipStatus.REQUEST_HAS_BEEN_SENT) {
+            throw new BadRequestException("Can`t add a friend because user don`t sent a friend request");
         }
 
         if (status == RelationshipStatus.NEVER_FRIENDS) {
-            throw new BadRequestException("You can`t set relationship to NEVER_FRIENDS");
+            relationshipFrom.setStatus(RelationshipStatus.NOT_FRIENDS);
+        } else {
+            relationshipFrom.setStatus(status);
         }
-
-        relationship.setStatus(status);
-        return relationship;
+        return relationshipFrom;
     }
 
-    //returns Relationship with null status
+    /* In the future, we will need users and in order not to re-access the db,
+       the method returns them as a relationship with a null status
+     */
     private Relationship validateRelationship(long userFromId, long userToId)
             throws ServiceException, InternalServerException {
 

@@ -21,6 +21,13 @@ public class Relationship {
         this.userTo = userTo;
     }
 
+    public Relationship(User userFrom, User userTo, RelationshipStatus status, Date dateModify) {
+        this.userFrom = userFrom;
+        this.userTo = userTo;
+        this.status = status;
+        this.dateModify = dateModify;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
