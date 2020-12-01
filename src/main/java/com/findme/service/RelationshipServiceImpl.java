@@ -8,7 +8,6 @@ import com.findme.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Transactional
@@ -23,20 +22,8 @@ public class RelationshipServiceImpl implements RelationshipService {
         this.userService = userService;
     }
 
-    public Relationship addRelationShip(String userFromIdStr, String userToIdStr, HttpSession session)
+    public Relationship addRelationShip(long userFromId, long userToId)
             throws ServiceException, InternalServerException {
-
-        long userFromId;
-        long userToId;
-        try {
-            userFromId = Long.parseLong(userFromIdStr);
-            userToId = Long.parseLong(userToIdStr);
-
-        } catch (ArithmeticException e) {
-            throw new BadRequestException("Id`s filed incorrect");
-        }
-
-        validateAccess(userFromId, session);
 
         Relationship relationship = validateAddRelationship(userFromId, userToId);
         relationship = relationshipDao.save(relationship);
@@ -47,19 +34,8 @@ public class RelationshipServiceImpl implements RelationshipService {
     }
 
 
-    public Relationship updateRelationShip(String userFromIdStr, String userToIdStr,
-                                           RelationshipStatus status, HttpSession session)
+    public Relationship updateRelationShip(long userFromId, long userToId, RelationshipStatus status)
             throws ServiceException, InternalServerException {
-
-        long userFromId;
-        long userToId;
-        try {
-            userFromId = Long.parseLong(userFromIdStr);
-            userToId = Long.parseLong(userToIdStr);
-
-        } catch (ArithmeticException e) {
-            throw new BadRequestException("Id`s filed incorrect");
-        }
 
         Relationship relationship = validateUpdateRelationship(userFromId, userToId, status);
 
@@ -70,18 +46,7 @@ public class RelationshipServiceImpl implements RelationshipService {
         return relationship;
     }
 
-    public List<Relationship> getIncomeRequests(String userIdStr, HttpSession session)
-            throws ServiceException, InternalServerException {
-
-        long userId;
-        try {
-            userId = Long.parseLong(userIdStr);
-
-        } catch (ArithmeticException e) {
-            throw new BadRequestException("Id`s filed incorrect");
-        }
-
-        validateAccess(userId, session);
+    public List<Relationship> getIncomeRequests(long userId) throws ServiceException, InternalServerException {
 
         List<Relationship> relationships = relationshipDao.getIncomeRequests(userId);
 
@@ -92,18 +57,7 @@ public class RelationshipServiceImpl implements RelationshipService {
         return relationships;
     }
 
-    public List<Relationship> getOutcomeRequests(String userIdStr, HttpSession session)
-            throws ServiceException, InternalServerException {
-
-        long userId;
-        try {
-            userId = Long.parseLong(userIdStr);
-
-        } catch (ArithmeticException e) {
-            throw new BadRequestException("Id`s filed incorrect");
-        }
-
-        validateAccess(userId, session);
+    public List<Relationship> getOutcomeRequests(long userId) throws ServiceException, InternalServerException {
 
         List<Relationship> relationships = relationshipDao.getOutcomeRequests(userId);
 
@@ -175,12 +129,4 @@ public class RelationshipServiceImpl implements RelationshipService {
         return new Relationship(userFrom, userTo);
     }
 
-    private void validateAccess(long userId, HttpSession session) throws UnauthorizedException, NoAccessException {
-        if (session.getAttribute("userId") == null) {
-            throw new UnauthorizedException("You must be authorized to add friends");
-        }
-        if (session.getAttribute("userId") != String.valueOf(userId)) {
-            throw new NoAccessException("You can`t send friend request in the name of another user");
-        }
-    }
 }

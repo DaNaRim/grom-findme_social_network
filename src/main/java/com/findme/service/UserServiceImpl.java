@@ -4,11 +4,8 @@ import com.findme.dao.UserDao;
 import com.findme.exception.BadRequestException;
 import com.findme.exception.InternalServerException;
 import com.findme.exception.NotFoundException;
-import com.findme.exception.UnauthorizedException;
 import com.findme.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.servlet.http.HttpSession;
 
 public class UserServiceImpl implements UserService {
 
@@ -35,12 +32,8 @@ public class UserServiceImpl implements UserService {
         return userdao.save(user);
     }
 
-    public User login(String mail, String password, HttpSession session)
+    public User login(String mail, String password)
             throws NotFoundException, BadRequestException, InternalServerException {
-
-        if (session.getAttribute("userId") != null) {
-            throw new BadRequestException("You`re already log in");
-        }
 
         User user = userdao.findByMail(mail);
 
@@ -56,12 +49,8 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    public void logout(HttpSession session) throws UnauthorizedException, InternalServerException {
-        if (session.getAttribute("userId") == null) {
-            throw new UnauthorizedException("You`re not log in");
-        }
-
-        updateDateLastActive((long) session.getAttribute("userId"));
+    public void logout(long userId) throws InternalServerException {
+        updateDateLastActive(userId);
     }
 
     public void updateDateLastActive(long userId) throws InternalServerException {

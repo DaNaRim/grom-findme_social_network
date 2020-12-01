@@ -82,7 +82,11 @@ public class UserController {
                                  @RequestParam String password,
                                  HttpSession session) {
         try {
-            User user = userService.login(mail, password, session);
+            if (session.getAttribute("userId") != null) {
+                throw new BadRequestException("You`re already log in");
+            }
+
+            User user = userService.login(mail, password);
 
             session.setAttribute("userId", user.getId());
 
@@ -104,7 +108,11 @@ public class UserController {
     public @ResponseBody
     ResponseEntity<String> logout(HttpSession session) {
         try {
-            userService.logout(session);
+            if (session.getAttribute("userId") == null) {
+                throw new UnauthorizedException("You`re not log in");
+            }
+
+            userService.logout((long) session.getAttribute("userId"));
 
             session.removeAttribute("userId");
 

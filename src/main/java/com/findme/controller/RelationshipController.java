@@ -1,9 +1,6 @@
 package com.findme.controller;
 
-import com.findme.exception.NoAccessException;
-import com.findme.exception.NotFoundException;
-import com.findme.exception.ServiceException;
-import com.findme.exception.UnauthorizedException;
+import com.findme.exception.*;
 import com.findme.model.Relationship;
 import com.findme.model.RelationshipStatus;
 import com.findme.service.RelationshipService;
@@ -29,11 +26,23 @@ public class RelationshipController {
     }
 
     @PostMapping(path = "/add")
-    public ResponseEntity<String> addRelationship(@RequestParam String userFromId,
-                                                  @RequestParam String userToId,
+    public ResponseEntity<String> addRelationship(@RequestParam String userFromIdStr,
+                                                  @RequestParam String userToIdStr,
                                                   HttpSession session) {
         try {
-            relationshipService.addRelationShip(userFromId, userToId, session);
+            long userFromId;
+            long userToId;
+            try {
+                userFromId = Long.parseLong(userFromIdStr);
+                userToId = Long.parseLong(userToIdStr);
+
+            } catch (ArithmeticException e) {
+                throw new BadRequestException("Id`s filed incorrect");
+            }
+
+            validateAccess(userFromId, session);
+
+            relationshipService.addRelationShip(userFromId, userToId);
 
             return new ResponseEntity<>("New Relationship created", HttpStatus.CREATED);
         } catch (ServiceException e) {
@@ -53,12 +62,23 @@ public class RelationshipController {
     }
 
     @PutMapping(path = "/update")
-    public ResponseEntity<String> updateRelationship(@RequestParam String userFromId,
-                                                     @RequestParam String userToId,
+    public ResponseEntity<String> updateRelationship(@RequestParam String userFromIdStr,
+                                                     @RequestParam String userToIdStr,
                                                      @RequestParam RelationshipStatus status,
                                                      HttpSession session) {
         try {
-            relationshipService.updateRelationShip(userFromId, userToId, status, session);
+            long userFromId;
+            long userToId;
+            try {
+                userFromId = Long.parseLong(userFromIdStr);
+                userToId = Long.parseLong(userToIdStr);
+
+            } catch (ArithmeticException e) {
+                throw new BadRequestException("Id`s filed incorrect");
+            }
+            validateAccess(userFromId, session);
+
+            relationshipService.updateRelationShip(userFromId, userToId, status);
 
             return new ResponseEntity<>("Relationship updated", HttpStatus.OK);
         } catch (ServiceException e) {
@@ -78,9 +98,19 @@ public class RelationshipController {
     }
 
     @GetMapping(path = "/incomeRequests")
-    public String getIncomeRequests(@RequestParam String userId, HttpSession session, Model model) {
+    public String getIncomeRequests(@RequestParam String userIdStr, HttpSession session, Model model) {
         try {
-            List<Relationship> relationships = relationshipService.getIncomeRequests(userId, session);
+            long userId;
+            try {
+                userId = Long.parseLong(userIdStr);
+
+            } catch (ArithmeticException e) {
+                throw new BadRequestException("Id filed incorrect");
+            }
+
+            validateAccess(userId, session);
+
+            List<Relationship> relationships = relationshipService.getIncomeRequests(userId);
 
             model.addAttribute("incomeRequests", relationships);
             return "";
@@ -106,12 +136,36 @@ public class RelationshipController {
     }
 
     @GetMapping(path = "/outcomeRequests")
-    public ResponseEntity<String> getOutcomeRequests(@RequestParam String userId, HttpSession session) {
+    public ResponseEntity<String> getOutcomeRequests(@RequestParam String userIdStr, HttpSession session) {
+        try {
+            long userId;
+            try {
+                userId = Long.parseLong(userIdStr);
+
+            } catch (ArithmeticException e) {
+                throw new BadRequestException("Id filed incorrect");
+            }
+
+            validateAccess(userId, session);
+
+        } catch (Exception e) {
+
+        }
+
         return null;
     }
 
     @GetMapping(path = "/friends")
     public ResponseEntity<String> getFriends(@RequestParam String userId, HttpSession session) {
         return null;
+    }
+
+    private void validateAccess(long userId, HttpSession session) throws UnauthorizedException, NoAccessException {
+        if (session.getAttribute("userId") == null) {
+            throw new UnauthorizedException("You must be authorized to do that");
+        }
+        if (session.getAttribute("userId") != String.valueOf(userId)) {
+            throw new NoAccessException("You can`t do that in the name of another user");
+        }
     }
 }
