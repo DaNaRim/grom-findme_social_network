@@ -1,9 +1,6 @@
 package com.findme.controller;
 
-import com.findme.exception.BadRequestException;
-import com.findme.exception.NotFoundException;
-import com.findme.exception.ServiceException;
-import com.findme.exception.UnauthorizedException;
+import com.findme.exception.*;
 import com.findme.model.User;
 import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,24 +26,20 @@ public class UserController {
     @GetMapping(path = "/{userId}")
     public String profile(Model model, @PathVariable String userId) {
         try {
-            long id = Long.parseLong(userId);
+            long id;
+            try {
+                id = Long.parseLong(userId);
+
+            } catch (ArithmeticException e) {
+                throw new BadRequestException("Id`s filed incorrect");
+            }
 
             User user = userService.findById(id);
 
             model.addAttribute("user", user);
             return "profile";
-        } catch (NotFoundException e) {
-
-            model.addAttribute("error", e.getMessage());
-            return "404";
-        } catch (NumberFormatException e) {
-
-            model.addAttribute("error", "Field filed incorrect");
-            return "400";
         } catch (Exception e) {
-            System.err.println(e.getMessage());
-            model.addAttribute("error", "Something went wrong");
-            return "500";
+            return errorHandlingWithModel(e, model);
         }
     }
 
@@ -62,13 +55,8 @@ public class UserController {
             userService.registerUser(user);
 
             return new ResponseEntity<>("Registration success", HttpStatus.CREATED);
-        } catch (ServiceException e) {
-
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-
-            System.err.println(e.getMessage());
-            return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+            return errorHandlingWithResponseEntity(e);
         }
     }
 
@@ -92,15 +80,8 @@ public class UserController {
             session.setAttribute("userId", user.getId());
 
             return new ResponseEntity<>("Login success", HttpStatus.OK);
-        } catch (ServiceException e) {
-            if (e.getCause() instanceof NotFoundException) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-
-            System.err.println(e.getMessage());
-            return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+            return errorHandlingWithResponseEntity(e);
         }
     }
 
@@ -117,14 +98,47 @@ public class UserController {
             session.removeAttribute("userId");
 
             return new ResponseEntity<>("Logout success", HttpStatus.OK);
-        } catch (UnauthorizedException e) {
-
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
-
-            System.err.println(e.getMessage());
-            return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+            return errorHandlingWithResponseEntity(e);
         }
+    }
+
+    private ResponseEntity<String> errorHandlingWithResponseEntity(Exception e) {
+        if (e.getCause() instanceof UnauthorizedException) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        } else if (e.getCause() instanceof ServiceException) {
+            if (e.getCause() instanceof NoAccessException) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+            }
+            if (e.getCause() instanceof NotFoundException) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            } else {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            }
+        }
+        System.err.println(e.getMessage());
+        return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private String errorHandlingWithModel(Exception e, Model model) {
+        if (e.getCause() instanceof UnauthorizedException) {
+            model.addAttribute("error", e.getMessage());
+            return "401";
+        } else if (e.getCause() instanceof ServiceException) {
+            if (e.getCause() instanceof NoAccessException) {
+                model.addAttribute("error", e.getMessage());
+                return "403";
+            } else if (e.getCause() instanceof NotFoundException) {
+                model.addAttribute("error", e.getMessage());
+                return "404";
+            } else {
+                model.addAttribute("error", e.getMessage());
+                return "400";
+            }
+        }
+        System.err.println(e.getMessage());
+        model.addAttribute("error", "Something went wrong");
+        return "500";
     }
 
 }

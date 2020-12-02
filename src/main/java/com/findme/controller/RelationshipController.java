@@ -45,19 +45,8 @@ public class RelationshipController {
             relationshipService.addRelationShip(userFromId, userToId);
 
             return new ResponseEntity<>("New Relationship created", HttpStatus.CREATED);
-        } catch (ServiceException e) {
-            if (e.getCause() instanceof UnauthorizedException) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-            }
-            if (e.getCause() instanceof NoAccessException) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
-            }
-            if (e.getCause() instanceof NotFoundException) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+            return errorHandlingWithResponseEntity(e);
         }
     }
 
@@ -81,19 +70,8 @@ public class RelationshipController {
             relationshipService.updateRelationShip(userFromId, userToId, status);
 
             return new ResponseEntity<>("Relationship updated", HttpStatus.OK);
-        } catch (ServiceException e) {
-            if (e.getCause() instanceof UnauthorizedException) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-            }
-            if (e.getCause() instanceof NoAccessException) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
-            }
-            if (e.getCause() instanceof NotFoundException) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+            return errorHandlingWithResponseEntity(e);
         }
     }
 
@@ -114,29 +92,13 @@ public class RelationshipController {
 
             model.addAttribute("incomeRequests", relationships);
             return "";
-        } catch (ServiceException e) {
-            if (e.getCause() instanceof UnauthorizedException) {
-                model.addAttribute("error", e.getMessage());
-                return "401";
-            }
-            if (e.getCause() instanceof NoAccessException) {
-                model.addAttribute("error", e.getMessage());
-                return "403";
-            }
-            if (e.getCause() instanceof NotFoundException) {
-                model.addAttribute("error", e.getMessage());
-                return "404";
-            }
-            model.addAttribute("error", e.getMessage());
-            return "400";
         } catch (Exception e) {
-            model.addAttribute("error", "Something went wrong");
-            return "500";
+            return errorHandlingWithModel(e, model);
         }
     }
 
     @GetMapping(path = "/outcomeRequests")
-    public ResponseEntity<String> getOutcomeRequests(@RequestParam String userIdStr, HttpSession session) {
+    public String getOutcomeRequests(@RequestParam String userIdStr, HttpSession session, Model model) {
         try {
             long userId;
             try {
@@ -148,16 +110,13 @@ public class RelationshipController {
 
             validateAccess(userId, session);
 
+            List<Relationship> relationships = relationshipService.getOutcomeRequests(userId);
+
+            model.addAttribute("outcomeRequests", relationships);
+            return "outcomeRequests";
         } catch (Exception e) {
-
+            return errorHandlingWithModel(e, model);
         }
-
-        return null;
-    }
-
-    @GetMapping(path = "/friends")
-    public ResponseEntity<String> getFriends(@RequestParam String userId, HttpSession session) {
-        return null;
     }
 
     private void validateAccess(long userId, HttpSession session) throws UnauthorizedException, NoAccessException {
@@ -167,5 +126,43 @@ public class RelationshipController {
         if (session.getAttribute("userId") != String.valueOf(userId)) {
             throw new NoAccessException("You can`t do that in the name of another user");
         }
+    }
+
+    private ResponseEntity<String> errorHandlingWithResponseEntity(Exception e) {
+        if (e.getCause() instanceof UnauthorizedException) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        } else if (e.getCause() instanceof ServiceException) {
+            if (e.getCause() instanceof NoAccessException) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+            }
+            if (e.getCause() instanceof NotFoundException) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            } else {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            }
+        }
+        System.err.println(e.getMessage());
+        return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private String errorHandlingWithModel(Exception e, Model model) {
+        if (e.getCause() instanceof UnauthorizedException) {
+            model.addAttribute("error", e.getMessage());
+            return "401";
+        } else if (e.getCause() instanceof ServiceException) {
+            if (e.getCause() instanceof NoAccessException) {
+                model.addAttribute("error", e.getMessage());
+                return "403";
+            } else if (e.getCause() instanceof NotFoundException) {
+                model.addAttribute("error", e.getMessage());
+                return "404";
+            } else {
+                model.addAttribute("error", e.getMessage());
+                return "400";
+            }
+        }
+        System.err.println(e.getMessage());
+        model.addAttribute("error", "Something went wrong");
+        return "500";
     }
 }
