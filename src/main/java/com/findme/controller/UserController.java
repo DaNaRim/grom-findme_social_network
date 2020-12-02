@@ -1,7 +1,9 @@
 package com.findme.controller;
 
 import com.findme.exception.*;
+import com.findme.model.RelationshipStatus;
 import com.findme.model.User;
+import com.findme.service.RelationshipService;
 import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,14 +19,16 @@ import javax.servlet.http.HttpSession;
 public class UserController {
 
     private final UserService userService;
+    private final RelationshipService relationshipService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, RelationshipService relationshipService) {
         this.userService = userService;
+        this.relationshipService = relationshipService;
     }
 
     @GetMapping(path = "/{userId}")
-    public String profile(Model model, @PathVariable String userId) {
+    public String profile(@PathVariable String userId, Model model, HttpSession session) {
         try {
             long id;
             try {
@@ -35,6 +39,16 @@ public class UserController {
             }
 
             User user = userService.findById(id);
+
+            if (session.getAttribute("userId") != null) {
+                RelationshipStatus relationshipStatus = relationshipService.getRelationShipStatus(
+                        (long) session.getAttribute("userId"),
+                        Long.parseLong(userId));
+
+                user.setRelationshipStatus(relationshipStatus);
+            } else {
+                user.setRelationshipStatus(RelationshipStatus.NEVER_FRIENDS);
+            }
 
             model.addAttribute("user", user);
             return "profile";

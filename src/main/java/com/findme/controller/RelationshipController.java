@@ -91,7 +91,7 @@ public class RelationshipController {
             List<Relationship> relationships = relationshipService.getIncomeRequests(userId);
 
             model.addAttribute("incomeRequests", relationships);
-            return "";
+            return "incomeRequests";
         } catch (Exception e) {
             return errorHandlingWithModel(e, model);
         }

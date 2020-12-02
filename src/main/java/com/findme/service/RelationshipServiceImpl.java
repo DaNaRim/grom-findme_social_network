@@ -34,6 +34,9 @@ public class RelationshipServiceImpl implements RelationshipService {
         return relationship;
     }
 
+    public RelationshipStatus getRelationShipStatus(long userFromId, long userToId) throws InternalServerException {
+        return relationshipDao.getRelationshipStatus(userFromId, userToId);
+    }
 
     public Relationship updateRelationShip(long userFromId, long userToId, RelationshipStatus status)
             throws ServiceException, InternalServerException {
@@ -75,7 +78,7 @@ public class RelationshipServiceImpl implements RelationshipService {
             throws ServiceException, InternalServerException {
         Relationship relationship = validateRelationship(userFromId, userToId);
 
-        RelationshipStatus currentStatus = relationshipDao.getCurrentStatus(userFromId, userToId);
+        RelationshipStatus currentStatus = relationshipDao.getRelationshipStatus(userFromId, userToId);
 
         if (currentStatus != RelationshipStatus.NEVER_FRIENDS
                 && currentStatus != RelationshipStatus.NOT_FRIENDS) {

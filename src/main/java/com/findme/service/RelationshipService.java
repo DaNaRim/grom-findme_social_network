@@ -13,6 +13,8 @@ public interface RelationshipService {
 
     Relationship addRelationShip(long userFromId, long userToId) throws ServiceException, InternalServerException;
 
+    RelationshipStatus getRelationShipStatus(long userFromId, long userToId) throws InternalServerException;
+
     Relationship updateRelationShip(long userFromId, long userToId, RelationshipStatus status)
             throws ServiceException, InternalServerException;
 

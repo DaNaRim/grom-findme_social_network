@@ -49,7 +49,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
         Relationship relationshipTo = findByUsers(relationshipFrom.getUserTo().getId(),
                 relationshipFrom.getUserFrom().getId());
 
-        RelationshipStatus currentRelationshipStatusFrom = getCurrentStatus(relationshipFrom.getUserFrom().getId(),
+        RelationshipStatus currentRelationshipStatusFrom = getRelationshipStatus(relationshipFrom.getUserFrom().getId(),
                 relationshipFrom.getUserTo().getId());
 
         if (relationshipFrom.getStatus() == RelationshipStatus.NOT_FRIENDS) {
@@ -105,7 +105,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
         }
     }
 
-    public RelationshipStatus getCurrentStatus(long userFromId, long userToId) throws InternalServerException {
+    public RelationshipStatus getRelationshipStatus(long userFromId, long userToId) throws InternalServerException {
         try {
             return (RelationshipStatus) em.createNativeQuery(GET_CURRENT_STATUS_QUERY)
                     .setParameter("userFromId", userFromId)
