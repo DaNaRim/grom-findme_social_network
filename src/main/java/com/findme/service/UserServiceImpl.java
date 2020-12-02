@@ -71,7 +71,6 @@ public class UserServiceImpl implements UserService {
                 || user.getPassword().length() > 30
                 || user.getCountry() != null && user.getCountry().length() > 30
                 || user.getCity() != null && user.getCity().length() > 30
-                || user.getRelationshipStatus() != null && user.getRelationshipStatus().length() > 30
                 || user.getReligion() != null && user.getReligion().length() > 30
                 || user.getSchool() != null && user.getSchool().length() > 30
                 || user.getUniversity() != null && user.getUniversity().length() > 30

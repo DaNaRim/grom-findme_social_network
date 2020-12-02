@@ -21,7 +21,7 @@ public class User {
     private Integer age;
     private Date dateRegistered;
     private Date dateLastActive;
-    private String relationshipStatus; //TODO remove
+    private RelationshipStatus relationshipStatus;
     private String religion;
     //TODO from existed date
     private String school;
@@ -133,11 +133,11 @@ public class User {
     }
 
     @Column(name = "RELATIONSHIP_STATUS")
-    public String getRelationshipStatus() {
+    public RelationshipStatus getRelationshipStatus() {
         return relationshipStatus;
     }
 
-    public void setRelationshipStatus(String relationshipStatus) {
+    public void setRelationshipStatus(RelationshipStatus relationshipStatus) {
         this.relationshipStatus = relationshipStatus;
     }
 

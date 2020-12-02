@@ -54,6 +54,7 @@ public class RelationshipServiceImpl implements RelationshipService {
         if (relationships == null) {
             throw new NotFoundException("There are no requests");
         }
+        userService.updateDateLastActive(userId);
 
         return relationships;
     }
@@ -65,6 +66,7 @@ public class RelationshipServiceImpl implements RelationshipService {
         if (relationships == null) {
             throw new NotFoundException("There are no requests");
         }
+        userService.updateDateLastActive(userId);
 
         return relationships;
     }
