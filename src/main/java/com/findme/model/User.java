@@ -132,7 +132,7 @@ public class User {
         this.dateLastActive = dateLastActive;
     }
 
-    @Column(name = "RELATIONSHIP_STATUS")
+    @Transient
     public RelationshipStatus getRelationshipStatus() {
         return relationshipStatus;
     }
