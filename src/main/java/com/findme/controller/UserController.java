@@ -36,7 +36,7 @@ public class UserController {
             try {
                 id = Long.parseLong(userId);
 
-            } catch (ArithmeticException e) {
+            } catch (NumberFormatException e) {
                 throw new BadRequestException("Id`s filed incorrect");
             }
 

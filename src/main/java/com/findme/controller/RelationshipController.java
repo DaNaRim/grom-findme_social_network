@@ -39,7 +39,7 @@ public class RelationshipController {
                 userFromId = Long.parseLong(userFromIdStr);
                 userToId = Long.parseLong(userToIdStr);
 
-            } catch (ArithmeticException e) {
+            } catch (NumberFormatException e) {
                 throw new BadRequestException("Id`s filed incorrect");
             }
 
@@ -80,7 +80,7 @@ public class RelationshipController {
                 userToId = Long.parseLong(userToIdStr);
                 relationshipStatus = RelationshipStatus.valueOf(status);
 
-            } catch (ArithmeticException e) {
+            } catch (NumberFormatException e) {
                 throw new BadRequestException("Fields filed incorrect");
             }
             validateAccess(userFromId, session);
@@ -113,7 +113,7 @@ public class RelationshipController {
             try {
                 userId = Long.parseLong(userIdStr);
 
-            } catch (ArithmeticException e) {
+            } catch (NumberFormatException e) {
                 throw new BadRequestException("Id filed incorrect");
             }
 
@@ -149,7 +149,7 @@ public class RelationshipController {
             try {
                 userId = Long.parseLong(userIdStr);
 
-            } catch (ArithmeticException e) {
+            } catch (NumberFormatException e) {
                 throw new BadRequestException("Id filed incorrect");
             }
 
