@@ -69,17 +69,19 @@ public class RelationshipController {
     @PutMapping(path = "/update")
     public ResponseEntity<String> updateRelationship(@RequestParam String userFromIdStr,
                                                      @RequestParam String userToIdStr,
-                                                     @RequestParam RelationshipStatus status,
+                                                     @RequestParam String status,
                                                      HttpSession session) {
         try {
             long userFromId;
             long userToId;
+            RelationshipStatus relationshipStatus;
             try {
                 userFromId = Long.parseLong(userFromIdStr);
                 userToId = Long.parseLong(userToIdStr);
+                relationshipStatus = RelationshipStatus.valueOf(status);
 
             } catch (ArithmeticException e) {
-                throw new BadRequestException("Id`s filed incorrect");
+                throw new BadRequestException("Fields filed incorrect");
             }
             validateAccess(userFromId, session);
 
