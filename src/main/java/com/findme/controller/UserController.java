@@ -1,6 +1,8 @@
 package com.findme.controller;
 
-import com.findme.exception.*;
+import com.findme.exception.BadRequestException;
+import com.findme.exception.NotFoundException;
+import com.findme.exception.UnauthorizedException;
 import com.findme.model.RelationshipStatus;
 import com.findme.model.User;
 import com.findme.service.RelationshipService;
@@ -40,6 +42,7 @@ public class UserController {
 
             User user = userService.findById(id);
 
+            //processing our relationship to this user
             if (session.getAttribute("userId") != null) {
                 RelationshipStatus relationshipStatus = relationshipService.getRelationShipStatus(
                         (long) session.getAttribute("userId"),
