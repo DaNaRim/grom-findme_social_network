@@ -59,6 +59,7 @@ public class Relationship {
     }
 
     @Column(name = "STATUS", nullable = false)
+    @Enumerated(EnumType.STRING)
     public RelationshipStatus getStatus() {
         return status;
     }

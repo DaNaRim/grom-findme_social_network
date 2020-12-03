@@ -107,11 +107,12 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
 
     public RelationshipStatus getRelationshipStatus(long userFromId, long userToId) throws InternalServerException {
         try {
-            return (RelationshipStatus) em.createNativeQuery(GET_CURRENT_STATUS_QUERY)
+            String relationshipStatus = (String) em.createNativeQuery(GET_CURRENT_STATUS_QUERY)
                     .setParameter("userFromId", userFromId)
                     .setParameter("userToId", userToId)
                     .getSingleResult();
 
+            return RelationshipStatus.valueOf(relationshipStatus);
         } catch (NoResultException e) {
             return RelationshipStatus.NEVER_FRIENDS;
         } catch (HibernateException e) {
