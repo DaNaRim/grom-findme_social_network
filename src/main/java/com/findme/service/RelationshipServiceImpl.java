@@ -1,7 +1,9 @@
 package com.findme.service;
 
 import com.findme.dao.RelationshipDao;
-import com.findme.exception.*;
+import com.findme.exception.BadRequestException;
+import com.findme.exception.InternalServerException;
+import com.findme.exception.NotFoundException;
 import com.findme.model.Relationship;
 import com.findme.model.RelationshipStatus;
 import com.findme.model.User;
@@ -23,7 +25,7 @@ public class RelationshipServiceImpl implements RelationshipService {
     }
 
     public Relationship addRelationShip(long userFromId, long userToId)
-            throws ServiceException, InternalServerException {
+            throws NotFoundException, BadRequestException, InternalServerException {
 
         Relationship relationship = validateAddRelationship(userFromId, userToId);
 
@@ -39,7 +41,7 @@ public class RelationshipServiceImpl implements RelationshipService {
     }
 
     public Relationship updateRelationShip(long userFromId, long userToId, RelationshipStatus status)
-            throws ServiceException, InternalServerException {
+            throws NotFoundException, BadRequestException, InternalServerException {
 
         Relationship relationship = validateUpdateRelationship(userFromId, userToId, status);
 
@@ -50,7 +52,7 @@ public class RelationshipServiceImpl implements RelationshipService {
         return relationship;
     }
 
-    public List<Relationship> getIncomeRequests(long userId) throws ServiceException, InternalServerException {
+    public List<Relationship> getIncomeRequests(long userId) throws NotFoundException, InternalServerException {
 
         List<Relationship> relationships = relationshipDao.getIncomeRequests(userId);
 
@@ -62,7 +64,7 @@ public class RelationshipServiceImpl implements RelationshipService {
         return relationships;
     }
 
-    public List<Relationship> getOutcomeRequests(long userId) throws ServiceException, InternalServerException {
+    public List<Relationship> getOutcomeRequests(long userId) throws NotFoundException, InternalServerException {
 
         List<Relationship> relationships = relationshipDao.getOutcomeRequests(userId);
 
@@ -75,7 +77,8 @@ public class RelationshipServiceImpl implements RelationshipService {
     }
 
     private Relationship validateAddRelationship(long userFromId, long userToId)
-            throws ServiceException, InternalServerException {
+            throws NotFoundException, BadRequestException, InternalServerException {
+
         Relationship relationship = validateRelationship(userFromId, userToId);
 
         RelationshipStatus currentStatus = relationshipDao.getRelationshipStatus(userFromId, userToId);
@@ -88,7 +91,7 @@ public class RelationshipServiceImpl implements RelationshipService {
     }
 
     private Relationship validateUpdateRelationship(long userFromId, long userToId, RelationshipStatus status)
-            throws ServiceException, InternalServerException {
+            throws NotFoundException, BadRequestException, InternalServerException {
 
         validateRelationship(userFromId, userToId);
 
@@ -107,7 +110,7 @@ public class RelationshipServiceImpl implements RelationshipService {
             throw new BadRequestException("Can`t update to the same status");
         }
         if (currentStatus == RelationshipStatus.REQUEST_REJECTED) {
-            throw new NoAccessException("Can`t update relationship because user has rejected your request");
+            throw new BadRequestException("Can`t update relationship because user has rejected your request");
         }
 
         Relationship relationshipTo = relationshipDao.findByUsers(userToId, userFromId);
@@ -129,7 +132,7 @@ public class RelationshipServiceImpl implements RelationshipService {
        the method returns them as a relationship with a null status
      */
     private Relationship validateRelationship(long userFromId, long userToId)
-            throws ServiceException, InternalServerException {
+            throws NotFoundException, BadRequestException, InternalServerException {
 
         if (userFromId == userToId) {
             throw new BadRequestException("you can`t change relationship to yourself");

@@ -52,8 +52,16 @@ public class UserController {
 
             model.addAttribute("user", user);
             return "profile";
+        } catch (NotFoundException e) {
+            model.addAttribute("error", e.getMessage());
+            return "404";
+        } catch (BadRequestException e) {
+            model.addAttribute("error", e.getMessage());
+            return "400";
         } catch (Exception e) {
-            return errorHandlingWithModel(e, model);
+            System.err.println(e.getMessage());
+            model.addAttribute("error", "Something went wrong");
+            return "500";
         }
     }
 
@@ -69,8 +77,12 @@ public class UserController {
             userService.registerUser(user);
 
             return new ResponseEntity<>("Registration success", HttpStatus.CREATED);
+        } catch (BadRequestException e) {
+
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return errorHandlingWithResponseEntity(e);
+            System.err.println(e.getMessage());
+            return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -94,8 +106,15 @@ public class UserController {
             session.setAttribute("userId", user.getId());
 
             return new ResponseEntity<>("Login success", HttpStatus.OK);
+        } catch (NotFoundException e) {
+
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (BadRequestException e) {
+
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return errorHandlingWithResponseEntity(e);
+            System.err.println(e.getMessage());
+            return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -112,47 +131,12 @@ public class UserController {
             session.removeAttribute("userId");
 
             return new ResponseEntity<>("Logout success", HttpStatus.OK);
+        } catch (UnauthorizedException e) {
+
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return errorHandlingWithResponseEntity(e);
+            System.err.println(e.getMessage());
+            return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    private ResponseEntity<String> errorHandlingWithResponseEntity(Exception e) {
-        if (e.getCause() instanceof UnauthorizedException) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-        } else if (e.getCause() instanceof ServiceException) {
-            if (e.getCause() instanceof NoAccessException) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
-            }
-            if (e.getCause() instanceof NotFoundException) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-            } else {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-            }
-        }
-        System.err.println(e.getMessage());
-        return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    private String errorHandlingWithModel(Exception e, Model model) {
-        if (e.getCause() instanceof UnauthorizedException) {
-            model.addAttribute("error", e.getMessage());
-            return "401";
-        } else if (e.getCause() instanceof ServiceException) {
-            if (e.getCause() instanceof NoAccessException) {
-                model.addAttribute("error", e.getMessage());
-                return "403";
-            } else if (e.getCause() instanceof NotFoundException) {
-                model.addAttribute("error", e.getMessage());
-                return "404";
-            } else {
-                model.addAttribute("error", e.getMessage());
-                return "400";
-            }
-        }
-        System.err.println(e.getMessage());
-        model.addAttribute("error", "Something went wrong");
-        return "500";
-    }
-
 }

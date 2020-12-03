@@ -1,6 +1,9 @@
 package com.findme.controller;
 
-import com.findme.exception.*;
+import com.findme.exception.BadRequestException;
+import com.findme.exception.NoAccessException;
+import com.findme.exception.NotFoundException;
+import com.findme.exception.UnauthorizedException;
 import com.findme.model.Relationship;
 import com.findme.model.RelationshipStatus;
 import com.findme.service.RelationshipService;
@@ -45,8 +48,21 @@ public class RelationshipController {
             relationshipService.addRelationShip(userFromId, userToId);
 
             return new ResponseEntity<>("New Relationship created", HttpStatus.CREATED);
+        } catch (UnauthorizedException e) {
+
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        } catch (NoAccessException e) {
+
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+        } catch (NotFoundException e) {
+
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (BadRequestException e) {
+
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return errorHandlingWithResponseEntity(e);
+            System.err.println(e.getMessage());
+            return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -67,11 +83,24 @@ public class RelationshipController {
             }
             validateAccess(userFromId, session);
 
-            relationshipService.updateRelationShip(userFromId, userToId, status);
+            relationshipService.updateRelationShip(userFromId, userToId, relationshipStatus);
 
             return new ResponseEntity<>("Relationship updated", HttpStatus.OK);
+        } catch (UnauthorizedException e) {
+
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        } catch (NoAccessException e) {
+
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+        } catch (NotFoundException e) {
+
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (BadRequestException e) {
+
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return errorHandlingWithResponseEntity(e);
+            System.err.println(e.getMessage());
+            return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -92,8 +121,22 @@ public class RelationshipController {
 
             model.addAttribute("incomeRequests", relationships);
             return "incomeRequests";
+        } catch (UnauthorizedException e) {
+            model.addAttribute("error", e.getMessage());
+            return "401";
+        } catch (NoAccessException e) {
+            model.addAttribute("error", e.getMessage());
+            return "403";
+        } catch (NotFoundException e) {
+            model.addAttribute("error", e.getMessage());
+            return "404";
+        } catch (BadRequestException e) {
+            model.addAttribute("error", e.getMessage());
+            return "400";
         } catch (Exception e) {
-            return errorHandlingWithModel(e, model);
+            System.err.println(e.getMessage());
+            model.addAttribute("error", "Something went wrong");
+            return "500";
         }
     }
 
@@ -114,8 +157,22 @@ public class RelationshipController {
 
             model.addAttribute("outcomeRequests", relationships);
             return "outcomeRequests";
+        } catch (UnauthorizedException e) {
+            model.addAttribute("error", e.getMessage());
+            return "401";
+        } catch (NoAccessException e) {
+            model.addAttribute("error", e.getMessage());
+            return "403";
+        } catch (NotFoundException e) {
+            model.addAttribute("error", e.getMessage());
+            return "404";
+        } catch (BadRequestException e) {
+            model.addAttribute("error", e.getMessage());
+            return "400";
         } catch (Exception e) {
-            return errorHandlingWithModel(e, model);
+            System.err.println(e.getMessage());
+            model.addAttribute("error", "Something went wrong");
+            return "500";
         }
     }
 
@@ -123,46 +180,9 @@ public class RelationshipController {
         if (session.getAttribute("userId") == null) {
             throw new UnauthorizedException("You must be authorized to do that");
         }
-        if (session.getAttribute("userId") != String.valueOf(userId)) {
+        if ((long) session.getAttribute("userId") != userId) {
             throw new NoAccessException("You can`t do that in the name of another user");
         }
     }
 
-    private ResponseEntity<String> errorHandlingWithResponseEntity(Exception e) {
-        if (e.getCause() instanceof UnauthorizedException) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-        } else if (e.getCause() instanceof ServiceException) {
-            if (e.getCause() instanceof NoAccessException) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
-            }
-            if (e.getCause() instanceof NotFoundException) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-            } else {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-            }
-        }
-        System.err.println(e.getMessage());
-        return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    private String errorHandlingWithModel(Exception e, Model model) {
-        if (e.getCause() instanceof UnauthorizedException) {
-            model.addAttribute("error", e.getMessage());
-            return "401";
-        } else if (e.getCause() instanceof ServiceException) {
-            if (e.getCause() instanceof NoAccessException) {
-                model.addAttribute("error", e.getMessage());
-                return "403";
-            } else if (e.getCause() instanceof NotFoundException) {
-                model.addAttribute("error", e.getMessage());
-                return "404";
-            } else {
-                model.addAttribute("error", e.getMessage());
-                return "400";
-            }
-        }
-        System.err.println(e.getMessage());
-        model.addAttribute("error", "Something went wrong");
-        return "500";
-    }
 }
