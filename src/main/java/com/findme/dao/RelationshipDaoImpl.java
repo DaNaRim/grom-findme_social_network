@@ -30,7 +30,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
         User userFrom = relationshipFrom.getUserFrom();
         User userTo = relationshipFrom.getUserTo();
 
-        if (!isRelationshipExists(userFrom.getId(), userTo.getId())) {
+        if (!isRelationshipExists(userTo.getId(), userFrom.getId())) {
 
             super.save(new Relationship(userTo, userFrom, RelationshipStatus.NEVER_FRIENDS, new Date()));
         }
