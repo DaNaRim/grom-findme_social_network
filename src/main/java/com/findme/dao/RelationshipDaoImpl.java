@@ -10,6 +10,7 @@ import javax.persistence.NoResultException;
 import java.util.Date;
 import java.util.List;
 
+@Transactional(rollbackFor = {HibernateException.class, InternalServerException.class})
 public class RelationshipDaoImpl extends Dao<Relationship> implements RelationshipDao {
 
     private static final String GET_CURRENT_STATUS_QUERY = "SELECT STATUS FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId";
@@ -22,7 +23,6 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     }
 
     @Override
-    @Transactional
     public Relationship save(Relationship relationshipFrom) throws InternalServerException {
 
         relationshipFrom.setStatus(RelationshipStatus.REQUEST_HAS_BEEN_SENT);
@@ -37,12 +37,10 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
 
             super.save(relationshipTo);
         }
-
         return super.save(relationshipFrom);
     }
 
     @Override
-    @Transactional
     public Relationship update(Relationship relationshipFrom) throws InternalServerException {
         //NOT_FRIENDS, REQUEST_HAS_BEEN_SENT, FRIENDS
 
