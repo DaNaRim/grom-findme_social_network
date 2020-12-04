@@ -42,7 +42,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
 
     @Override
     public Relationship update(Relationship relationshipFrom) throws InternalServerException {
-        //NOT_FRIENDS, REQUEST_HAS_BEEN_SENT, FRIENDS
+        //NOT_FRIENDS (NEVER_FRIENDS), FRIENDS
 
         Relationship relationshipTo = findByUsers(relationshipFrom.getUserTo().getId(),
                 relationshipFrom.getUserFrom().getId());
@@ -89,16 +89,12 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
                 super.update(relationshipTo);
                 return super.update(relationshipFrom);
             }
-        } else if (relationshipFrom.getStatus() == RelationshipStatus.FRIENDS) {
+        } else { // if (relationshipFrom.getStatus() == RelationshipStatus.FRIENDS) {
             relationshipTo.setStatus(RelationshipStatus.FRIENDS);
 
             relationshipFrom.setDateModify(new Date());
             relationshipTo.setDateModify(new Date());
             super.update(relationshipTo);
-            return super.update(relationshipFrom);
-
-        } else { //if (relationshipFrom.getStatus() == RelationshipStatus.REQUEST_HAS_BEEN_SENT) {
-            relationshipFrom.setDateModify(new Date());
             return super.update(relationshipFrom);
         }
     }

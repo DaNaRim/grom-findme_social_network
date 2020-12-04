@@ -101,6 +101,9 @@ public class RelationshipServiceImpl implements RelationshipService {
         if (status == RelationshipStatus.REQUEST_REJECTED) {
             throw new BadRequestException("Can`t reject your own request");
         }
+        if (status == RelationshipStatus.REQUEST_HAS_BEEN_SENT) {
+            throw new BadRequestException("Can`t add relationship in update method");
+        }
 
         Relationship relationshipFrom = relationshipDao.findByUsers(userFromId, userToId);
 
@@ -115,9 +118,6 @@ public class RelationshipServiceImpl implements RelationshipService {
         }
         if (currentStatus == RelationshipStatus.REQUEST_REJECTED) {
             throw new BadRequestException("Can`t update relationship because user has rejected your request");
-        }
-        if (status == RelationshipStatus.REQUEST_HAS_BEEN_SENT && currentStatus == RelationshipStatus.FRIENDS) {
-            throw new BadRequestException("You already friends");
         }
 
         Relationship relationshipTo = relationshipDao.findByUsers(userToId, userFromId);
