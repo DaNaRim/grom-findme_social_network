@@ -40,7 +40,7 @@
     $("#logout").submit(function (e) {
         e.preventDefault();
         $.ajax({
-            type: "POST",
+            type: "GET",
             url: "logout",
             success: function () {
                 alert("Logout Success");
