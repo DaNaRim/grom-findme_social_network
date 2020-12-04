@@ -3,6 +3,7 @@ package com.findme.dao;
 import com.findme.exception.InternalServerException;
 import com.findme.model.Relationship;
 import com.findme.model.RelationshipStatus;
+import com.findme.model.User;
 import org.hibernate.HibernateException;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
 
     private static final String GET_CURRENT_STATUS_QUERY = "SELECT STATUS FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId";
     private static final String FIND_BY_USERS_QUERY = "SELECT * FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId";
+    private static final String IS_RELATIONSHIP_EXISTS_QUERY = "SELECT EXISTS(SELECT 1 FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId)";
     private static final String GET_INCOME_REQUESTS_QUERY = "SELECT * FROM RELATIONSHIP WHERE USER_TO = :userTo AND STATUS = 'REQUEST_HAS_BEEN_SENT' ORDER BY DATE_MODIFY";
     private static final String GET_OUTCOME_REQUESTS_QUERY = "SELECT * FROM RELATIONSHIP WHERE USER_FROM = :userFrom AND STATUS = 'REQUEST_HAS_BEEN_SENT' ORDER BY DATE_MODIFY";
 
@@ -25,18 +27,16 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     @Override
     public Relationship save(Relationship relationshipFrom) throws InternalServerException {
 
+        User userFrom = relationshipFrom.getUserFrom();
+        User userTo = relationshipFrom.getUserTo();
+
+        if (!isRelationshipExists(userFrom.getId(), userTo.getId())) {
+
+            super.save(new Relationship(userTo, userFrom, RelationshipStatus.NEVER_FRIENDS, new Date()));
+        }
+
         relationshipFrom.setStatus(RelationshipStatus.REQUEST_HAS_BEEN_SENT);
         relationshipFrom.setDateModify(new Date());
-
-        Relationship relationshipTo = findByUsers(relationshipFrom.getUserTo().getId(),
-                relationshipFrom.getUserFrom().getId());
-
-        if (relationshipTo == null) {
-            relationshipTo = new Relationship(relationshipFrom.getUserTo(), relationshipFrom.getUserFrom(),
-                    RelationshipStatus.NEVER_FRIENDS, new Date());
-
-            super.save(relationshipTo);
-        }
         return super.save(relationshipFrom);
     }
 
@@ -125,6 +125,18 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
             return null;
         } catch (HibernateException e) {
             throw new InternalServerException("RelationshipDaoImpl.getCurrentStatus failed: " + e.getMessage());
+        }
+    }
+
+    public boolean isRelationshipExists(long userFromId, long userToId) throws InternalServerException {
+        try {
+            return (boolean) em.createNativeQuery(IS_RELATIONSHIP_EXISTS_QUERY)
+                    .setParameter("userFromId", userFromId)
+                    .setParameter("userToId", userToId)
+                    .getSingleResult();
+
+        } catch (HibernateException e) {
+            throw new InternalServerException("RelationshipDaoImpl.isRelationshipExists failed: " + e.getMessage());
         }
     }
 
