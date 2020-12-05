@@ -18,6 +18,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
 
     private static final String GET_CURRENT_STATUS_QUERY = "SELECT STATUS FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId";
     private static final String FIND_BY_USERS_QUERY = "SELECT * FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId";
+    private static final String FIND_ID_BY_USERS_QUERY = "SELECT ID FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId";
     private static final String IS_RELATIONSHIP_EXISTS_QUERY = "SELECT EXISTS(SELECT 1 FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId)";
     private static final String GET_INCOME_REQUESTS_QUERY = "SELECT * FROM RELATIONSHIP WHERE USER_TO = :userTo AND STATUS = 'REQUEST_HAS_BEEN_SENT' ORDER BY DATE_MODIFY";
     private static final String GET_OUTCOME_REQUESTS_QUERY = "SELECT * FROM RELATIONSHIP WHERE USER_FROM = :userFrom AND STATUS = 'REQUEST_HAS_BEEN_SENT' ORDER BY DATE_MODIFY";
@@ -39,7 +40,15 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
 
         relationshipFrom.setStatus(REQUEST_HAS_BEEN_SENT);
         relationshipFrom.setDateModify(new Date());
-        return super.save(relationshipFrom);
+
+        if (!isRelationshipExists(userFrom.getId(), userTo.getId())) {
+
+            return super.save(relationshipFrom);
+        } else {
+            relationshipFrom.setId(findIdByUsers(userFrom.getId(), userTo.getId()));
+
+            return super.update(relationshipFrom);
+        }
     }
 
     @Override
@@ -116,6 +125,21 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
 
         } catch (HibernateException e) {
             throw new InternalServerException("RelationshipDaoImpl.isRelationshipExists failed: " + e.getMessage());
+        }
+    }
+
+    public Long findIdByUsers(long userFromId, long userToId) throws InternalServerException {
+        try {
+            Integer id = (Integer) em.createNativeQuery(FIND_ID_BY_USERS_QUERY)
+                    .setParameter("userFromId", userFromId)
+                    .setParameter("userToId", userToId)
+                    .getSingleResult();
+
+            return Long.valueOf(id);
+        } catch (NoResultException e) {
+            return null;
+        } catch (HibernateException e) {
+            throw new InternalServerException("RelationshipDaoImpl.getCurrentStatus failed: " + e.getMessage());
         }
     }
 

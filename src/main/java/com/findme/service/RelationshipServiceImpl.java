@@ -85,9 +85,7 @@ public class RelationshipServiceImpl implements RelationshipService {
         RelationshipStatus currentStatusTo = relationshipDao.getRelationshipStatus(userToId, userFromId);
 
         if (currentStatusFrom != RelationshipStatus.NEVER_FRIENDS
-                && currentStatusFrom != RelationshipStatus.NOT_FRIENDS
-                || currentStatusTo != RelationshipStatus.NEVER_FRIENDS
-                && currentStatusTo != RelationshipStatus.NOT_FRIENDS) {
+                && currentStatusFrom != RelationshipStatus.NOT_FRIENDS) {
             throw new BadRequestException("Relationship already exists");
         }
         return relationship;
@@ -135,12 +133,11 @@ public class RelationshipServiceImpl implements RelationshipService {
         return relationshipFrom;
     }
 
-    /* In the future, we will need users and in order not to re-access the db,
-       the method returns them as a relationship with a null status
-     */
     private Relationship validateRelationship(long userFromId, long userToId)
             throws NotFoundException, BadRequestException, InternalServerException {
-
+        /* In the future, we will need users and in order not to re-access the db,
+            the method returns them as a relationship with a null status
+        */
         if (userFromId == userToId) {
             throw new BadRequestException("you can`t change relationship to yourself");
         }
