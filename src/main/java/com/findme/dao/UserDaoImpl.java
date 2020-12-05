@@ -51,7 +51,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
 
     public boolean areThePhoneAndMailBusy(String phone, String mail) throws InternalServerException {
         try {
-            return (Boolean) em.createNativeQuery(ARE_THE_PHONE_AND_MAIL_BUSY_QUERY)
+            return (boolean) em.createNativeQuery(ARE_THE_PHONE_AND_MAIL_BUSY_QUERY)
                     .setParameter("phone", phone)
                     .setParameter("mail", mail)
                     .getSingleResult();
