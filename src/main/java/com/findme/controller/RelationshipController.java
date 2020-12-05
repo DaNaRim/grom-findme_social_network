@@ -40,14 +40,14 @@ public class RelationshipController {
                 userToId = Long.parseLong(userToIdStr);
 
             } catch (NumberFormatException e) {
-                throw new BadRequestException("Id`s filed incorrect");
+                throw new BadRequestException("Fields filed incorrect");
             }
 
             validateAccess(userFromId, session);
 
             relationshipService.addRelationShip(userFromId, userToId);
 
-            return new ResponseEntity<>("New Relationship created", HttpStatus.CREATED);
+            return new ResponseEntity<>("Friend request sent", HttpStatus.OK);
         } catch (UnauthorizedException e) {
 
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
@@ -114,7 +114,7 @@ public class RelationshipController {
                 userId = Long.parseLong(userIdStr);
 
             } catch (NumberFormatException e) {
-                throw new BadRequestException("Id filed incorrect");
+                throw new BadRequestException("Fields filed incorrect");
             }
 
             validateAccess(userId, session);
@@ -186,5 +186,4 @@ public class RelationshipController {
             throw new NoAccessException("You can`t do that in the name of another user");
         }
     }
-
 }
