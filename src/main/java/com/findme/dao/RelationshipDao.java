@@ -10,17 +10,11 @@ public interface RelationshipDao {
 
     Relationship save(Relationship relationship) throws InternalServerException;
 
-    Relationship findById(long id) throws InternalServerException;
-
     Relationship update(Relationship relationship) throws InternalServerException;
-
-    void delete(Relationship relationship) throws InternalServerException;
-
-    RelationshipStatus getRelationshipStatus(long userFromId, long userToId) throws InternalServerException;
 
     Relationship findByUsers(long userFromId, long userToId) throws InternalServerException;
 
-    boolean isRelationshipExists(long userFromId, long userToId) throws InternalServerException;
+    RelationshipStatus findStatusByUsers(long userFromId, long userToId) throws InternalServerException;
 
     List<Relationship> getIncomeRequests(long userId) throws InternalServerException;
 

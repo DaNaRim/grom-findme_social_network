@@ -16,8 +16,8 @@ import static com.findme.model.RelationshipStatus.*;
 @Transactional(rollbackFor = {HibernateException.class, InternalServerException.class})
 public class RelationshipDaoImpl extends Dao<Relationship> implements RelationshipDao {
 
-    private static final String GET_CURRENT_STATUS_QUERY = "SELECT STATUS FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId";
     private static final String FIND_BY_USERS_QUERY = "SELECT * FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId";
+    private static final String FIND_STATUS_BY_USERS_QUERY = "SELECT STATUS FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId";
     private static final String FIND_ID_BY_USERS_QUERY = "SELECT ID FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId";
     private static final String IS_RELATIONSHIP_EXISTS_QUERY = "SELECT EXISTS(SELECT 1 FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId)";
     private static final String GET_INCOME_REQUESTS_QUERY = "SELECT * FROM RELATIONSHIP WHERE USER_TO = :userTo AND STATUS = 'REQUEST_HAS_BEEN_SENT' ORDER BY DATE_MODIFY";
@@ -87,9 +87,23 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
         }
     }
 
-    public RelationshipStatus getRelationshipStatus(long userFromId, long userToId) throws InternalServerException {
+    public Relationship findByUsers(long userFromId, long userToId) throws InternalServerException {
         try {
-            String relationshipStatus = (String) em.createNativeQuery(GET_CURRENT_STATUS_QUERY)
+            return (Relationship) em.createNativeQuery(FIND_BY_USERS_QUERY, Relationship.class)
+                    .setParameter("userFromId", userFromId)
+                    .setParameter("userToId", userToId)
+                    .getSingleResult();
+
+        } catch (NoResultException e) {
+            return null;
+        } catch (HibernateException e) {
+            throw new InternalServerException("RelationshipDaoImpl.getCurrentStatus failed: " + e.getMessage());
+        }
+    }
+
+    public RelationshipStatus findStatusByUsers(long userFromId, long userToId) throws InternalServerException {
+        try {
+            String relationshipStatus = (String) em.createNativeQuery(FIND_STATUS_BY_USERS_QUERY)
                     .setParameter("userFromId", userFromId)
                     .setParameter("userToId", userToId)
                     .getSingleResult();
@@ -98,17 +112,18 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
         } catch (NoResultException e) {
             return NEVER_FRIENDS;
         } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.getCurrentStatus failed: " + e.getMessage());
+            throw new InternalServerException("RelationshipDaoImpl.findStatusByUsers failed: " + e.getMessage());
         }
     }
 
-    public Relationship findByUsers(long userFromId, long userToId) throws InternalServerException {
+    public Long findIdByUsers(long userFromId, long userToId) throws InternalServerException {
         try {
-            return (Relationship) em.createNativeQuery(FIND_BY_USERS_QUERY, Relationship.class)
+            Integer id = (Integer) em.createNativeQuery(FIND_ID_BY_USERS_QUERY)
                     .setParameter("userFromId", userFromId)
                     .setParameter("userToId", userToId)
                     .getSingleResult();
 
+            return Long.valueOf(id);
         } catch (NoResultException e) {
             return null;
         } catch (HibernateException e) {
@@ -125,21 +140,6 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
 
         } catch (HibernateException e) {
             throw new InternalServerException("RelationshipDaoImpl.isRelationshipExists failed: " + e.getMessage());
-        }
-    }
-
-    public Long findIdByUsers(long userFromId, long userToId) throws InternalServerException {
-        try {
-            Integer id = (Integer) em.createNativeQuery(FIND_ID_BY_USERS_QUERY)
-                    .setParameter("userFromId", userFromId)
-                    .setParameter("userToId", userToId)
-                    .getSingleResult();
-
-            return Long.valueOf(id);
-        } catch (NoResultException e) {
-            return null;
-        } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.getCurrentStatus failed: " + e.getMessage());
         }
     }
 
@@ -171,7 +171,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
         long userIdFrom = relationshipFrom.getUserFrom().getId();
         long userIdTo = relationshipFrom.getUserTo().getId();
 
-        RelationshipStatus currentStatusFrom = getRelationshipStatus(userIdFrom, userIdTo);
+        RelationshipStatus currentStatusFrom = findStatusByUsers(userIdFrom, userIdTo);
 
         if (currentStatusFrom == REQUEST_HAS_BEEN_SENT) { //cancel userFrom request
             if (relationshipTo.getStatus() == NEVER_FRIENDS) {
