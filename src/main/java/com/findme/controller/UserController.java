@@ -136,7 +136,7 @@ public class UserController {
             return new ResponseEntity<>("Logout success", HttpStatus.OK);
         } catch (UnauthorizedException e) {
 
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
             System.err.println(e.getMessage());
             return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
