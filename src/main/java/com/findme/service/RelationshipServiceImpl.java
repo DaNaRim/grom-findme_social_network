@@ -99,14 +99,28 @@ public class RelationshipServiceImpl implements RelationshipService {
 
         RelationshipStatus currentStatusFrom = relationshipDao.findStatusByUsers(userFromId, userToId);
 
-        if (currentStatusFrom != NEVER_FRIENDS && currentStatusFrom != NOT_FRIENDS) {
-            throw new BadRequestException("Relationship already exists");
+        if (currentStatusFrom == REQUEST_REJECTED) {
+            throw new BadRequestException("Can`t send friend request again because user has rejected your request");
         }
+        if (currentStatusFrom == REQUEST_HAS_BEEN_SENT) {
+            throw new BadRequestException("You already sent request");
+        }
+        if (currentStatusFrom == FRIENDS) {
+            throw new BadRequestException("You already friends");
+        }
+
+        RelationshipStatus currentStatusTo = relationshipDao.findStatusByUsers(userToId, userFromId);
+        if (currentStatusTo == REQUEST_HAS_BEEN_SENT) {
+            throw new BadRequestException("Cant sent request to user that send request to you");
+        }
+
         return relationship;
     }
 
     private Relationship validateUpdateRelationship(long userFromId, long userToId, RelationshipStatus newStatus)
             throws NotFoundException, BadRequestException, InternalServerException {
+
+        if (newStatus == NEVER_FRIENDS) newStatus = NOT_FRIENDS;
 
         validateRelationship(userFromId, userToId);
 
@@ -128,9 +142,6 @@ public class RelationshipServiceImpl implements RelationshipService {
         if (currentStatus == newStatus) {
             throw new BadRequestException("Can`t update to the same status");
         }
-        if (currentStatus == REQUEST_REJECTED) {
-            throw new BadRequestException("Can`t update relationship because user has rejected your request");
-        }
 
         RelationshipStatus statusTo = relationshipDao.findStatusByUsers(userToId, userFromId);
 
@@ -138,11 +149,15 @@ public class RelationshipServiceImpl implements RelationshipService {
             throw new BadRequestException("Can`t add a friend because user don`t sent a friend request");
         }
 
-        if (newStatus == NEVER_FRIENDS) {
-            relationshipFrom.setStatus(NOT_FRIENDS);
-        } else {
-            relationshipFrom.setStatus(newStatus);
+        if (currentStatus != REQUEST_HAS_BEEN_SENT
+                && statusTo != REQUEST_HAS_BEEN_SENT
+                && statusTo != FRIENDS) {
+            throw new BadRequestException("Can`t delete a friend because you are not friends \n" +
+                    "or can`t reject request because user don`t sent request \n" +
+                    "or can`t cancel your request because you don`t send it");
         }
+
+        relationshipFrom.setStatus(newStatus);
         return relationshipFrom;
     }
 }

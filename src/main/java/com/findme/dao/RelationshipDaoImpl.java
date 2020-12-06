@@ -63,6 +63,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
             userTo = REQUEST_HAS_BEEN_SENT (reject userTo request)
                 currentUserFrom = NEVER_FRIENDS - deleting userFrom and set userTo REQUEST_REJECTED
                 currentUserFrom = NOT_FRIENDS - set userTo REQUEST_REJECTED
+                currentUserFrom = REQUEST_REJECTED - set statuses NOT_FRIENDS
             userTo = FRIENDS - set statuses NOT_FRIENDS
 
         return null if relationship was deleted
@@ -187,15 +188,23 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
             }
         } else if (relationshipTo.getStatus() == REQUEST_HAS_BEEN_SENT) { //reject userTo request
 
-            relationshipTo.setStatus(RelationshipStatus.REQUEST_REJECTED);
+            relationshipTo.setDateModify(new Date());
 
             if (currentStatusFrom == NEVER_FRIENDS) {
+                relationshipTo.setStatus(RelationshipStatus.REQUEST_REJECTED);
+                super.update(relationshipTo);
                 delete(relationshipFrom);
                 return null;
-            } else { //if (currentRelationshipStatusFrom == RelationshipStatus.NOT_FRIENDS) {
-                relationshipTo.setDateModify(new Date());
+            } else if (currentStatusFrom == RelationshipStatus.NOT_FRIENDS) {
+                relationshipTo.setStatus(RelationshipStatus.REQUEST_REJECTED);
                 super.update(relationshipTo);
                 return relationshipFrom;
+            } else { //if (currentStatusFrom == REQUEST_REJECTED) {
+                relationshipFrom.setStatus(NOT_FRIENDS);
+                relationshipTo.setStatus(NOT_FRIENDS);
+                relationshipFrom.setDateModify(new Date());
+                super.update(relationshipTo);
+                return super.update(relationshipFrom);
             }
         } else { //if (relationshipTo.getStatus() == FRIENDS) {
             relationshipTo.setStatus(NOT_FRIENDS);
