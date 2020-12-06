@@ -14,11 +14,13 @@
 </body>
 
 <script>
+    const home = "http://localhost:8090/findme_war/";
+
     $("#confirm_friend_request").submit(function (e) {
         e.preventDefault();
         $.ajax({
             type: "PUT",
-            url: "relationship/update",
+            url: home + "relationship/update",
             data: {
                 userToIdStr: request.userFrom.id,
                 status: "FRIENDS"
@@ -37,7 +39,7 @@
         e.preventDefault();
         $.ajax({
             type: "PUT",
-            url: "relationship/update",
+            url: home + "relationship/update",
             data: {
                 userToIdStr: request.userFrom.id,
                 status: "NOT_FRIENDS"

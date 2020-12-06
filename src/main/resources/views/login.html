@@ -22,11 +22,13 @@
 </body>
 
 <script>
+    const home = "http://localhost:8090/findme_war/";
+
     $("#login-form").submit(function (e) {
         e.preventDefault();
         $.ajax({
             type: "POST",
-            url: "login",
+            url: home + "user/login",
             data: $('#login-form').serialize(),
             success: function () {
                 alert("Login Success");
@@ -41,7 +43,7 @@
         e.preventDefault();
         $.ajax({
             type: "GET",
-            url: "logout",
+            url: home + "user/logout",
             success: function () {
                 alert("Logout Success");
             },

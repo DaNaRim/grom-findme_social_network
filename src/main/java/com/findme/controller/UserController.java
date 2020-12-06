@@ -73,7 +73,7 @@ public class UserController {
         return "registration";
     }
 
-    @PostMapping(path = "/userRegistration")
+    @PostMapping(path = "/registration")
     public @ResponseBody
     ResponseEntity<String> registerUser(@ModelAttribute User user) {
         try {

@@ -21,12 +21,14 @@
 </body>
 
 <script>
+    const home = "http://localhost:8090/findme_war/";
+
     //cancel my request
     $("#delete_from_friends").submit(function (e) {
         e.preventDefault();
         $.ajax({
             type: "PUT",
-            url: "relationship/update",
+            url: home + "relationship/update",
             data: {
                 userToId: request.userFrom.id,
                 status: "NOT_FRIENDS"
