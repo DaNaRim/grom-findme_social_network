@@ -1,7 +1,6 @@
 package com.findme.controller;
 
 import com.findme.exception.BadRequestException;
-import com.findme.exception.NoAccessException;
 import com.findme.exception.NotFoundException;
 import com.findme.exception.UnauthorizedException;
 import com.findme.model.Relationship;
@@ -29,21 +28,19 @@ public class RelationshipController {
     }
 
     @PostMapping(path = "/add")
-    public ResponseEntity<String> addRelationship(@RequestParam String userFromIdStr,
-                                                  @RequestParam String userToIdStr,
-                                                  HttpSession session) {
+    public ResponseEntity<String> addRelationship(@RequestParam String userToIdStr, HttpSession session) {
         try {
-            long userFromId;
             long userToId;
             try {
-                userFromId = Long.parseLong(userFromIdStr);
                 userToId = Long.parseLong(userToIdStr);
 
             } catch (NumberFormatException e) {
                 throw new BadRequestException("Fields filed incorrect");
             }
-
-            validateAccess(userFromId, session);
+            if (session.getAttribute("userId") == null) {
+                throw new UnauthorizedException("You must be authorized to do that");
+            }
+            long userFromId = (long) session.getAttribute("userId");
 
             relationshipService.addRelationShip(userFromId, userToId);
 
@@ -51,9 +48,6 @@ public class RelationshipController {
         } catch (UnauthorizedException e) {
 
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-        } catch (NoAccessException e) {
-
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
         } catch (NotFoundException e) {
 
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -67,23 +61,23 @@ public class RelationshipController {
     }
 
     @PutMapping(path = "/update")
-    public ResponseEntity<String> updateRelationship(@RequestParam String userFromIdStr,
-                                                     @RequestParam String userToIdStr,
+    public ResponseEntity<String> updateRelationship(@RequestParam String userToIdStr,
                                                      @RequestParam String status,
                                                      HttpSession session) {
         try {
-            long userFromId;
             long userToId;
             RelationshipStatus relationshipStatus;
             try {
-                userFromId = Long.parseLong(userFromIdStr);
                 userToId = Long.parseLong(userToIdStr);
                 relationshipStatus = RelationshipStatus.valueOf(status);
 
-            } catch (NumberFormatException e) {
+            } catch (IllegalArgumentException e) {
                 throw new BadRequestException("Fields filed incorrect");
             }
-            validateAccess(userFromId, session);
+            if (session.getAttribute("userId") == null) {
+                throw new UnauthorizedException("You must be authorized to do that");
+            }
+            long userFromId = (long) session.getAttribute("userId");
 
             relationshipService.updateRelationShip(userFromId, userToId, relationshipStatus);
 
@@ -91,9 +85,6 @@ public class RelationshipController {
         } catch (UnauthorizedException e) {
 
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-        } catch (NoAccessException e) {
-
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
         } catch (NotFoundException e) {
 
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -107,17 +98,12 @@ public class RelationshipController {
     }
 
     @GetMapping(path = "/incomeRequests")
-    public String getIncomeRequests(@RequestParam String userIdStr, HttpSession session, Model model) {
+    public String getIncomeRequests(HttpSession session, Model model) {
         try {
-            long userId;
-            try {
-                userId = Long.parseLong(userIdStr);
-
-            } catch (NumberFormatException e) {
-                throw new BadRequestException("Fields filed incorrect");
+            if (session.getAttribute("userId") == null) {
+                throw new UnauthorizedException("You must be authorized to do that");
             }
-
-            validateAccess(userId, session);
+            long userId = (long) session.getAttribute("userId");
 
             List<Relationship> relationships = relationshipService.getIncomeRequests(userId);
 
@@ -126,15 +112,9 @@ public class RelationshipController {
         } catch (UnauthorizedException e) {
             model.addAttribute("error", e.getMessage());
             return "401";
-        } catch (NoAccessException e) {
-            model.addAttribute("error", e.getMessage());
-            return "403";
         } catch (NotFoundException e) {
             model.addAttribute("error", e.getMessage());
             return "404";
-        } catch (BadRequestException e) {
-            model.addAttribute("error", e.getMessage());
-            return "400";
         } catch (Exception e) {
             System.err.println(e.getMessage());
             model.addAttribute("error", "Something went wrong");
@@ -143,17 +123,12 @@ public class RelationshipController {
     }
 
     @GetMapping(path = "/outcomeRequests")
-    public String getOutcomeRequests(@RequestParam String userIdStr, HttpSession session, Model model) {
+    public String getOutcomeRequests(HttpSession session, Model model) {
         try {
-            long userId;
-            try {
-                userId = Long.parseLong(userIdStr);
-
-            } catch (NumberFormatException e) {
-                throw new BadRequestException("Id filed incorrect");
+            if (session.getAttribute("userId") == null) {
+                throw new UnauthorizedException("You must be authorized to do that");
             }
-
-            validateAccess(userId, session);
+            long userId = (long) session.getAttribute("userId");
 
             List<Relationship> relationships = relationshipService.getOutcomeRequests(userId);
 
@@ -162,15 +137,9 @@ public class RelationshipController {
         } catch (UnauthorizedException e) {
             model.addAttribute("error", e.getMessage());
             return "401";
-        } catch (NoAccessException e) {
-            model.addAttribute("error", e.getMessage());
-            return "403";
         } catch (NotFoundException e) {
             model.addAttribute("error", e.getMessage());
             return "404";
-        } catch (BadRequestException e) {
-            model.addAttribute("error", e.getMessage());
-            return "400";
         } catch (Exception e) {
             System.err.println(e.getMessage());
             model.addAttribute("error", "Something went wrong");
@@ -178,12 +147,4 @@ public class RelationshipController {
         }
     }
 
-    private void validateAccess(long userId, HttpSession session) throws UnauthorizedException, NoAccessException {
-        if (session.getAttribute("userId") == null) {
-            throw new UnauthorizedException("You must be authorized to do that");
-        }
-        if ((long) session.getAttribute("userId") != userId) {
-            throw new NoAccessException("You can`t do that in the name of another user");
-        }
-    }
 }
