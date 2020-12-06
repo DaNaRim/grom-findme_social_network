@@ -21,49 +21,18 @@
 </body>
 
 <script>
-    $("#accept").submit(function (e) {
-        e.preventDefault();
-        $.ajax({
-            type: "POST",
-            url: "relationship/add",
-            data: {
-                userFromId: request.userTo.id,
-                userToId: request.userFrom.id
-            },
-            success: function () {
-                alert("Friend " + request.userFrom.firstName + " added");
-            },
-            error: function (xhr) {
-                alert(xhr.responseText);
-            }
-        });
-    });
-    $("#accept").submit(function (e) {
+    //cancel my request
+    $("#delete_from_friends").submit(function (e) {
         e.preventDefault();
         $.ajax({
             type: "PUT",
             url: "relationship/update",
             data: {
-                userFromId: request.userFrom.id,
-                userToId: request.userTo.id
+                userToId: request.userFrom.id,
+                status: "NOT_FRIENDS"
             },
             success: function () {
-                alert("Friend " + request.userFrom.firstName + " added");
-            },
-            error: function (xhr) {
-                alert(xhr.responseText);
-            }
-        });
-    });
-
-    $("#login-form").submit(function (e) {
-        e.preventDefault();
-        $.ajax({
-            type: "POST",
-            url: "login",
-            data: $('#login-form').serialize(),
-            success: function () {
-                alert("Login Success");
+                alert("Success");
             },
             error: function (xhr) {
                 alert(xhr.responseText);

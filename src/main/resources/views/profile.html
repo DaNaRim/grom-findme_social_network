@@ -46,4 +46,60 @@
         margin-top: 230px;
     }
 </style>
+
+<script>
+    $("#send_friend_request").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "relationship/add",
+            data: {
+                userToIdStr: user.id,
+            },
+            success: function () {
+                alert("Success");
+            },
+            error: function (xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    });
+
+    $("#confirm_friend_request").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: "PUT",
+            url: "relationship/update",
+            data: {
+                userToIdStr: user.id,
+                status: "FRIENDS"
+            },
+            success: function () {
+                alert("Success");
+            },
+            error: function (xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    });
+
+    //cancel my request / reject his request / delete from friends
+    $("#delete_from_friends").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: "PUT",
+            url: "relationship/update",
+            data: {
+                userToIdStr: user.id,
+                status: "NOT_FRIENDS"
+            },
+            success: function () {
+                alert("Success");
+            },
+            error: function (xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    });
+</script>
 </html>
