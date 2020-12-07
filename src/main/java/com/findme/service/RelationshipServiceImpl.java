@@ -30,7 +30,11 @@ public class RelationshipServiceImpl implements RelationshipService {
         Relationship relationship = validateAddRelationship(userFromId, userToId);
         relationship = relationshipDao.save(relationship);
 
-        userService.updateDateLastActive(userFromId);
+        try {
+            userService.updateDateLastActive(userFromId);
+        } catch (InternalServerException e) {
+            System.err.println(e.getMessage());
+        }
 
         return relationship;
     }
@@ -45,7 +49,11 @@ public class RelationshipServiceImpl implements RelationshipService {
         Relationship relationship = validateUpdateRelationship(userFromId, userToId, status);
         relationship = relationshipDao.update(relationship);
 
-        userService.updateDateLastActive(userFromId);
+        try {
+            userService.updateDateLastActive(userFromId);
+        } catch (InternalServerException e) {
+            System.err.println(e.getMessage());
+        }
 
         return relationship;
     }
@@ -57,7 +65,12 @@ public class RelationshipServiceImpl implements RelationshipService {
         if (relationships == null) {
             throw new NotFoundException("There are no requests");
         }
-        userService.updateDateLastActive(userId);
+
+        try {
+            userService.updateDateLastActive(userId);
+        } catch (InternalServerException e) {
+            System.err.println(e.getMessage());
+        }
 
         return relationships;
     }
@@ -69,7 +82,12 @@ public class RelationshipServiceImpl implements RelationshipService {
         if (relationships == null) {
             throw new NotFoundException("There are no requests");
         }
-        userService.updateDateLastActive(userId);
+
+        try {
+            userService.updateDateLastActive(userId);
+        } catch (InternalServerException e) {
+            System.err.println(e.getMessage());
+        }
 
         return relationships;
     }
