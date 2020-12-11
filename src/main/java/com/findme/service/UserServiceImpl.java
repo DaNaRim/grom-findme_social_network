@@ -32,16 +32,12 @@ public class UserServiceImpl implements UserService {
         return userdao.save(user);
     }
 
-    public User login(String mail, String password)
-            throws NotFoundException, BadRequestException, InternalServerException {
+    public User login(String mail, String password) throws BadRequestException, InternalServerException {
 
         User user = userdao.findByMail(mail);
 
-        if (user == null) {
-            throw new NotFoundException("Missing user with mail " + mail);
-        }
-        if (!user.getPassword().equals(password)) {
-            throw new BadRequestException("Wrong password");
+        if (user == null || !user.getPassword().equals(password)) {
+            throw new BadRequestException("Wrong mail or password");
         }
 
         try {

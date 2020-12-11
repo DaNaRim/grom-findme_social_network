@@ -109,9 +109,6 @@ public class UserController {
             session.setAttribute("userId", user.getId());
 
             return new ResponseEntity<>("Login success", HttpStatus.OK);
-        } catch (NotFoundException e) {
-
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (BadRequestException e) {
 
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

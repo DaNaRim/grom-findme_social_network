@@ -13,7 +13,7 @@ public interface UserService {
 
     User registerUser(User user) throws BadRequestException, InternalServerException;
 
-    User login(String mail, String password) throws NotFoundException, BadRequestException, InternalServerException;
+    User login(String mail, String password) throws BadRequestException, InternalServerException;
 
     void logout(long userId) throws InternalServerException;
 
