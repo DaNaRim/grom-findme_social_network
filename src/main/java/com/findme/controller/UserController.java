@@ -45,8 +45,7 @@ public class UserController {
             //processing our relationship to this user
             if (session.getAttribute("userId") != null) {
                 RelationshipStatus relationshipStatus = relationshipService.getRelationShipStatus(
-                        (long) session.getAttribute("userId"),
-                        Long.parseLong(userId));
+                        (long) session.getAttribute("userId"), id);
 
                 user.setRelationshipStatus(relationshipStatus);
             } else {
