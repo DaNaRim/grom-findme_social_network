@@ -126,7 +126,7 @@ public class UserController {
                 throw new UnauthorizedException("You`re not log in");
             }
 
-            userService.logout((long) session.getAttribute("userId"));
+            userService.updateDateLastActive((long) session.getAttribute("userId"));
 
             session.removeAttribute("userId");
 

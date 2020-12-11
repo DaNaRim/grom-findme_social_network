@@ -15,7 +15,5 @@ public interface UserService {
 
     User login(String mail, String password) throws BadRequestException, InternalServerException;
 
-    void logout(long userId) throws InternalServerException;
-
     void updateDateLastActive(long userId) throws InternalServerException;
 }

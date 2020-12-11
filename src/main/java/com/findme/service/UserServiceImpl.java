@@ -40,21 +40,9 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException("Wrong mail or password");
         }
 
-        try {
-            updateDateLastActive(user.getId());
-        } catch (InternalServerException e) {
-            System.err.println(e.getMessage());
-        }
+        updateDateLastActive(user.getId());
 
         return user;
-    }
-
-    public void logout(long userId) {
-        try {
-            updateDateLastActive(userId);
-        } catch (InternalServerException e) {
-            System.err.println(e.getMessage());
-        }
     }
 
     public void updateDateLastActive(long userId) throws InternalServerException {
