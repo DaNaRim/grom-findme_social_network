@@ -119,39 +119,35 @@ public class RelationshipServiceImpl implements RelationshipService {
 
     private Relationship validateUpdateRelationship(long userFromId, long userToId, RelationshipStatus newStatus)
             throws NotFoundException, BadRequestException, InternalServerException {
+        // returned statuses: NOT_FRIENDS, FRIENDS
 
         if (newStatus == NEVER_FRIENDS) newStatus = NOT_FRIENDS;
 
         validateRelationship(userFromId, userToId);
-
-        if (newStatus == REQUEST_REJECTED) {
-            throw new BadRequestException("Can`t reject your own request");
-        }
-        if (newStatus == REQUEST_HAS_BEEN_SENT) {
-            throw new BadRequestException("Can`t add relationship in update method");
-        }
 
         Relationship relationshipFrom = relationshipDao.findByUsers(userFromId, userToId);
 
         if (relationshipFrom == null) {
             throw new BadRequestException("Relationship is not created. Can`t update");
         }
+        RelationshipStatus currentStatusFrom = relationshipFrom.getStatus();
+        RelationshipStatus currentStatusTo = relationshipDao.findStatusByUsers(userToId, userFromId);
 
-        RelationshipStatus currentStatus = relationshipFrom.getStatus();
-
-        if (currentStatus == newStatus) {
+        if (newStatus == currentStatusFrom) {
             throw new BadRequestException("Can`t update to the same status");
-        }
 
-        RelationshipStatus statusTo = relationshipDao.findStatusByUsers(userToId, userFromId);
+        } else if (newStatus == REQUEST_REJECTED) {
+            throw new BadRequestException("Can`t reject your own request");
 
-        if (newStatus == FRIENDS && statusTo != REQUEST_HAS_BEEN_SENT) {
+        } else if (newStatus == REQUEST_HAS_BEEN_SENT) {
+            throw new BadRequestException("Can`t add relationship in update method");
+
+        } else if (newStatus == FRIENDS && currentStatusTo != REQUEST_HAS_BEEN_SENT) {
             throw new BadRequestException("Can`t add a friend because user don`t sent a friend request");
-        }
 
-        if (currentStatus != REQUEST_HAS_BEEN_SENT
-                && statusTo != REQUEST_HAS_BEEN_SENT
-                && statusTo != FRIENDS) {
+        } else if (currentStatusFrom != REQUEST_HAS_BEEN_SENT
+                && currentStatusTo != REQUEST_HAS_BEEN_SENT
+                && currentStatusTo != FRIENDS) {
             throw new BadRequestException("Can`t delete a friend because you are not friends \n" +
                     "or can`t reject request because user don`t sent request \n" +
                     "or can`t cancel your request because you don`t send it");
