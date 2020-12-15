@@ -100,18 +100,16 @@ public class RelationshipServiceImpl implements RelationshipService {
         Relationship relationship = validateRelationship(userFromId, userToId);
 
         RelationshipStatus currentStatusFrom = relationshipDao.findStatusByUsers(userFromId, userToId);
-
-        if (currentStatusFrom == REQUEST_REJECTED) {
-            throw new BadRequestException("Can`t send friend request again because user has rejected your request");
-        }
-        if (currentStatusFrom == REQUEST_HAS_BEEN_SENT) {
-            throw new BadRequestException("You already sent request");
-        }
-        if (currentStatusFrom == FRIENDS) {
-            throw new BadRequestException("You already friends");
-        }
-
         RelationshipStatus currentStatusTo = relationshipDao.findStatusByUsers(userToId, userFromId);
+
+        switch (currentStatusFrom) {
+            case REQUEST_REJECTED:
+                throw new BadRequestException("Can`t send friend request again because user has rejected your request");
+            case REQUEST_HAS_BEEN_SENT:
+                throw new BadRequestException("You already sent request");
+            case FRIENDS:
+                throw new BadRequestException("You already friends");
+        }
         if (currentStatusTo == REQUEST_HAS_BEEN_SENT) {
             throw new BadRequestException("Cant sent request to user that send request to you");
         }
