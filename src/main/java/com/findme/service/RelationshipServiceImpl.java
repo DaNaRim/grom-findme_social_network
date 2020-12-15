@@ -109,15 +109,16 @@ public class RelationshipServiceImpl implements RelationshipService {
         RelationshipStatus currentStatusFrom = relationshipDao.findStatusByUsers(userFromId, userToId);
         RelationshipStatus currentStatusTo = relationshipDao.findStatusByUsers(userToId, userFromId);
 
-        switch (currentStatusFrom) {
-            case REQUEST_REJECTED:
-                throw new BadRequestException("Can`t send friend request again because user has rejected your request");
-            case REQUEST_HAS_BEEN_SENT:
-                throw new BadRequestException("You already sent request");
-            case FRIENDS:
-                throw new BadRequestException("You already friends");
-        }
-        if (currentStatusTo == REQUEST_HAS_BEEN_SENT) {
+        if (currentStatusFrom == REQUEST_REJECTED) {
+            throw new BadRequestException("Can`t send friend request again because user has rejected your request");
+
+        } else if (currentStatusFrom == REQUEST_HAS_BEEN_SENT) {
+            throw new BadRequestException("You already sent request");
+
+        } else if (currentStatusFrom == FRIENDS) {
+            throw new BadRequestException("You already friends");
+
+        } else if (currentStatusTo == REQUEST_HAS_BEEN_SENT) {
             throw new BadRequestException("Cant sent request to user that send request to you");
         }
 
@@ -138,14 +139,14 @@ public class RelationshipServiceImpl implements RelationshipService {
         if (currentStatusFrom == null) {
             throw new BadRequestException("Relationship is not created. Can`t update");
 
-        } else if (newStatus == currentStatusFrom) {
-            throw new BadRequestException("Can`t update to the same status");
-
         } else if (newStatus == REQUEST_REJECTED) {
             throw new BadRequestException("Can`t reject your own request");
 
         } else if (newStatus == REQUEST_HAS_BEEN_SENT) {
             throw new BadRequestException("Can`t add relationship in update method");
+
+        } else if (newStatus == currentStatusFrom && currentStatusTo != REQUEST_HAS_BEEN_SENT) {
+            throw new BadRequestException("Can`t update to the same status");
 
         } else if (newStatus == FRIENDS && currentStatusTo != REQUEST_HAS_BEEN_SENT) {
             throw new BadRequestException("Can`t add a friend because user don`t sent a friend request");

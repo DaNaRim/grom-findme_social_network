@@ -73,6 +73,8 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
         long userIdFrom = relationshipFrom.getUserFrom().getId();
         long userIdTo = relationshipFrom.getUserTo().getId();
 
+        relationshipFrom.setId(findIdByUsers(userIdFrom, userIdTo));
+
         Relationship relationshipTo = findByUsers(userIdTo, userIdFrom);
 
         if (relationshipFrom.getStatus() == RelationshipStatus.FRIENDS) {
