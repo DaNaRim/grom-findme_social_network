@@ -111,7 +111,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
 
             return RelationshipStatus.valueOf(relationshipStatus);
         } catch (NoResultException e) {
-            return NEVER_FRIENDS;
+            return null;
         } catch (HibernateException e) {
             throw new InternalServerException("RelationshipDaoImpl.findStatusByUsers failed: " + e.getMessage());
         }

@@ -36,7 +36,14 @@ public class RelationshipServiceImpl implements RelationshipService {
     }
 
     public RelationshipStatus getRelationShipStatus(long userFromId, long userToId) throws InternalServerException {
-        return relationshipDao.findStatusByUsers(userFromId, userToId);
+
+        RelationshipStatus relationshipStatus = relationshipDao.findStatusByUsers(userFromId, userToId);
+
+        if (relationshipStatus == null) {
+            relationshipStatus = NEVER_FRIENDS;
+        }
+
+        return relationshipStatus;
     }
 
     public Relationship updateRelationShip(long userFromId, long userToId, RelationshipStatus status)
@@ -123,17 +130,15 @@ public class RelationshipServiceImpl implements RelationshipService {
 
         if (newStatus == NEVER_FRIENDS) newStatus = NOT_FRIENDS;
 
-        validateRelationship(userFromId, userToId);
+        Relationship relationshipFrom = validateRelationship(userFromId, userToId);
 
-        Relationship relationshipFrom = relationshipDao.findByUsers(userFromId, userToId);
-
-        if (relationshipFrom == null) {
-            throw new BadRequestException("Relationship is not created. Can`t update");
-        }
-        RelationshipStatus currentStatusFrom = relationshipFrom.getStatus();
+        RelationshipStatus currentStatusFrom = relationshipDao.findStatusByUsers(userFromId, userToId);
         RelationshipStatus currentStatusTo = relationshipDao.findStatusByUsers(userToId, userFromId);
 
-        if (newStatus == currentStatusFrom) {
+        if (currentStatusFrom == null) {
+            throw new BadRequestException("Relationship is not created. Can`t update");
+
+        } else if (newStatus == currentStatusFrom) {
             throw new BadRequestException("Can`t update to the same status");
 
         } else if (newStatus == REQUEST_REJECTED) {
