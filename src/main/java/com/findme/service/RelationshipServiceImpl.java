@@ -81,13 +81,13 @@ public class RelationshipServiceImpl implements RelationshipService {
         /* In the future, we will need users and in order not to re-access the db,
             the method returns them as a relationship with a null status
         */
-        if (userFromId == userToId) {
-            throw new BadRequestException("you can`t change relationship to yourself");
-        }
+
         User userFrom = userService.findById(userFromId);
         User userTo = userService.findById(userToId);
 
-        if (userFrom == null || userTo == null) {
+        if (userFromId == userToId) {
+            throw new BadRequestException("you can`t change relationship to yourself");
+        } else if (userFrom == null || userTo == null) {
             throw new NotFoundException("Can`t found one of users");
         }
 
