@@ -49,7 +49,7 @@ public class UserController {
 
                 user.setRelationshipStatus(relationshipStatus);
             } else {
-                user.setRelationshipStatus(RelationshipStatus.NEVER_FRIENDS);
+                user.setRelationshipStatus(RelationshipStatus.NEVER_WERE_FRIENDS);
             }
 
             model.addAttribute("user", user);

@@ -35,10 +35,10 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
 
         if (!isRelationshipExists(userTo.getId(), userFrom.getId())) {
 
-            super.save(new Relationship(userTo, userFrom, NEVER_FRIENDS, new Date()));
+            super.save(new Relationship(userTo, userFrom, NEVER_WERE_FRIENDS, new Date()));
         }
 
-        relationshipFrom.setStatus(REQUEST_HAS_BEEN_SENT);
+        relationshipFrom.setStatus(SENT_A_REQUEST);
         relationshipFrom.setDateModify(new Date());
 
         if (!isRelationshipExists(userFrom.getId(), userTo.getId())) {
@@ -176,8 +176,8 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
 
         RelationshipStatus currentStatusFrom = findStatusByUsers(userIdFrom, userIdTo);
 
-        if (currentStatusFrom == REQUEST_HAS_BEEN_SENT) { //cancel userFrom request
-            if (relationshipTo.getStatus() == NEVER_FRIENDS) {
+        if (currentStatusFrom == SENT_A_REQUEST) { //cancel userFrom request
+            if (relationshipTo.getStatus() == NEVER_WERE_FRIENDS) {
                 delete(relationshipFrom);
                 delete(relationshipTo);
 
@@ -188,11 +188,11 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
 
                 return super.update(relationshipFrom);
             }
-        } else if (relationshipTo.getStatus() == REQUEST_HAS_BEEN_SENT) { //reject userTo request
+        } else if (relationshipTo.getStatus() == SENT_A_REQUEST) { //reject userTo request
 
             relationshipTo.setDateModify(new Date());
 
-            if (currentStatusFrom == NEVER_FRIENDS) {
+            if (currentStatusFrom == NEVER_WERE_FRIENDS) {
                 relationshipTo.setStatus(RelationshipStatus.REQUEST_REJECTED);
                 super.update(relationshipTo);
                 delete(relationshipFrom);

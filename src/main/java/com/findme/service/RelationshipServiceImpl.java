@@ -40,7 +40,7 @@ public class RelationshipServiceImpl implements RelationshipService {
         RelationshipStatus relationshipStatus = relationshipDao.findStatusByUsers(userFromId, userToId);
 
         if (relationshipStatus == null) {
-            relationshipStatus = NEVER_FRIENDS;
+            relationshipStatus = NEVER_WERE_FRIENDS;
         }
 
         return relationshipStatus;
@@ -112,13 +112,13 @@ public class RelationshipServiceImpl implements RelationshipService {
         if (currentStatusFrom == REQUEST_REJECTED) {
             throw new BadRequestException("Can`t send friend request again because user has rejected your request");
 
-        } else if (currentStatusFrom == REQUEST_HAS_BEEN_SENT) {
+        } else if (currentStatusFrom == SENT_A_REQUEST) {
             throw new BadRequestException("You already sent request");
 
         } else if (currentStatusFrom == FRIENDS) {
             throw new BadRequestException("You already friends");
 
-        } else if (currentStatusTo == REQUEST_HAS_BEEN_SENT) {
+        } else if (currentStatusTo == SENT_A_REQUEST) {
             throw new BadRequestException("Cant sent request to user that send request to you");
         }
 
@@ -129,7 +129,7 @@ public class RelationshipServiceImpl implements RelationshipService {
             throws NotFoundException, BadRequestException, InternalServerException {
         // returned statuses: NOT_FRIENDS, FRIENDS
 
-        if (newStatus == NEVER_FRIENDS) newStatus = NOT_FRIENDS;
+        if (newStatus == NEVER_WERE_FRIENDS) newStatus = NOT_FRIENDS;
 
         Relationship relationshipFrom = validateRelationship(userFromId, userToId);
 
@@ -142,17 +142,17 @@ public class RelationshipServiceImpl implements RelationshipService {
         } else if (newStatus == REQUEST_REJECTED) {
             throw new BadRequestException("Can`t reject your own request");
 
-        } else if (newStatus == REQUEST_HAS_BEEN_SENT) {
+        } else if (newStatus == SENT_A_REQUEST) {
             throw new BadRequestException("Can`t add relationship in update method");
 
-        } else if (newStatus == currentStatusFrom && currentStatusTo != REQUEST_HAS_BEEN_SENT) {
+        } else if (newStatus == currentStatusFrom && currentStatusTo != SENT_A_REQUEST) {
             throw new BadRequestException("Can`t update to the same status");
 
-        } else if (newStatus == FRIENDS && currentStatusTo != REQUEST_HAS_BEEN_SENT) {
+        } else if (newStatus == FRIENDS && currentStatusTo != SENT_A_REQUEST) {
             throw new BadRequestException("Can`t add a friend because user don`t sent a friend request");
 
-        } else if (currentStatusFrom != REQUEST_HAS_BEEN_SENT
-                && currentStatusTo != REQUEST_HAS_BEEN_SENT
+        } else if (currentStatusFrom != SENT_A_REQUEST
+                && currentStatusTo != SENT_A_REQUEST
                 && currentStatusTo != FRIENDS) {
             throw new BadRequestException("Can`t delete a friend because you are not friends \n" +
                     "or can`t reject request because user don`t sent request \n" +

@@ -1,9 +1,9 @@
 package com.findme.model;
 
 public enum RelationshipStatus {
-    NEVER_FRIENDS,
+    NEVER_WERE_FRIENDS,
     NOT_FRIENDS,
-    REQUEST_HAS_BEEN_SENT,
+    SENT_A_REQUEST,
     REQUEST_REJECTED,
     FRIENDS
 }
