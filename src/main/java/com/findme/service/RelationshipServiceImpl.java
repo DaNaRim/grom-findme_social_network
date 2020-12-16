@@ -40,7 +40,7 @@ public class RelationshipServiceImpl implements RelationshipService {
         RelationshipStatus relationshipStatus = relationshipDao.findStatusByUsers(userFromId, userToId);
 
         if (relationshipStatus == null) {
-            relationshipStatus = NEVER_WERE_FRIENDS;
+            relationshipStatus = DELETED;
         }
 
         return relationshipStatus;
@@ -109,16 +109,16 @@ public class RelationshipServiceImpl implements RelationshipService {
         RelationshipStatus currentStatusFrom = relationshipDao.findStatusByUsers(userFromId, userToId);
         RelationshipStatus currentStatusTo = relationshipDao.findStatusByUsers(userToId, userFromId);
 
-        if (currentStatusFrom == REQUEST_REJECTED) {
+        if (currentStatusFrom == REJECTED) {
             throw new BadRequestException("Can`t send friend request again because user has rejected your request");
 
-        } else if (currentStatusFrom == SENT_A_REQUEST) {
+        } else if (currentStatusFrom == REQUESTED) {
             throw new BadRequestException("You already sent request");
 
         } else if (currentStatusFrom == FRIENDS) {
             throw new BadRequestException("You already friends");
 
-        } else if (currentStatusTo == SENT_A_REQUEST) {
+        } else if (currentStatusTo == REQUESTED) {
             throw new BadRequestException("Cant sent request to user that send request to you");
         }
 
@@ -127,32 +127,30 @@ public class RelationshipServiceImpl implements RelationshipService {
 
     private Relationship validateUpdateRelationship(long userFromId, long userToId, RelationshipStatus newStatus)
             throws NotFoundException, BadRequestException, InternalServerException {
-        // returned statuses: NOT_FRIENDS, FRIENDS
-
-        if (newStatus == NEVER_WERE_FRIENDS) newStatus = NOT_FRIENDS;
+        // returned statuses: DELETED, FRIENDS
 
         Relationship relationshipFrom = validateRelationship(userFromId, userToId);
 
         RelationshipStatus currentStatusFrom = relationshipDao.findStatusByUsers(userFromId, userToId);
         RelationshipStatus currentStatusTo = relationshipDao.findStatusByUsers(userToId, userFromId);
 
-        if (currentStatusFrom == null) {
+        if (currentStatusFrom == null && currentStatusTo == null) {
             throw new BadRequestException("Relationship is not created. Can`t update");
 
-        } else if (newStatus == REQUEST_REJECTED) {
+        } else if (newStatus == REJECTED) {
             throw new BadRequestException("Can`t reject your own request");
 
-        } else if (newStatus == SENT_A_REQUEST) {
+        } else if (newStatus == REQUESTED) {
             throw new BadRequestException("Can`t add relationship in update method");
 
-        } else if (newStatus == currentStatusFrom && currentStatusTo != SENT_A_REQUEST) {
+        } else if (newStatus == currentStatusFrom && currentStatusTo != REQUESTED) {
             throw new BadRequestException("Can`t update to the same status");
 
-        } else if (newStatus == FRIENDS && currentStatusTo != SENT_A_REQUEST) {
+        } else if (newStatus == FRIENDS && currentStatusTo != REQUESTED) {
             throw new BadRequestException("Can`t add a friend because user don`t sent a friend request");
 
-        } else if (currentStatusFrom != SENT_A_REQUEST
-                && currentStatusTo != SENT_A_REQUEST
+        } else if (currentStatusFrom != REQUESTED
+                && currentStatusTo != REQUESTED
                 && currentStatusTo != FRIENDS) {
             throw new BadRequestException("Can`t delete a friend because you are not friends \n" +
                     "or can`t reject request because user don`t sent request \n" +

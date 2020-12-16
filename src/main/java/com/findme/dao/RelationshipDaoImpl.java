@@ -33,38 +33,31 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
         User userFrom = relationshipFrom.getUserFrom();
         User userTo = relationshipFrom.getUserTo();
 
-        if (!isRelationshipExists(userTo.getId(), userFrom.getId())) {
-
-            super.save(new Relationship(userTo, userFrom, NEVER_WERE_FRIENDS, new Date()));
-        }
-
-        relationshipFrom.setStatus(SENT_A_REQUEST);
+        relationshipFrom.setStatus(REQUESTED);
         relationshipFrom.setDateModify(new Date());
 
-        if (!isRelationshipExists(userFrom.getId(), userTo.getId())) {
-
-            return super.save(relationshipFrom);
-        } else {
+        if (isRelationshipExists(userFrom.getId(), userTo.getId())) {
             relationshipFrom.setId(findIdByUsers(userFrom.getId(), userTo.getId()));
 
             return super.update(relationshipFrom);
+        } else {
+            return super.save(relationshipFrom);
         }
     }
 
     @Override
     public Relationship update(Relationship relationshipFrom) throws InternalServerException {
-       /* possible statuses - NOT_FRIENDS, FRIENDS
+       /* possible statuses - DELETED, FRIENDS
 
        userFrom = FRIENDS - makes users friends
-       userFrom = NOT_FRIENDS
-            currentUserFrom = REQUEST_HAS_BEEN_SENT (cancel userFrom request)
-                userTo = NEVER_FRIENDS - deleting relationship
-                userTo = NOT_FRIENDS - set statuses NOT_FRIENDS
-            userTo = REQUEST_HAS_BEEN_SENT (reject userTo request)
-                currentUserFrom = NEVER_FRIENDS - deleting userFrom and set userTo REQUEST_REJECTED
-                currentUserFrom = NOT_FRIENDS - set userTo REQUEST_REJECTED
-                currentUserFrom = REQUEST_REJECTED - set statuses NOT_FRIENDS
-            userTo = FRIENDS - set statuses NOT_FRIENDS
+       userFrom = DELETED
+            currentUserFrom = REQUESTED (cancel userFrom request)
+                userTo = null - deleting relationship
+                userTo = DELETED - set statuses DELETED
+            userTo = REQUESTED (reject userTo request)
+                currentUserFrom = null or DELETED - set userTo REJECTED
+                currentUserFrom = REJECTED - set statuses DELETED
+            userTo = FRIENDS - set statuses DELETED (delete from friends)
 
         return null if relationship was deleted
         in other case return processed relationshipFrom
@@ -77,14 +70,14 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
 
         Relationship relationshipTo = findByUsers(userIdTo, userIdFrom);
 
-        if (relationshipFrom.getStatus() == RelationshipStatus.FRIENDS) {
-            relationshipTo.setStatus(RelationshipStatus.FRIENDS);
+        if (relationshipFrom.getStatus() == FRIENDS) {
+            relationshipTo.setStatus(FRIENDS);
 
             relationshipFrom.setDateModify(new Date());
             relationshipTo.setDateModify(new Date());
             super.update(relationshipTo);
             return super.update(relationshipFrom);
-        } else { //if (relationshipFrom.getStatus() == NOT_FRIENDS) {
+        } else { //if (relationshipFrom.getStatus() == DELETED) {
 
             return downgradeHandling(relationshipFrom, relationshipTo);
         }
@@ -176,40 +169,36 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
 
         RelationshipStatus currentStatusFrom = findStatusByUsers(userIdFrom, userIdTo);
 
-        if (currentStatusFrom == SENT_A_REQUEST) { //cancel userFrom request
-            if (relationshipTo.getStatus() == NEVER_WERE_FRIENDS) {
+        if (currentStatusFrom == REQUESTED) { //cancel userFrom request
+            if (relationshipTo == null) {
                 delete(relationshipFrom);
-                delete(relationshipTo);
 
                 return null;
-            } else { //if (relationshipTo.getStatus() == NOT_FRIENDS) {
-                relationshipFrom.setStatus(NOT_FRIENDS);
+            } else { //if (relationshipTo.getStatus() == DELETED) {
+                relationshipFrom.setStatus(DELETED);
                 relationshipFrom.setDateModify(new Date());
 
                 return super.update(relationshipFrom);
             }
-        } else if (relationshipTo.getStatus() == SENT_A_REQUEST) { //reject userTo request
+        } else if (relationshipTo.getStatus() == REQUESTED) { //reject userTo request
 
             relationshipTo.setDateModify(new Date());
 
-            if (currentStatusFrom == NEVER_WERE_FRIENDS) {
-                relationshipTo.setStatus(RelationshipStatus.REQUEST_REJECTED);
-                super.update(relationshipTo);
-                delete(relationshipFrom);
-                return null;
-            } else if (currentStatusFrom == RelationshipStatus.NOT_FRIENDS) {
-                relationshipTo.setStatus(RelationshipStatus.REQUEST_REJECTED);
+            if (currentStatusFrom == null || currentStatusFrom == DELETED) {
+                relationshipTo.setStatus(REJECTED);
+
                 super.update(relationshipTo);
                 return relationshipFrom;
             } else { //if (currentStatusFrom == REQUEST_REJECTED) {
-                relationshipFrom.setStatus(NOT_FRIENDS);
-                relationshipTo.setStatus(NOT_FRIENDS);
+                relationshipFrom.setStatus(DELETED);
+                relationshipTo.setStatus(DELETED);
                 relationshipFrom.setDateModify(new Date());
+
                 super.update(relationshipTo);
                 return super.update(relationshipFrom);
             }
-        } else { //if (relationshipTo.getStatus() == FRIENDS) {
-            relationshipTo.setStatus(NOT_FRIENDS);
+        } else { //if (relationshipTo.getStatus() == FRIENDS) { //delete from friends
+            relationshipTo.setStatus(DELETED);
 
             relationshipFrom.setDateModify(new Date());
             relationshipTo.setDateModify(new Date());
