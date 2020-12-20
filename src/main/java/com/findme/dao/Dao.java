@@ -6,7 +6,7 @@ import org.hibernate.HibernateException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-public class Dao<T> {
+public abstract class Dao<T> {
 
     private final Class<T> tClass;
 
