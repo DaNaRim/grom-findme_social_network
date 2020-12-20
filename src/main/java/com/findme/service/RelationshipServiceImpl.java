@@ -93,9 +93,9 @@ public class RelationshipServiceImpl implements RelationshipService {
         User userTo = userService.findById(userToId);
 
         if (userFromId == userToId) {
-            throw new BadRequestException("you can`t change relationship to yourself");
-        } else if (userFrom == null || userTo == null) {
-            throw new NotFoundException("Can`t found one of users");
+            throw new BadRequestException("You can`t change relationship to yourself");
+        } else if (userTo == null) {
+            throw new NotFoundException("User id filed incorrect");
         }
 
         return new Relationship(userFrom, userTo);
