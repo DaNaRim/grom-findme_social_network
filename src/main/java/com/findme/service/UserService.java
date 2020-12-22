@@ -11,6 +11,8 @@ public interface UserService {
 
     User findById(long id) throws NotFoundException, InternalServerException;
 
+    boolean isUserExists(long id) throws InternalServerException;
+
     User registerUser(User user) throws BadRequestException, InternalServerException;
 
     User login(String mail, String password) throws BadRequestException, InternalServerException;

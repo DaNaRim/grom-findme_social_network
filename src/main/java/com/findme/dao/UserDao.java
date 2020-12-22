@@ -15,6 +15,8 @@ public interface UserDao {
 
     void delete(User user) throws InternalServerException;
 
+    boolean isExists(long id) throws InternalServerException;
+
     User findByMail(String mail) throws InternalServerException;
 
     void updateDateLastActive(long userId) throws InternalServerException;

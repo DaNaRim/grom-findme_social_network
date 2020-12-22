@@ -6,12 +6,13 @@ import com.findme.exception.InternalServerException;
 import com.findme.exception.NotFoundException;
 import com.findme.model.Relationship;
 import com.findme.model.RelationshipStatus;
-import com.findme.model.User;
+import com.findme.validator.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static com.findme.model.RelationshipStatus.*;
+import static com.findme.model.RelationshipStatus.DELETED;
+import static com.findme.model.RelationshipStatus.REQUESTED;
 
 public class RelationshipServiceImpl implements RelationshipService {
 
@@ -22,17 +23,6 @@ public class RelationshipServiceImpl implements RelationshipService {
     public RelationshipServiceImpl(RelationshipDao relationshipDao, UserService userService) {
         this.relationshipDao = relationshipDao;
         this.userService = userService;
-    }
-
-    public Relationship addRelationShip(long userFromId, long userToId)
-            throws NotFoundException, BadRequestException, InternalServerException {
-
-        Relationship relationship = validateAddRelationship(userFromId, userToId);
-        relationship = relationshipDao.save(relationship);
-
-        userService.updateDateLastActive(userFromId);
-
-        return relationship;
     }
 
     public RelationshipStatus getRelationShipStatus(long userFromId, long userToId) throws InternalServerException {
@@ -46,10 +36,29 @@ public class RelationshipServiceImpl implements RelationshipService {
         return relationshipStatus;
     }
 
+    public Relationship addRelationShip(long userFromId, long userToId)
+            throws NotFoundException, BadRequestException, InternalServerException {
+
+        validateAddRelationship(userFromId, userToId);
+
+        Relationship relationship =
+                new Relationship(userService.findById(userFromId), userService.findById(userFromId), REQUESTED);
+
+        relationship = relationshipDao.save(relationship);
+
+        userService.updateDateLastActive(userFromId);
+
+        return relationship;
+    }
+
     public Relationship updateRelationShip(long userFromId, long userToId, RelationshipStatus status)
             throws NotFoundException, BadRequestException, InternalServerException {
 
-        Relationship relationship = validateUpdateRelationship(userFromId, userToId, status);
+        validateUpdateRelationship(userFromId, userToId, status);
+
+        Relationship relationship =
+                new Relationship(userService.findById(userFromId), userService.findById(userFromId), status);
+
         relationship = relationshipDao.update(relationship);
 
         userService.updateDateLastActive(userFromId);
@@ -83,81 +92,56 @@ public class RelationshipServiceImpl implements RelationshipService {
         return relationships;
     }
 
-    private Relationship validateRelationship(long userFromId, long userToId)
+    private void validateFields(long userFromId, long userToId)
             throws NotFoundException, BadRequestException, InternalServerException {
-        /* In the future, we will need users and in order not to re-access the db,
-            the method returns them as a relationship with a null status
-        */
-
-        User userFrom = userService.findById(userFromId);
-        User userTo = userService.findById(userToId);
 
         if (userFromId == userToId) {
             throw new BadRequestException("You can`t change relationship to yourself");
-        } else if (userTo == null) {
+
+        } else if (!userService.isUserExists(userToId)) {
             throw new NotFoundException("User id filed incorrect");
         }
-
-        return new Relationship(userFrom, userTo);
     }
 
-    private Relationship validateAddRelationship(long userFromId, long userToId)
+    private void validateAddRelationship(long userFromId, long userToId)
             throws NotFoundException, BadRequestException, InternalServerException {
 
-        Relationship relationship = validateRelationship(userFromId, userToId);
+        validateFields(userFromId, userToId);
 
-        RelationshipStatus currentStatusFrom = relationshipDao.findStatusByUsers(userFromId, userToId);
-        RelationshipStatus currentStatusTo = relationshipDao.findStatusByUsers(userToId, userFromId);
+        RelationshipValidator relationshipValidator = new RequestedValidator(null);
+        RelationshipValidatorParams relationshipValidatorParams = new RelationshipValidatorParams();
 
-        if (currentStatusFrom == REJECTED) {
-            throw new BadRequestException("Can`t send friend request again because user has rejected your request");
+        relationshipValidatorParams.setNewStatus(REQUESTED);
+        relationshipValidatorParams.setCurrentStatusFrom(relationshipDao.findStatusByUsers(userFromId, userToId));
+        relationshipValidatorParams.setCurrentStatusTo(relationshipDao.findStatusByUsers(userToId, userFromId));
 
-        } else if (currentStatusFrom == REQUESTED) {
-            throw new BadRequestException("You already sent request");
+        relationshipValidatorParams.setOutcomeRequests(relationshipDao.countOutcomeRequests(userFromId));
+        relationshipValidatorParams.setFriends(relationshipDao.countFriends(userFromId));
 
-        } else if (currentStatusFrom == FRIENDS) {
-            throw new BadRequestException("You already friends");
-
-        } else if (currentStatusTo == REQUESTED) {
-            throw new BadRequestException("Cant sent request to user that send request to you");
-        }
-
-        return relationship;
+        relationshipValidator.check(relationshipValidatorParams);
     }
 
-    private Relationship validateUpdateRelationship(long userFromId, long userToId, RelationshipStatus newStatus)
+    private void validateUpdateRelationship(long userFromId, long userToId, RelationshipStatus newStatus)
             throws NotFoundException, BadRequestException, InternalServerException {
-        // returned statuses: DELETED, FRIENDS
 
-        Relationship relationshipFrom = validateRelationship(userFromId, userToId);
+        ///Possible newStatus: CANCELED, REJECTED, DELETED, FRIENDS
 
-        RelationshipStatus currentStatusFrom = relationshipDao.findStatusByUsers(userFromId, userToId);
-        RelationshipStatus currentStatusTo = relationshipDao.findStatusByUsers(userToId, userFromId);
+        validateFields(userFromId, userToId);
 
-        if (currentStatusFrom == null && currentStatusTo == null) {
-            throw new BadRequestException("Relationship is not created. Can`t update");
+        RelationshipValidator deletedValidator = new DeletedValidator(null);
+        RelationshipValidator friendsValidator = new FriendsValidator(deletedValidator);
+        RelationshipValidator rejectedValidator = new RejectedValidator(friendsValidator);
+        RelationshipValidator canceledValidator = new CanceledValidator(rejectedValidator);
+        RelationshipValidator baseUpdateValidator = new BaseUpdateValidator(canceledValidator);
 
-        } else if (newStatus == REJECTED) {
-            throw new BadRequestException("Can`t reject your own request");
+        RelationshipValidatorParams relationshipValidatorParams = new RelationshipValidatorParams();
 
-        } else if (newStatus == REQUESTED) {
-            throw new BadRequestException("Can`t add relationship in update method");
+        relationshipValidatorParams.setNewStatus(newStatus);
+        relationshipValidatorParams.setCurrentStatusFrom(relationshipDao.findStatusByUsers(userFromId, userToId));
+        relationshipValidatorParams.setCurrentStatusTo(relationshipDao.findStatusByUsers(userToId, userFromId));
 
-        } else if (newStatus == currentStatusFrom && currentStatusTo != REQUESTED) {
-            throw new BadRequestException("Can`t update to the same status");
+        relationshipValidatorParams.setDateModify(relationshipDao.getDateModify(userFromId));
 
-        } else if (newStatus == FRIENDS && currentStatusTo != REQUESTED) {
-            throw new BadRequestException("Can`t add a friend because user don`t sent a friend request");
-
-        } else if (currentStatusFrom != REQUESTED
-                && currentStatusTo != REQUESTED
-                && currentStatusTo != FRIENDS) {
-            throw new BadRequestException("Can`t delete a friend because you are not friends \n" +
-                    "or can`t reject request because user don`t sent request \n" +
-                    "or can`t cancel your request because you don`t send it");
-        }
-
-        relationshipFrom.setStatus(newStatus);
-        return relationshipFrom;
+        baseUpdateValidator.check(relationshipValidatorParams);
     }
 }

@@ -26,6 +26,11 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    @Override
+    public boolean isUserExists(long id) throws InternalServerException {
+        return userdao.isExists(id);
+    }
+
     public User registerUser(User user) throws BadRequestException, InternalServerException {
         validateUser(user);
 

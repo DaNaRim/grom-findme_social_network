@@ -21,11 +21,10 @@ public class Relationship {
         this.userTo = userTo;
     }
 
-    public Relationship(User userFrom, User userTo, RelationshipStatus status, Date dateModify) {
+    public Relationship(User userFrom, User userTo, RelationshipStatus status) {
         this.userFrom = userFrom;
         this.userTo = userTo;
         this.status = status;
-        this.dateModify = dateModify;
     }
 
     @Id

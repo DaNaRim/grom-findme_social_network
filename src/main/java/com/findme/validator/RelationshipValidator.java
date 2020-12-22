@@ -11,8 +11,4 @@ public abstract class RelationshipValidator {
     }
 
     public abstract void check(RelationshipValidatorParams params) throws BadRequestException;
-
-    public void checkNext(RelationshipValidatorParams params) throws BadRequestException {
-        if (nextValidator != null) nextValidator.check(params);
-    }
 }

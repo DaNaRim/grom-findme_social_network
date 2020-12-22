@@ -15,6 +15,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
         super(User.class);
     }
 
+    private static final String IS_EXISTS_QUERY = "SELECT EXISTS(SELECT 1 FROM USERS WHERE ID = :id)";
     private static final String FIND_BY_MAIL_QUERY = "SELECT * FROM USERS WHERE MAIL = :mail";
     private static final String ARE_THE_PHONE_AND_MAIL_BUSY_QUERY = "SELECT EXISTS(SELECT 1 FROM USERS WHERE PHONE = :phone OR MAIL = :mail)";
 
@@ -23,6 +24,18 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
         entity.setDateLastActive(new Date());
 
         return super.save(entity);
+    }
+
+    @Override
+    public boolean isExists(long id) throws InternalServerException {
+        try {
+            return (boolean) em.createNativeQuery(IS_EXISTS_QUERY)
+                    .setParameter("id", id)
+                    .getSingleResult();
+
+        } catch (HibernateException e) {
+            throw new InternalServerException("UserDaoImpl.isExists failed: " + e.getMessage());
+        }
     }
 
     public User findByMail(String mail) throws InternalServerException {
