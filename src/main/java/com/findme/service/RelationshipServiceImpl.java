@@ -25,6 +25,7 @@ public class RelationshipServiceImpl implements RelationshipService {
         this.userService = userService;
     }
 
+    @Override
     public RelationshipStatus getRelationShipStatus(long userFromId, long userToId) throws InternalServerException {
 
         RelationshipStatus relationshipStatus = relationshipDao.findStatusByUsers(userFromId, userToId);
@@ -36,6 +37,7 @@ public class RelationshipServiceImpl implements RelationshipService {
         return relationshipStatus;
     }
 
+    @Override
     public Relationship addRelationShip(long userFromId, long userToId)
             throws NotFoundException, BadRequestException, InternalServerException {
 
@@ -51,6 +53,7 @@ public class RelationshipServiceImpl implements RelationshipService {
         return relationship;
     }
 
+    @Override
     public Relationship updateRelationShip(long userFromId, long userToId, RelationshipStatus status)
             throws NotFoundException, BadRequestException, InternalServerException {
 
@@ -66,6 +69,7 @@ public class RelationshipServiceImpl implements RelationshipService {
         return relationship;
     }
 
+    @Override
     public List<Relationship> getIncomeRequests(long userId) throws NotFoundException, InternalServerException {
 
         List<Relationship> relationships = relationshipDao.getIncomeRequests(userId);
@@ -79,6 +83,7 @@ public class RelationshipServiceImpl implements RelationshipService {
         return relationships;
     }
 
+    @Override
     public List<Relationship> getOutcomeRequests(long userId) throws NotFoundException, InternalServerException {
 
         List<Relationship> relationships = relationshipDao.getOutcomeRequests(userId);

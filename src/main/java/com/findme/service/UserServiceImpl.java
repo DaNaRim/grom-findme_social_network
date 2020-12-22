@@ -16,6 +16,7 @@ public class UserServiceImpl implements UserService {
         this.userdao = userdao;
     }
 
+    @Override
     public User findById(long id) throws NotFoundException, InternalServerException {
         User user = userdao.findById(id);
 
@@ -31,12 +32,14 @@ public class UserServiceImpl implements UserService {
         return userdao.isExists(id);
     }
 
+    @Override
     public User registerUser(User user) throws BadRequestException, InternalServerException {
         validateUser(user);
 
         return userdao.save(user);
     }
 
+    @Override
     public User login(String mail, String password) throws BadRequestException, InternalServerException {
 
         User user = userdao.findByMail(mail);
@@ -50,6 +53,7 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    @Override
     public void updateDateLastActive(long userId) throws InternalServerException {
         userdao.updateDateLastActive(userId);
     }

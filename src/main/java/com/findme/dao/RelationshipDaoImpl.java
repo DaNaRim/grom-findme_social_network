@@ -123,6 +123,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
         }
     }
 
+    @Override
     public Relationship findByUsers(long userFromId, long userToId) throws InternalServerException {
         try {
             return (Relationship) em.createNativeQuery(FIND_BY_USERS_QUERY, Relationship.class)
@@ -137,6 +138,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
         }
     }
 
+    @Override
     public RelationshipStatus findStatusByUsers(long userFromId, long userToId) throws InternalServerException {
         try {
             String relationshipStatus = (String) em.createNativeQuery(FIND_STATUS_BY_USERS_QUERY)
@@ -191,6 +193,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
         }
     }
 
+    @Override
     public List<Relationship> getIncomeRequests(long userId) throws InternalServerException {
         try {
             return em.createNativeQuery(GET_INCOME_REQUESTS_QUERY)
@@ -202,6 +205,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
         }
     }
 
+    @Override
     public List<Relationship> getOutcomeRequests(long userId) throws InternalServerException {
         try {
             return em.createNativeQuery(GET_OUTCOME_REQUESTS_QUERY)
@@ -213,6 +217,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
         }
     }
 
+    @Override
     public int countOutcomeRequests(long userId) throws InternalServerException {
         try {
             return (int) em.createNativeQuery(COUNT_OUTCOME_REQUESTS_QUERY)
@@ -224,6 +229,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
         }
     }
 
+    @Override
     public int countFriends(long userId) throws InternalServerException {
         try {
             return (int) em.createNativeQuery(COUNT_FRIENDS_QUERY)

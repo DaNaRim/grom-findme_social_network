@@ -38,6 +38,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
         }
     }
 
+    @Override
     public User findByMail(String mail) throws InternalServerException {
         try {
             return (User) em.createNativeQuery(FIND_BY_MAIL_QUERY, User.class)
@@ -51,6 +52,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
         }
     }
 
+    @Override
     public void updateDateLastActive(long userId) throws InternalServerException {
         try {
             User user = findById(userId);
@@ -62,6 +64,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
         }
     }
 
+    @Override
     public boolean areThePhoneAndMailBusy(String phone, String mail) throws InternalServerException {
         try {
             return (boolean) em.createNativeQuery(ARE_THE_PHONE_AND_MAIL_BUSY_QUERY)
