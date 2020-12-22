@@ -85,7 +85,42 @@
         });
     });
 
-    //cancel my request / reject his request / delete from friends
+    $("#cancel_my_request").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: "PUT",
+            url: home + "relationship/update",
+            data: {
+                userToId: request.userFrom.id,
+                status: "CANCELED"
+            },
+            success: function () {
+                alert("Success");
+            },
+            error: function (xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    });
+
+    $("#reject_his_request").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: "PUT",
+            url: home + "relationship/update",
+            data: {
+                userToIdStr: request.userFrom.id,
+                status: "REJECTED"
+            },
+            success: function () {
+                alert("Success");
+            },
+            error: function (xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    });
+
     $("#delete_from_friends").submit(function (e) {
         e.preventDefault();
         $.ajax({

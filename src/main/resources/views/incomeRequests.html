@@ -34,15 +34,14 @@
         });
     });
 
-    //reject his request
-    $("#delete_from_friends").submit(function (e) {
+    $("#reject_his_request").submit(function (e) {
         e.preventDefault();
         $.ajax({
             type: "PUT",
             url: home + "relationship/update",
             data: {
                 userToIdStr: request.userFrom.id,
-                status: "DELETED"
+                status: "REJECTED"
             },
             success: function () {
                 alert("Success");
