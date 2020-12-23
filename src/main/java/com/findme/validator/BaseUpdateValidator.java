@@ -12,7 +12,7 @@ public class BaseUpdateValidator extends RelationshipValidator {
     }
 
     @Override
-    public void check(RelationshipValidatorParams params) throws BadRequestException {
+    public void checkParams(RelationshipValidatorParams params) throws BadRequestException {
 
         if (params.getCurrentStatusFrom() == null && params.getCurrentStatusTo() == null) {
             throw new BadRequestException("Relationship is not created. Can`t update");

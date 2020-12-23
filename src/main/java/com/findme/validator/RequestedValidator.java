@@ -12,7 +12,7 @@ public class RequestedValidator extends RelationshipValidator {
     }
 
     @Override
-    public void check(RelationshipValidatorParams params) throws BadRequestException {
+    public void checkParams(RelationshipValidatorParams params) throws BadRequestException {
 
         if (params.getNewStatus() == RelationshipStatus.REQUESTED) {
 

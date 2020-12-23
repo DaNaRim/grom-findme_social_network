@@ -12,7 +12,7 @@ public class CanceledValidator extends RelationshipValidator {
     }
 
     @Override
-    public void check(RelationshipValidatorParams params) throws BadRequestException {
+    public void checkParams(RelationshipValidatorParams params) throws BadRequestException {
 
         if (params.getNewStatus() == CANCELED && params.getCurrentStatusFrom() != REQUESTED) {
 

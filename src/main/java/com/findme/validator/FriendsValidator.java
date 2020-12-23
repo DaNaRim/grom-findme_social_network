@@ -12,7 +12,7 @@ public class FriendsValidator extends RelationshipValidator {
     }
 
     @Override
-    public void check(RelationshipValidatorParams params) throws BadRequestException {
+    public void checkParams(RelationshipValidatorParams params) throws BadRequestException {
 
         if (params.getNewStatus() == FRIENDS && params.getCurrentStatusTo() != REQUESTED) {
 
