@@ -19,9 +19,9 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
 
     private static final String FIND_BY_USERS_QUERY = "SELECT * FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId";
     private static final String FIND_STATUS_BY_USERS_QUERY = "SELECT STATUS FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId";
-    private static final String GET_DATE_MODIFY_QUERY = "SELECT DATE_MODIFY FROM RELATIONSHIP WHERE USER_FROM = :userFromId";
     private static final String FIND_ID_BY_USERS_QUERY = "SELECT ID FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId";
-    private static final String IS_RELATIONSHIP_EXISTS_QUERY = "SELECT EXISTS(SELECT 1 FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId)";
+    private static final String FIND_DATE_MODIFY_BY_USER_FROM_QUERY = "SELECT DATE_MODIFY FROM RELATIONSHIP WHERE USER_FROM = :userFromId";
+    private static final String IS_EXISTS_BY_USERS_QUERY = "SELECT EXISTS(SELECT 1 FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId)";
     private static final String GET_INCOME_REQUESTS_QUERY = "SELECT * FROM RELATIONSHIP WHERE USER_TO = :userToId AND STATUS = 'REQUEST_HAS_BEEN_SENT' ORDER BY DATE_MODIFY";
     private static final String GET_OUTCOME_REQUESTS_QUERY = "SELECT * FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND STATUS = 'REQUEST_HAS_BEEN_SENT' ORDER BY DATE_MODIFY";
     private static final String COUNT_OUTCOME_REQUESTS_QUERY = "SELECT COUNT(*) FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND STATUS = 'REQUEST_HAS_BEEN_SENT'";
@@ -173,7 +173,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     @Override
     public Date getDateModify(long userId) throws InternalServerException {
         try {
-            return (Date) em.createNativeQuery(GET_DATE_MODIFY_QUERY)
+            return (Date) em.createNativeQuery(FIND_DATE_MODIFY_BY_USER_FROM_QUERY)
                     .setParameter("userFromId", userId)
                     .getSingleResult();
 
@@ -186,7 +186,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
 
     public boolean isRelationshipExists(long userFromId, long userToId) throws InternalServerException {
         try {
-            return (boolean) em.createNativeQuery(IS_RELATIONSHIP_EXISTS_QUERY)
+            return (boolean) em.createNativeQuery(IS_EXISTS_BY_USERS_QUERY)
                     .setParameter("userFromId", userFromId)
                     .setParameter("userToId", userToId)
                     .getSingleResult();
