@@ -44,7 +44,7 @@ public class RelationshipServiceImpl implements RelationshipService {
         validateAddRelationship(userFromId, userToId);
 
         Relationship relationship =
-                new Relationship(userService.findById(userFromId), userService.findById(userFromId), REQUESTED);
+                new Relationship(userService.findById(userFromId), userService.findById(userToId), REQUESTED);
 
         relationship = relationshipDao.save(relationship);
 
@@ -60,7 +60,7 @@ public class RelationshipServiceImpl implements RelationshipService {
         validateUpdateRelationship(userFromId, userToId, status);
 
         Relationship relationship =
-                new Relationship(userService.findById(userFromId), userService.findById(userFromId), status);
+                new Relationship(userService.findById(userFromId), userService.findById(userToId), status);
 
         relationship = relationshipDao.update(relationship);
 

@@ -8,6 +8,7 @@ import org.hibernate.HibernateException;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NoResultException;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
@@ -176,6 +177,8 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
                     .setParameter("userFromId", userId)
                     .getSingleResult();
 
+        } catch (NoResultException e) {
+            return null;
         } catch (HibernateException e) {
             throw new InternalServerException("RelationshipDaoImpl.getDateModify failed: " + e.getMessage());
         }
@@ -220,10 +223,11 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     @Override
     public int countOutcomeRequests(long userId) throws InternalServerException {
         try {
-            return (int) em.createNativeQuery(COUNT_OUTCOME_REQUESTS_QUERY)
+            BigInteger outcomeRequests = (BigInteger) em.createNativeQuery(COUNT_OUTCOME_REQUESTS_QUERY)
                     .setParameter("userFromId", userId)
                     .getSingleResult();
 
+            return outcomeRequests.intValue();
         } catch (HibernateException e) {
             throw new InternalServerException("RelationshipDaoImpl.countOutcomeRequests failed: " + e.getMessage());
         }
@@ -232,10 +236,11 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     @Override
     public int countFriends(long userId) throws InternalServerException {
         try {
-            return (int) em.createNativeQuery(COUNT_FRIENDS_QUERY)
+            BigInteger friends = (BigInteger) em.createNativeQuery(COUNT_FRIENDS_QUERY)
                     .setParameter("userFromId", userId)
                     .getSingleResult();
 
+            return friends.intValue();
         } catch (HibernateException e) {
             throw new InternalServerException("RelationshipDaoImpl.countFriends failed: " + e.getMessage());
         }
