@@ -7,10 +7,6 @@ import static com.findme.model.RelationshipStatus.REQUESTED;
 
 public class FriendsValidator extends RelationshipValidator {
 
-    public FriendsValidator(RelationshipValidator nextValidator) {
-        super(nextValidator);
-    }
-
     @Override
     public void checkParams(RelationshipValidatorParams params) throws BadRequestException {
 

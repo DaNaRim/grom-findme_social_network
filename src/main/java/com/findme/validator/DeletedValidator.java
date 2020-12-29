@@ -10,10 +10,6 @@ import static com.findme.model.RelationshipStatus.FRIENDS;
 
 public class DeletedValidator extends RelationshipValidator {
 
-    public DeletedValidator(RelationshipValidator nextValidator) {
-        super(nextValidator);
-    }
-
     @Override
     public void checkParams(RelationshipValidatorParams params) throws BadRequestException {
 

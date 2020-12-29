@@ -4,10 +4,10 @@ import com.findme.exception.BadRequestException;
 
 public abstract class RelationshipValidator {
 
-    private final RelationshipValidator nextValidator;
+    private RelationshipValidator nextValidator;
 
-    public RelationshipValidator(RelationshipValidator nextValidator) {
-        this.nextValidator = nextValidator;
+    public RelationshipValidator linkWith(RelationshipValidator nextValidator) {
+        return this.nextValidator = nextValidator;
     }
 
     public void check(RelationshipValidatorParams params) throws BadRequestException {

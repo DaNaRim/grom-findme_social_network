@@ -113,17 +113,17 @@ public class RelationshipServiceImpl implements RelationshipService {
 
         validateFields(userFromId, userToId);
 
-        RelationshipValidator relationshipValidator = new RequestedValidator(null);
-        RelationshipValidatorParams relationshipValidatorParams = new RelationshipValidatorParams();
+        RelationshipValidator relationshipValidator = new RequestedValidator();
 
-        relationshipValidatorParams.setNewStatus(REQUESTED);
-        relationshipValidatorParams.setCurrentStatusFrom(relationshipDao.findStatusByUsers(userFromId, userToId));
-        relationshipValidatorParams.setCurrentStatusTo(relationshipDao.findStatusByUsers(userToId, userFromId));
+        RelationshipValidatorParams params = new RelationshipValidatorParams.Builder()
+                .withNewStatus(REQUESTED)
+                .withCurrentStatusFrom(relationshipDao.findStatusByUsers(userFromId, userToId))
+                .withCurrentStatusTo(relationshipDao.findStatusByUsers(userToId, userFromId))
+                .withOutcomeRequests(relationshipDao.countOutcomeRequests(userFromId))
+                .withFriends(relationshipDao.countFriends(userFromId))
+                .build();
 
-        relationshipValidatorParams.setOutcomeRequests(relationshipDao.countOutcomeRequests(userFromId));
-        relationshipValidatorParams.setFriends(relationshipDao.countFriends(userFromId));
-
-        relationshipValidator.check(relationshipValidatorParams);
+        relationshipValidator.check(params);
     }
 
     private void validateUpdateRelationship(long userFromId, long userToId, RelationshipStatus newStatus)
@@ -133,20 +133,20 @@ public class RelationshipServiceImpl implements RelationshipService {
 
         validateFields(userFromId, userToId);
 
-        RelationshipValidator deletedValidator = new DeletedValidator(null);
-        RelationshipValidator friendsValidator = new FriendsValidator(deletedValidator);
-        RelationshipValidator rejectedValidator = new RejectedValidator(friendsValidator);
-        RelationshipValidator canceledValidator = new CanceledValidator(rejectedValidator);
-        RelationshipValidator baseUpdateValidator = new BaseUpdateValidator(canceledValidator);
+        RelationshipValidator baseUpdateValidator = new BaseUpdateValidator();
 
-        RelationshipValidatorParams relationshipValidatorParams = new RelationshipValidatorParams();
+        baseUpdateValidator.linkWith(new CanceledValidator())
+                .linkWith(new RejectedValidator())
+                .linkWith(new FriendsValidator())
+                .linkWith(new DeletedValidator());
 
-        relationshipValidatorParams.setNewStatus(newStatus);
-        relationshipValidatorParams.setCurrentStatusFrom(relationshipDao.findStatusByUsers(userFromId, userToId));
-        relationshipValidatorParams.setCurrentStatusTo(relationshipDao.findStatusByUsers(userToId, userFromId));
+        RelationshipValidatorParams params = new RelationshipValidatorParams.Builder()
+                .withNewStatus(newStatus)
+                .withCurrentStatusFrom(relationshipDao.findStatusByUsers(userFromId, userToId))
+                .withCurrentStatusTo(relationshipDao.findStatusByUsers(userToId, userFromId))
+                .withDateModify(relationshipDao.getDateModify(userFromId))
+                .build();
 
-        relationshipValidatorParams.setDateModify(relationshipDao.getDateModify(userFromId));
-
-        baseUpdateValidator.check(relationshipValidatorParams);
+        baseUpdateValidator.check(params);
     }
 }

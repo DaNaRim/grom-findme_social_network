@@ -7,10 +7,6 @@ import static com.findme.model.RelationshipStatus.REQUESTED;
 
 public class BaseUpdateValidator extends RelationshipValidator {
 
-    public BaseUpdateValidator(RelationshipValidator nextValidator) {
-        super(nextValidator);
-    }
-
     @Override
     public void checkParams(RelationshipValidatorParams params) throws BadRequestException {
 
