@@ -11,8 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static com.findme.model.RelationshipStatus.DELETED;
-import static com.findme.model.RelationshipStatus.REQUESTED;
+import static com.findme.model.RelationshipStatus.*;
 
 public class RelationshipServiceImpl implements RelationshipService {
 
@@ -133,20 +132,31 @@ public class RelationshipServiceImpl implements RelationshipService {
 
         validateFields(userFromId, userToId);
 
-        RelationshipValidator baseUpdateValidator = new BaseUpdateValidator();
+        RelationshipStatus currentStatusFrom = relationshipDao.findStatusByUsers(userFromId, userToId);
+        RelationshipStatus currentStatusTo = relationshipDao.findStatusByUsers(userToId, userFromId);
 
-        baseUpdateValidator.linkWith(new CanceledValidator())
-                .linkWith(new RejectedValidator())
+        if (currentStatusFrom == null && currentStatusTo == null) {
+            throw new BadRequestException("Relationship is not created. Can`t update");
+
+        } else if (newStatus == REQUESTED) {
+            throw new BadRequestException("Can`t add relationship in update method");
+
+        } else if (newStatus == currentStatusFrom && currentStatusFrom != REJECTED) {
+            throw new BadRequestException("Can`t update to the same status");
+        }
+
+        RelationshipValidator canceledValidator = new CanceledValidator();
+        canceledValidator.linkWith(new RejectedValidator())
                 .linkWith(new FriendsValidator())
                 .linkWith(new DeletedValidator());
 
         RelationshipValidatorParams params = new RelationshipValidatorParams.Builder()
                 .withNewStatus(newStatus)
-                .withCurrentStatusFrom(relationshipDao.findStatusByUsers(userFromId, userToId))
-                .withCurrentStatusTo(relationshipDao.findStatusByUsers(userToId, userFromId))
+                .withCurrentStatusFrom(currentStatusFrom)
+                .withCurrentStatusTo(currentStatusTo)
                 .withDateModify(relationshipDao.getDateModify(userFromId))
                 .build();
 
-        baseUpdateValidator.check(params);
+        canceledValidator.check(params);
     }
 }
