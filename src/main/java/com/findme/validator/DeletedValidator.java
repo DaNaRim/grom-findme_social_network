@@ -15,17 +15,15 @@ public class DeletedValidator extends RelationshipValidator {
 
         if (params.getNewStatus() == DELETED) {
 
+            Calendar deleteFriendsTimeLimit = Calendar.getInstance();
+            deleteFriendsTimeLimit.setTime(params.getDateModify());
+            deleteFriendsTimeLimit.add(Calendar.DAY_OF_MONTH, 3);
+
             if (params.getCurrentStatusFrom() != FRIENDS) {
                 throw new BadRequestException("Can`t delete a friend because you are not friends");
 
-            } else {
-                Calendar deleteFriendsTimeLimit = Calendar.getInstance();
-                deleteFriendsTimeLimit.setTime(params.getDateModify());
-                deleteFriendsTimeLimit.add(Calendar.DAY_OF_MONTH, 3);
-
-                if (deleteFriendsTimeLimit.after(new Date())) {
-                    throw new BadRequestException("To remove a friend, 3 days must pass from the moment of adding a friend");
-                }
+            } else if (deleteFriendsTimeLimit.after(new Date())) {
+                throw new BadRequestException("To remove a friend, 3 days must pass from the moment of adding a friend");
             }
         }
     }
