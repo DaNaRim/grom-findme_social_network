@@ -112,7 +112,7 @@ public class RelationshipServiceImpl implements RelationshipService {
 
         validateFields(userFromId, userToId);
 
-        RelationshipValidator relationshipValidator = new RequestedValidator();
+        RelationshipValidator relationshipValidator = new RequestValidator();
 
         RelationshipValidatorParams params = new RelationshipValidatorParams.Builder()
                 .withNewStatus(REQUESTED)
@@ -145,10 +145,10 @@ public class RelationshipServiceImpl implements RelationshipService {
             throw new BadRequestException("Can`t update to the same status");
         }
 
-        RelationshipValidator canceledValidator = new CanceledValidator();
-        canceledValidator.linkWith(new RejectedValidator())
+        RelationshipValidator canceledValidator = new CancelValidator();
+        canceledValidator.linkWith(new RejectValidator())
                 .linkWith(new FriendsValidator())
-                .linkWith(new DeletedValidator());
+                .linkWith(new DeleteValidator());
 
         RelationshipValidatorParams params = new RelationshipValidatorParams.Builder()
                 .withNewStatus(newStatus)

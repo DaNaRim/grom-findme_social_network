@@ -5,7 +5,7 @@ import com.findme.model.RelationshipStatus;
 
 import static com.findme.model.RelationshipStatus.*;
 
-public class RequestedValidator extends RelationshipValidator {
+public class RequestValidator extends RelationshipValidator {
 
     @Override
     public void checkParams(RelationshipValidatorParams params) throws BadRequestException {

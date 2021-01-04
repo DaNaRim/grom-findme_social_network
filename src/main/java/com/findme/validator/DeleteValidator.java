@@ -8,7 +8,7 @@ import java.util.Date;
 import static com.findme.model.RelationshipStatus.DELETED;
 import static com.findme.model.RelationshipStatus.FRIENDS;
 
-public class DeletedValidator extends RelationshipValidator {
+public class DeleteValidator extends RelationshipValidator {
 
     @Override
     public void checkParams(RelationshipValidatorParams params) throws BadRequestException {
