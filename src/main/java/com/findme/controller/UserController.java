@@ -3,7 +3,6 @@ package com.findme.controller;
 import com.findme.exception.BadRequestException;
 import com.findme.exception.NotFoundException;
 import com.findme.exception.UnauthorizedException;
-import com.findme.model.RelationshipStatus;
 import com.findme.model.User;
 import com.findme.service.RelationshipService;
 import com.findme.service.UserService;
@@ -42,14 +41,10 @@ public class UserController {
 
             User user = userService.findById(id);
 
-            //processing our relationship to this user
             if (session.getAttribute("userId") != null) {
-                RelationshipStatus relationshipStatus = relationshipService.getRelationShipStatus(
-                        (long) session.getAttribute("userId"), id);
 
-                user.setRelationshipStatus(relationshipStatus);
-            } else {
-                user.setRelationshipStatus(RelationshipStatus.DELETED);
+                user.setOurRelationship(relationshipService.getOurRelationshipToUser(
+                        (long) session.getAttribute("userId"), id));
             }
 
             model.addAttribute("user", user);

@@ -6,12 +6,14 @@ import com.findme.exception.InternalServerException;
 import com.findme.exception.NotFoundException;
 import com.findme.model.Relationship;
 import com.findme.model.RelationshipStatus;
+import com.findme.model.User;
 import com.findme.validator.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static com.findme.model.RelationshipStatus.*;
+import static com.findme.model.RelationshipStatus.DELETED;
+import static com.findme.model.RelationshipStatus.REQUESTED;
 
 public class RelationshipServiceImpl implements RelationshipService {
 
@@ -24,28 +26,26 @@ public class RelationshipServiceImpl implements RelationshipService {
         this.userService = userService;
     }
 
-    @Override
-    public RelationshipStatus getRelationShipStatus(long userFromId, long userToId) throws InternalServerException {
+    public Relationship getOurRelationshipToUser(long userFromId, long userToId) throws InternalServerException {
 
-        RelationshipStatus relationshipStatus = relationshipDao.findStatusByUsers(userFromId, userToId);
+        Relationship relationship = relationshipDao.findByUsers(userFromId, userToId);
 
-        if (relationshipStatus == null) {
-            relationshipStatus = DELETED;
+        if (relationship.getStatus() == null) {
+            relationship.setStatus(DELETED);
         }
 
-        return relationshipStatus;
+        return relationship;
     }
 
     @Override
-    public Relationship addRelationShip(long userFromId, long userToId)
+    public Relationship addRelationship(long userFromId, long userToId)
             throws NotFoundException, BadRequestException, InternalServerException {
 
         validateAddRelationship(userFromId, userToId);
 
-        Relationship relationship =
-                new Relationship(userService.findById(userFromId), userService.findById(userToId), REQUESTED);
-
-        relationship = relationshipDao.save(relationship);
+        User userFrom = userService.findById(userFromId);
+        User userTo = userService.findById(userToId);
+        Relationship relationship = relationshipDao.save(new Relationship(userFrom, userTo));
 
         userService.updateDateLastActive(userFromId);
 
@@ -58,10 +58,9 @@ public class RelationshipServiceImpl implements RelationshipService {
 
         validateUpdateRelationship(userFromId, userToId, status);
 
-        Relationship relationship =
-                new Relationship(userService.findById(userFromId), userService.findById(userToId), status);
-
-        relationship = relationshipDao.update(relationship);
+        User userFrom = userService.findById(userFromId);
+        User userTo = userService.findById(userToId);
+        Relationship relationship = relationshipDao.update(new Relationship(userFrom, userTo, status));
 
         userService.updateDateLastActive(userFromId);
 
@@ -116,8 +115,9 @@ public class RelationshipServiceImpl implements RelationshipService {
 
         RelationshipValidatorParams params = new RelationshipValidatorParams.Builder()
                 .withNewStatus(REQUESTED)
-                .withCurrentStatusFrom(relationshipDao.findStatusByUsers(userFromId, userToId))
-                .withCurrentStatusTo(relationshipDao.findStatusByUsers(userToId, userFromId))
+                .withCurrentStatus(relationshipDao.findStatus(userFromId, userToId))
+                .withNewActionUserId(userFromId)
+                .withOldActionUserId(relationshipDao.findActionUserId(userFromId, userToId))
                 .withOutcomeRequests(relationshipDao.countOutcomeRequests(userFromId))
                 .withFriends(relationshipDao.countFriends(userFromId))
                 .build();
@@ -132,16 +132,15 @@ public class RelationshipServiceImpl implements RelationshipService {
 
         validateFields(userFromId, userToId);
 
-        RelationshipStatus currentStatusFrom = relationshipDao.findStatusByUsers(userFromId, userToId);
-        RelationshipStatus currentStatusTo = relationshipDao.findStatusByUsers(userToId, userFromId);
+        RelationshipStatus currentStatus = relationshipDao.findStatus(userFromId, userToId);
 
-        if (currentStatusFrom == null && currentStatusTo == null) {
+        if (currentStatus == null) {
             throw new BadRequestException("Relationship is not created. Can`t update");
 
         } else if (newStatus == REQUESTED) {
             throw new BadRequestException("Can`t add relationship in update method");
 
-        } else if (newStatus == currentStatusFrom && currentStatusFrom != REJECTED) {
+        } else if (newStatus == currentStatus) {
             throw new BadRequestException("Can`t update to the same status");
         }
 
@@ -152,9 +151,10 @@ public class RelationshipServiceImpl implements RelationshipService {
 
         RelationshipValidatorParams params = new RelationshipValidatorParams.Builder()
                 .withNewStatus(newStatus)
-                .withCurrentStatusFrom(currentStatusFrom)
-                .withCurrentStatusTo(currentStatusTo)
-                .withDateModify(relationshipDao.getDateModify(userFromId))
+                .withCurrentStatus(currentStatus)
+                .withNewActionUserId(userFromId)
+                .withOldActionUserId(relationshipDao.findActionUserId(userFromId, userToId))
+                .withDateModify(relationshipDao.findDateModify(userFromId, userToId))
                 .build();
 
         canceledValidator.check(params);

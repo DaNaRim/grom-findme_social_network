@@ -17,9 +17,11 @@ public interface RelationshipDao {
 
     Relationship findByUsers(long userFromId, long userToId) throws InternalServerException;
 
-    RelationshipStatus findStatusByUsers(long userFromId, long userToId) throws InternalServerException;
+    RelationshipStatus findStatus(long userFromId, long userToId) throws InternalServerException;
 
-    Date getDateModify(long userId) throws InternalServerException;
+    Long findActionUserId(long userFromId, long userToId) throws InternalServerException;
+
+    Date findDateModify(long userFromId, long userToId) throws InternalServerException;
 
     List<Relationship> getIncomeRequests(long userId) throws InternalServerException;
 

@@ -35,20 +35,20 @@ public class Message {
 
     @Column(name = "DATE_SENT")
     public Date getDateSent() {
-        return dateSent;
+        return new Date(dateSent.getTime());
     }
 
     public void setDateSent(Date dateSent) {
-        this.dateSent = dateSent;
+        this.dateSent = new Date(dateSent.getTime());
     }
 
     @Column(name = "DATE_READ")
     public Date getDateRead() {
-        return dateRead;
+        return new Date(dateRead.getTime());
     }
 
     public void setDateRead(Date dateRead) {
-        this.dateRead = dateRead;
+        this.dateRead = new Date(dateRead.getTime());
     }
 
     @ManyToOne

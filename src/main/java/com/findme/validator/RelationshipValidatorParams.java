@@ -7,8 +7,9 @@ import java.util.Date;
 public class RelationshipValidatorParams {
 
     private RelationshipStatus newStatus;
-    private RelationshipStatus currentStatusFrom;
-    private RelationshipStatus currentStatusTo;
+    private RelationshipStatus currentStatus;
+    private Long newActionUserId;
+    private Long oldActionUserId;
     private Date dateModify;
     private int friends;
     private int outcomeRequests;
@@ -17,16 +18,20 @@ public class RelationshipValidatorParams {
         return newStatus;
     }
 
-    public RelationshipStatus getCurrentStatusFrom() {
-        return currentStatusFrom;
+    public RelationshipStatus getCurrentStatus() {
+        return currentStatus;
     }
 
-    public RelationshipStatus getCurrentStatusTo() {
-        return currentStatusTo;
+    public Long getNewActionUserId() {
+        return newActionUserId;
+    }
+
+    public Long getOldActionUserId() {
+        return oldActionUserId;
     }
 
     public Date getDateModify() {
-        return dateModify;
+        return new Date(dateModify.getTime());
     }
 
     public int getFriends() {
@@ -50,13 +55,18 @@ public class RelationshipValidatorParams {
             return this;
         }
 
-        public Builder withCurrentStatusFrom(RelationshipStatus currentStatusFrom) {
-            params.currentStatusFrom = currentStatusFrom;
+        public Builder withCurrentStatus(RelationshipStatus currentStatus) {
+            params.currentStatus = currentStatus;
             return this;
         }
 
-        public Builder withCurrentStatusTo(RelationshipStatus currentStatusTo) {
-            params.currentStatusTo = currentStatusTo;
+        public Builder withNewActionUserId(Long newActionUserId) {
+            params.newActionUserId = newActionUserId;
+            return this;
+        }
+
+        public Builder withOldActionUserId(Long oldActionUserId) {
+            params.oldActionUserId = oldActionUserId;
             return this;
         }
 

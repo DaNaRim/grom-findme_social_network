@@ -11,6 +11,7 @@ public class Relationship {
     private User userFrom;
     private User userTo;
     private RelationshipStatus status;
+    private Long actionUserId;
     private Date dateModify;
 
     public Relationship() {
@@ -67,12 +68,21 @@ public class Relationship {
         this.status = status;
     }
 
+    @Column(name = "ACTION_USER_ID", nullable = false)
+    public Long getActionUserId() {
+        return actionUserId;
+    }
+
+    public void setActionUserId(Long actionUserId) {
+        this.actionUserId = actionUserId;
+    }
+
     @Column(name = "DATE_MODIFY", nullable = false)
     public Date getDateModify() {
-        return dateModify;
+        return new Date(dateModify.getTime());
     }
 
     public void setDateModify(Date dateModify) {
-        this.dateModify = dateModify;
+        this.dateModify = new Date(dateModify.getTime());
     }
 }

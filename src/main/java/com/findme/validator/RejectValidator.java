@@ -10,9 +10,13 @@ public class RejectValidator extends RelationshipValidator {
     @Override
     public void checkParams(RelationshipValidatorParams params) throws BadRequestException {
 
-        if (params.getNewStatus() == REJECTED && params.getCurrentStatusTo() != REQUESTED) {
+        if (params.getNewStatus() == REJECTED) {
 
-            throw new BadRequestException("Can`t reject request because user don`t sent request");
+            if (params.getCurrentStatus() != REQUESTED
+                    || params.getOldActionUserId().equals(params.getNewActionUserId())) {
+
+                throw new BadRequestException("Can`t reject request because user don`t sent request");
+            }
         }
     }
 }

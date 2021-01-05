@@ -21,7 +21,7 @@ public class User {
     private Integer age;
     private Date dateRegistered;
     private Date dateLastActive;
-    private RelationshipStatus relationshipStatus;
+    private Relationship ourRelationship;
     private String religion;
     //TODO from existed date
     private String school;
@@ -116,29 +116,29 @@ public class User {
 
     @Column(name = "DATE_REGISTERED", insertable = false)
     public Date getDateRegistered() {
-        return dateRegistered;
+        return new Date(dateRegistered.getTime());
     }
 
     public void setDateRegistered(Date dateRegistered) {
-        this.dateRegistered = dateRegistered;
+        this.dateRegistered = new Date(dateRegistered.getTime());
     }
 
     @Column(name = "DATE_LAST_ACTIVE", nullable = false)
     public Date getDateLastActive() {
-        return dateLastActive;
+        return new Date(dateLastActive.getTime());
     }
 
     public void setDateLastActive(Date dateLastActive) {
-        this.dateLastActive = dateLastActive;
+        this.dateLastActive = new Date(dateLastActive.getTime());
     }
 
     @Transient
-    public RelationshipStatus getRelationshipStatus() {
-        return relationshipStatus;
+    public Relationship getOurRelationship() {
+        return ourRelationship;
     }
 
-    public void setRelationshipStatus(RelationshipStatus relationshipStatus) {
-        this.relationshipStatus = relationshipStatus;
+    public void setOurRelationship(Relationship ourRelationship) {
+        this.ourRelationship = ourRelationship;
     }
 
     @Column(name = "RELIGION")

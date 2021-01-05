@@ -42,7 +42,7 @@ public class RelationshipController {
             }
             long userFromId = (long) session.getAttribute("userId");
 
-            relationshipService.addRelationShip(userFromId, userToId);
+            relationshipService.addRelationship(userFromId, userToId);
 
             return new ResponseEntity<>("Friend request sent", HttpStatus.OK);
         } catch (UnauthorizedException e) {

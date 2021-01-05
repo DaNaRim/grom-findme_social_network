@@ -12,13 +12,13 @@ import java.util.List;
 @Service
 public interface RelationshipService {
 
-    Relationship addRelationShip(long userFromId, long userToId)
+    Relationship getOurRelationshipToUser(long userFromId, long userToId) throws InternalServerException;
+
+    Relationship addRelationship(long userFromId, long userToId)
             throws InternalServerException, NotFoundException, BadRequestException;
 
     Relationship updateRelationShip(long userFromId, long userToId, RelationshipStatus status)
             throws InternalServerException, NotFoundException, BadRequestException;
-
-    RelationshipStatus getRelationShipStatus(long userFromId, long userToId) throws InternalServerException;
 
     List<Relationship> getIncomeRequests(long userId) throws InternalServerException, NotFoundException;
 

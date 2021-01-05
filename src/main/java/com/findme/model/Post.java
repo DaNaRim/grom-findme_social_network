@@ -35,11 +35,11 @@ public class Post {
 
     @Column(name = "DATE_POSTED")
     public Date getDatePosted() {
-        return datePosted;
+        return new Date(datePosted.getTime());
     }
 
     public void setDatePosted(Date datePosted) {
-        this.datePosted = datePosted;
+        this.datePosted = new Date(datePosted.getTime());
     }
 
     @ManyToOne

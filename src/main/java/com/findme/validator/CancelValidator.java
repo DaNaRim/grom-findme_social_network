@@ -10,9 +10,13 @@ public class CancelValidator extends RelationshipValidator {
     @Override
     public void checkParams(RelationshipValidatorParams params) throws BadRequestException {
 
-        if (params.getNewStatus() == CANCELED && params.getCurrentStatusFrom() != REQUESTED) {
+        if (params.getNewStatus() == CANCELED) {
 
-            throw new BadRequestException("Can`t cancel your request because you don`t send it");
+            if (params.getCurrentStatus() != REQUESTED
+                    || !params.getOldActionUserId().equals(params.getNewActionUserId())) {
+
+                throw new BadRequestException("Can`t cancel your request because you don`t send it");
+            }
         }
     }
 }
