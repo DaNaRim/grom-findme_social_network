@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NoResultException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -158,10 +159,11 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     @Override
     public List<Relationship> getIncomeRequests(long userId) throws InternalServerException {
         try {
-            return em.createNativeQuery(GET_INCOME_REQUESTS_QUERY)
+            List<Relationship> incomeRequests = em.createNativeQuery(GET_INCOME_REQUESTS_QUERY)
                     .setParameter("userId", userId)
                     .getResultList();
 
+            return incomeRequests == null ? new ArrayList<>() : incomeRequests;
         } catch (HibernateException e) {
             throw new InternalServerException("RelationshipDaoImpl.getIncomeRequests failed: " + e.getMessage());
         }
@@ -170,10 +172,11 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     @Override
     public List<Relationship> getOutcomeRequests(long userId) throws InternalServerException {
         try {
-            return em.createNativeQuery(GET_OUTCOME_REQUESTS_QUERY)
+            List<Relationship> outcomeRequests = em.createNativeQuery(GET_OUTCOME_REQUESTS_QUERY)
                     .setParameter("userId", userId)
                     .getResultList();
 
+            return outcomeRequests == null ? new ArrayList<>() : outcomeRequests;
         } catch (HibernateException e) {
             throw new InternalServerException("RelationshipDaoImpl.getOutcomeRequests failed: " + e.getMessage());
         }

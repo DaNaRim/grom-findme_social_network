@@ -72,7 +72,7 @@ public class RelationshipServiceImpl implements RelationshipService {
 
         List<Relationship> relationships = relationshipDao.getIncomeRequests(userId);
 
-        if (relationships == null) {
+        if (relationships.isEmpty()) {
             throw new NotFoundException("There are no requests");
         }
 
@@ -86,7 +86,7 @@ public class RelationshipServiceImpl implements RelationshipService {
 
         List<Relationship> relationships = relationshipDao.getOutcomeRequests(userId);
 
-        if (relationships == null) {
+        if (relationships.isEmpty()) {
             throw new NotFoundException("There are no requests");
         }
 
