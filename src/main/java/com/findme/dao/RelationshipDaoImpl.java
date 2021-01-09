@@ -82,21 +82,6 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
         }
     }
 
-    public Long findIdByUsers(long userFromId, long userToId) throws InternalServerException {
-        try {
-            Integer id = (Integer) em.createNativeQuery(FIND_ID_BY_USERS_QUERY)
-                    .setParameter("userFromId", userFromId)
-                    .setParameter("userToId", userToId)
-                    .getSingleResult();
-
-            return Long.valueOf(id);
-        } catch (NoResultException e) {
-            return null;
-        } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.findIdByUsers failed: " + e.getMessage());
-        }
-    }
-
     @Override
     public RelationshipStatus findStatus(long userFromId, long userToId) throws InternalServerException {
         try {
@@ -141,18 +126,6 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
             return null;
         } catch (HibernateException e) {
             throw new InternalServerException("RelationshipDaoImpl.findDateModify failed: " + e.getMessage());
-        }
-    }
-
-    public boolean isRelationshipExists(long userFromId, long userToId) throws InternalServerException {
-        try {
-            return (boolean) em.createNativeQuery(IS_EXISTS_BY_USERS_QUERY)
-                    .setParameter("userFromId", userFromId)
-                    .setParameter("userToId", userToId)
-                    .getSingleResult();
-
-        } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.isRelationshipExists failed: " + e.getMessage());
         }
     }
 
@@ -208,4 +181,30 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
         }
     }
 
+    private Long findIdByUsers(long userFromId, long userToId) throws InternalServerException {
+        try {
+            Integer id = (Integer) em.createNativeQuery(FIND_ID_BY_USERS_QUERY)
+                    .setParameter("userFromId", userFromId)
+                    .setParameter("userToId", userToId)
+                    .getSingleResult();
+
+            return Long.valueOf(id);
+        } catch (NoResultException e) {
+            return null;
+        } catch (HibernateException e) {
+            throw new InternalServerException("RelationshipDaoImpl.findIdByUsers failed: " + e.getMessage());
+        }
+    }
+
+    private boolean isRelationshipExists(long userFromId, long userToId) throws InternalServerException {
+        try {
+            return (boolean) em.createNativeQuery(IS_EXISTS_BY_USERS_QUERY)
+                    .setParameter("userFromId", userFromId)
+                    .setParameter("userToId", userToId)
+                    .getSingleResult();
+
+        } catch (HibernateException e) {
+            throw new InternalServerException("RelationshipDaoImpl.isRelationshipExists failed: " + e.getMessage());
+        }
+    }
 }

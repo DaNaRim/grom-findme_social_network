@@ -25,6 +25,7 @@ public class RelationshipServiceImpl implements RelationshipService {
         this.userService = userService;
     }
 
+    @Override
     public Relationship getOurRelationshipToUser(long userFromId, long userToId) throws InternalServerException {
 
         Relationship relationship = relationshipDao.findByUsers(userFromId, userToId);

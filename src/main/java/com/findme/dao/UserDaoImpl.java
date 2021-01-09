@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.NoResultException;
 import java.util.Date;
 
-@Transactional
+@Transactional(rollbackFor = {HibernateException.class, InternalServerException.class})
 public class UserDaoImpl extends Dao<User> implements UserDao {
 
     public UserDaoImpl() {
