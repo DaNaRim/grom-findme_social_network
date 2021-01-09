@@ -12,8 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static com.findme.model.RelationshipStatus.DELETED;
-import static com.findme.model.RelationshipStatus.REQUESTED;
+import static com.findme.model.RelationshipStatus.*;
 
 public class RelationshipServiceImpl implements RelationshipService {
 
@@ -93,6 +92,14 @@ public class RelationshipServiceImpl implements RelationshipService {
         userService.updateDateLastActive(userId);
 
         return relationships;
+    }
+
+    @Override
+    public boolean areUsersFriends(long userFromId, long userToId) throws InternalServerException {
+
+        RelationshipStatus status = relationshipDao.findStatus(userFromId, userToId);
+
+        return status == FRIENDS;
     }
 
     private void validateFields(long userFromId, long userToId)

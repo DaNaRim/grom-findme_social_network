@@ -1,10 +1,7 @@
 package com.findme.config;
 
 import com.findme.dao.*;
-import com.findme.service.RelationshipService;
-import com.findme.service.RelationshipServiceImpl;
-import com.findme.service.UserService;
-import com.findme.service.UserServiceImpl;
+import com.findme.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -105,11 +102,6 @@ public class AppConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public PostDao postDao() {
-        return new PostDaoImpl();
-    }
-
-    @Bean
     public RelationshipDao relationshipDao() {
         return new RelationshipDaoImpl();
     }
@@ -117,5 +109,15 @@ public class AppConfig implements WebMvcConfigurer {
     @Bean
     public RelationshipService relationshipService() {
         return new RelationshipServiceImpl(relationshipDao(), userService());
+    }
+
+    @Bean
+    public PostDao postDao() {
+        return new PostDaoImpl();
+    }
+
+    @Bean
+    public PostService postService() {
+        return new PostServiceImpl(postDao(), userService(), relationshipService());
     }
 }

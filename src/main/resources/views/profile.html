@@ -50,6 +50,8 @@
 <script>
     const home = "http://localhost:8090/findme_war/";
 
+    //relationship
+
     $("#send_friend_request").submit(function (e) {
         e.preventDefault();
         $.ajax({
@@ -138,5 +140,72 @@
             }
         });
     });
+
+    //post
+
+    $("#create_post").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: home + "post/create",
+            data: {
+                //post data
+            },
+            success: function () {
+                alert("Success");
+            },
+            error: function (xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    });
+
+    $("#update_post").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: "PUT",
+            url: home + "post/update",
+            data: {
+                //post data
+            },
+            success: function () {
+                alert("Success");
+            },
+            error: function (xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    });
+
+    $("#delete_post").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: "DELETE",
+            url: home + "post/delete",
+            postId: "", //postId
+            success: function () {
+                alert("Success");
+            },
+            error: function (xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    });
+
+    $("#get_by_page").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: "GET",
+            url: home + "post/getByPage",
+            userIdStr: user.id,
+            success: function () {
+                alert("Success");
+            },
+            error: function (xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    });
+
 </script>
 </html>
