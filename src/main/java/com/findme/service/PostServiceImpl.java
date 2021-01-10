@@ -115,9 +115,9 @@ public class PostServiceImpl implements PostService {
 
     private void validateCreatePost(long userPosted, Post post) throws BadRequestException, InternalServerException {
 
-        long userPagePostedId = post.getUserPagePosted().getId();
-
         validatePostFields(post);
+
+        long userPagePostedId = post.getUserPagePosted().getId();
 
         if (userPosted != userPagePostedId
                 && !relationshipService.areUsersFriends(userPosted, userPagePostedId)) {

@@ -12,10 +12,12 @@ public class Post {
     private String message;
     private String taggedLocation;
     private List<User> taggedUsers;
-    private Date datePosted;
-    private Date dateUpdated;
     private User userPosted;
     private User userPagePosted;
+
+    private Date datePosted;
+    private Date dateUpdated;
+
     //TODO levels permissions
     //TODO comments
 
@@ -59,24 +61,6 @@ public class Post {
         this.taggedUsers = taggedUsers;
     }
 
-    @Column(name = "DATE_POSTED", insertable = false)
-    public Date getDatePosted() {
-        return new Date(datePosted.getTime());
-    }
-
-    public void setDatePosted(Date datePosted) {
-        this.datePosted = new Date(datePosted.getTime());
-    }
-
-    @Column(name = "DATE_UPDATED")
-    public Date getDateUpdated() {
-        return new Date(dateUpdated.getTime());
-    }
-
-    public void setDateUpdated(Date dateUpdated) {
-        this.dateUpdated = new Date(dateUpdated.getTime());
-    }
-
     @ManyToOne
     @JoinColumn(name = "USER_POSTED", nullable = false, updatable = false)
     public User getUserPosted() {
@@ -95,5 +79,23 @@ public class Post {
 
     public void setUserPagePosted(User userPagePosted) {
         this.userPagePosted = userPagePosted;
+    }
+
+    @Column(name = "DATE_POSTED", insertable = false)
+    public Date getDatePosted() {
+        return new Date(datePosted.getTime());
+    }
+
+    public void setDatePosted(Date datePosted) {
+        this.datePosted = new Date(datePosted.getTime());
+    }
+
+    @Column(name = "DATE_UPDATED")
+    public Date getDateUpdated() {
+        return new Date(dateUpdated.getTime());
+    }
+
+    public void setDateUpdated(Date dateUpdated) {
+        this.dateUpdated = new Date(dateUpdated.getTime());
     }
 }
