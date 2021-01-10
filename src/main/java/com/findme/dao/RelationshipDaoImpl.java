@@ -22,7 +22,6 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     private static final String FIND_STATUS_BY_USERS_QUERY = "SELECT STATUS FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId OR USER_FROM = :userToId AND USER_TO = :userFromId";
     private static final String FIND_ACTION_USER_ID_BY_USERS_QUERY = "SELECT ACTION_USER_ID FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId OR USER_FROM = :userToId AND USER_TO = :userFromId";
     private static final String FIND_DATE_MODIFY_BY_USERS_QUERY = "SELECT DATE_MODIFY FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId OR USER_FROM = :userToId AND USER_TO = :userFromId";
-    private static final String IS_EXISTS_BY_USERS_QUERY = "SELECT EXISTS(SELECT 1 FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId OR USER_FROM = :userToId AND USER_TO = :userFromId)";
     private static final String GET_INCOME_REQUESTS_QUERY = "SELECT * FROM RELATIONSHIP WHERE STATUS = 'REQUESTED' AND (USER_FROM = :userId OR USER_TO = :userId) AND ACTION_USER_ID != :userId ORDER BY DATE_MODIFY";
     private static final String GET_OUTCOME_REQUESTS_QUERY = "SELECT * FROM RELATIONSHIP WHERE STATUS = 'REQUESTED' AND ACTION_USER_ID = :userId ORDER BY DATE_MODIFY";
     private static final String COUNT_OUTCOME_REQUESTS_QUERY = "SELECT COUNT(*) FROM RELATIONSHIP WHERE STATUS = 'REQUESTED' AND ACTION_USER_ID = :userId";
@@ -42,8 +41,10 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
         relationship.setActionUserId(userFromId);
         relationship.setDateModify(new Date());
 
-        if (isRelationshipExists(userFromId, userToId)) {
-            relationship.setId(findIdByUsers(userFromId, userToId));
+        Long relationshipId = findIdByUsers(userFromId, userToId);
+
+        if (relationshipId != null) {
+            relationship.setId(relationshipId);
 
             return super.update(relationship);
         }
@@ -193,18 +194,6 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
             return null;
         } catch (HibernateException e) {
             throw new InternalServerException("RelationshipDaoImpl.findIdByUsers failed: " + e.getMessage());
-        }
-    }
-
-    private boolean isRelationshipExists(long userFromId, long userToId) throws InternalServerException {
-        try {
-            return (boolean) em.createNativeQuery(IS_EXISTS_BY_USERS_QUERY)
-                    .setParameter("userFromId", userFromId)
-                    .setParameter("userToId", userToId)
-                    .getSingleResult();
-
-        } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.isRelationshipExists failed: " + e.getMessage());
         }
     }
 }
