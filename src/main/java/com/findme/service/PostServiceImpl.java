@@ -7,7 +7,6 @@ import com.findme.model.Post;
 import com.findme.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Calendar;
 import java.util.List;
 
 public class PostServiceImpl implements PostService {
@@ -104,14 +103,6 @@ public class PostServiceImpl implements PostService {
 
         } else if (actionUserId != post.getUserPosted().getId()) {
             throw new BadRequestException("You can`t update post that you don`t posted");
-        }
-
-        Calendar deletePostTimeLimit = Calendar.getInstance();
-        deletePostTimeLimit.setTime(postDao.findDatePosted(post.getId()));
-        deletePostTimeLimit.add(Calendar.MINUTE, 5);
-
-        if (deletePostTimeLimit.before(Calendar.getInstance())) {
-            throw new BadRequestException("You have only 5 minutes after posted for update");
         }
     }
 
