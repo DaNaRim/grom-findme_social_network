@@ -6,6 +6,7 @@ import com.findme.exception.UnauthorizedException;
 import com.findme.model.Relationship;
 import com.findme.model.RelationshipStatus;
 import com.findme.service.RelationshipService;
+import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,15 +22,19 @@ import java.util.List;
 public class RelationshipController {
 
     private final RelationshipService relationshipService;
+    private final UserService userService;
 
     @Autowired
-    public RelationshipController(RelationshipService relationshipService) {
+    public RelationshipController(RelationshipService relationshipService, UserService userService) {
         this.relationshipService = relationshipService;
+        this.userService = userService;
     }
 
     @PostMapping(path = "/add")
-    public ResponseEntity<String> addRelationship(@RequestParam String userToIdStr, HttpSession session) {
+    public ResponseEntity<String> addRelationship(@RequestParam String userToIdStr, Model model, HttpSession session) {
         try {
+            Long actionUserId = (Long) session.getAttribute("userId");
+
             long userToId;
             try {
                 userToId = Long.parseLong(userToIdStr);
@@ -37,13 +42,19 @@ public class RelationshipController {
             } catch (NumberFormatException e) {
                 throw new BadRequestException("Fields filed incorrect");
             }
-            if (session.getAttribute("userId") == null) {
+            if (actionUserId == null) {
                 throw new UnauthorizedException("You must be authorized to do that");
             }
-            long userFromId = (long) session.getAttribute("userId");
 
-            relationshipService.addRelationship(userFromId, userToId);
+            Relationship relationship = relationshipService.addRelationship(actionUserId, userToId);
 
+            try {
+                userService.updateDateLastActive(actionUserId);
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+            }
+
+            model.addAttribute("relationship", relationship);
             return new ResponseEntity<>("Friend request sent", HttpStatus.OK);
         } catch (UnauthorizedException e) {
 
@@ -63,8 +74,11 @@ public class RelationshipController {
     @PutMapping(path = "/update")
     public ResponseEntity<String> updateRelationship(@RequestParam String userToIdStr,
                                                      @RequestParam String status,
+                                                     Model model,
                                                      HttpSession session) {
         try {
+            Long actionUserId = (Long) session.getAttribute("userId");
+
             long userToId;
             RelationshipStatus relationshipStatus;
             try {
@@ -74,13 +88,20 @@ public class RelationshipController {
             } catch (IllegalArgumentException e) {
                 throw new BadRequestException("Fields filed incorrect");
             }
-            if (session.getAttribute("userId") == null) {
+            if (actionUserId == null) {
                 throw new UnauthorizedException("You must be authorized to do that");
             }
-            long userFromId = (long) session.getAttribute("userId");
 
-            relationshipService.updateRelationShip(userFromId, userToId, relationshipStatus);
+            Relationship relationship =
+                    relationshipService.updateRelationShip(actionUserId, userToId, relationshipStatus);
 
+            try {
+                userService.updateDateLastActive(actionUserId);
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+            }
+
+            model.addAttribute("relationship", relationship);
             return new ResponseEntity<>("Relationship updated", HttpStatus.OK);
         } catch (UnauthorizedException e) {
 
@@ -100,12 +121,19 @@ public class RelationshipController {
     @GetMapping(path = "/incomeRequests")
     public String getIncomeRequests(HttpSession session, Model model) {
         try {
-            if (session.getAttribute("userId") == null) {
+            Long actionUserId = (Long) session.getAttribute("userId");
+
+            if (actionUserId == null) {
                 throw new UnauthorizedException("You must be authorized to do that");
             }
-            long userId = (long) session.getAttribute("userId");
 
-            List<Relationship> relationships = relationshipService.getIncomeRequests(userId);
+            List<Relationship> relationships = relationshipService.getIncomeRequests(actionUserId);
+
+            try {
+                userService.updateDateLastActive(actionUserId);
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+            }
 
             model.addAttribute("incomeRequests", relationships);
             return "incomeRequests";
@@ -125,12 +153,19 @@ public class RelationshipController {
     @GetMapping(path = "/outcomeRequests")
     public String getOutcomeRequests(HttpSession session, Model model) {
         try {
-            if (session.getAttribute("userId") == null) {
+            Long actionUserId = (Long) session.getAttribute("userId");
+
+            if (actionUserId == null) {
                 throw new UnauthorizedException("You must be authorized to do that");
             }
-            long userId = (long) session.getAttribute("userId");
 
-            List<Relationship> relationships = relationshipService.getOutcomeRequests(userId);
+            List<Relationship> relationships = relationshipService.getOutcomeRequests(actionUserId);
+
+            try {
+                userService.updateDateLastActive(actionUserId);
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+            }
 
             model.addAttribute("outcomeRequests", relationships);
             return "outcomeRequests";

@@ -6,6 +6,7 @@ import com.findme.exception.UnauthorizedException;
 import com.findme.model.Post;
 import com.findme.model.PostFilter;
 import com.findme.service.PostService;
+import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,14 +22,16 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final UserService userService;
 
     @Autowired
-    public PostController(PostService postService) {
+    public PostController(PostService postService, UserService userService) {
         this.postService = postService;
+        this.userService = userService;
     }
 
     @PostMapping(path = "/create")
-    public ResponseEntity<String> createPost(@ModelAttribute Post post, HttpSession session) {
+    public ResponseEntity<String> createPost(@ModelAttribute Post post, Model model, HttpSession session) {
         try {
             Long actionUserId = (Long) session.getAttribute("userId");
 
@@ -36,8 +39,15 @@ public class PostController {
                 throw new UnauthorizedException("You must be authorized to do that");
             }
 
-            postService.createPost(actionUserId, post);
+            Post newPost = postService.createPost(actionUserId, post);
 
+            try {
+                userService.updateDateLastActive(actionUserId);
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+            }
+
+            model.addAttribute("post", newPost);
             return new ResponseEntity<>("Post created", HttpStatus.CREATED);
         } catch (BadRequestException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -49,7 +59,7 @@ public class PostController {
     }
 
     @PutMapping(path = "/update")
-    public ResponseEntity<String> updatePost(@ModelAttribute Post post, HttpSession session) {
+    public ResponseEntity<String> updatePost(@ModelAttribute Post post, Model model, HttpSession session) {
         try {
             Long actionUserId = (Long) session.getAttribute("userId");
 
@@ -57,8 +67,15 @@ public class PostController {
                 throw new UnauthorizedException("You must be authorized to do that");
             }
 
-            postService.updatePost(actionUserId, post);
+            Post updatedPost = postService.updatePost(actionUserId, post);
 
+            try {
+                userService.updateDateLastActive(actionUserId);
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+            }
+
+            model.addAttribute("post", updatedPost);
             return new ResponseEntity<>("Post updated", HttpStatus.OK);
         } catch (BadRequestException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -72,9 +89,9 @@ public class PostController {
     @DeleteMapping(path = "/delete")
     public ResponseEntity<String> deletePost(@RequestParam String postIdStr, HttpSession session) {
         try {
-            long postId;
             Long actionUserId = (Long) session.getAttribute("userId");
 
+            long postId;
             try {
                 postId = Long.parseLong(postIdStr);
             } catch (NumberFormatException e) {
@@ -86,6 +103,12 @@ public class PostController {
             }
 
             postService.deletePost(actionUserId, postId);
+
+            try {
+                userService.updateDateLastActive(actionUserId);
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+            }
 
             return new ResponseEntity<>("Post deleted", HttpStatus.OK);
         } catch (BadRequestException e) {
@@ -100,8 +123,11 @@ public class PostController {
     @GetMapping(path = "/getByFilter")
     public ResponseEntity<String> getPostsOnUserPageByFilter(@RequestParam String userIdStr,
                                                              @ModelAttribute PostFilter postFilter,
-                                                             Model model) {
+                                                             Model model,
+                                                             HttpSession session) {
         try {
+            Long actionUserId = (Long) session.getAttribute("userId");
+
             long userId;
 
             try {
@@ -111,6 +137,14 @@ public class PostController {
             }
 
             List<Post> posts = postService.getPostsOnUserPageByFilter(userId, postFilter);
+
+            if (actionUserId != null) {
+                try {
+                    userService.updateDateLastActive(actionUserId);
+                } catch (Exception e) {
+                    System.err.println(e.getMessage());
+                }
+            }
 
             model.addAttribute("posts", posts);
             return new ResponseEntity<>("Posts found", HttpStatus.OK);

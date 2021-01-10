@@ -45,11 +45,8 @@ public class RelationshipServiceImpl implements RelationshipService {
 
         User userFrom = userService.findById(userFromId);
         User userTo = userService.findById(userToId);
-        Relationship relationship = relationshipDao.save(new Relationship(userFrom, userTo));
 
-        userService.updateDateLastActive(userFromId);
-
-        return relationship;
+        return relationshipDao.save(new Relationship(userFrom, userTo));
     }
 
     @Override
@@ -60,11 +57,8 @@ public class RelationshipServiceImpl implements RelationshipService {
 
         User userFrom = userService.findById(userFromId);
         User userTo = userService.findById(userToId);
-        Relationship relationship = relationshipDao.update(new Relationship(userFrom, userTo, status));
 
-        userService.updateDateLastActive(userFromId);
-
-        return relationship;
+        return relationshipDao.update(new Relationship(userFrom, userTo, status));
     }
 
     @Override
@@ -75,8 +69,6 @@ public class RelationshipServiceImpl implements RelationshipService {
         if (relationships.isEmpty()) {
             throw new NotFoundException("There are no requests");
         }
-
-        userService.updateDateLastActive(userId);
 
         return relationships;
     }
@@ -89,8 +81,6 @@ public class RelationshipServiceImpl implements RelationshipService {
         if (relationships.isEmpty()) {
             throw new NotFoundException("There are no requests");
         }
-
-        userService.updateDateLastActive(userId);
 
         return relationships;
     }

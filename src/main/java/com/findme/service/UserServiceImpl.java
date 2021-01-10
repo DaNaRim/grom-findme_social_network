@@ -48,8 +48,6 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException("Wrong mail or password");
         }
 
-        updateDateLastActive(user.getId());
-
         return user;
     }
 

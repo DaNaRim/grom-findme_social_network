@@ -60,6 +60,12 @@ public class UserController {
                     ourRelationship = relationshipService.getOurRelationshipToUser(
                             (long) session.getAttribute("userId"), userPageId);
                 }
+
+                try {
+                    userService.updateDateLastActive(actionUserId);
+                } catch (Exception e) {
+                    System.err.println(e.getMessage());
+                }
             }
 
             model.addAttribute("user", user);
@@ -87,10 +93,11 @@ public class UserController {
 
     @PostMapping(path = "/registration")
     public @ResponseBody
-    ResponseEntity<String> registerUser(@ModelAttribute User user) {
+    ResponseEntity<String> registerUser(@ModelAttribute User user, Model model) {
         try {
-            userService.registerUser(user);
+            User newUser = userService.registerUser(user);
 
+            model.addAttribute("user", newUser);
             return new ResponseEntity<>("Registration success", HttpStatus.CREATED);
         } catch (BadRequestException e) {
 
@@ -120,6 +127,12 @@ public class UserController {
 
             session.setAttribute("userId", user.getId());
 
+            try {
+                userService.updateDateLastActive(user.getId());
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+            }
+
             return new ResponseEntity<>("Login success", HttpStatus.OK);
         } catch (BadRequestException e) {
 
@@ -134,11 +147,17 @@ public class UserController {
     public @ResponseBody
     ResponseEntity<String> logout(HttpSession session) {
         try {
-            if (session.getAttribute("userId") == null) {
+            Long actionUserId = (Long) session.getAttribute("userId");
+
+            if (actionUserId == null) {
                 throw new UnauthorizedException("You`re not log in");
             }
 
-            userService.updateDateLastActive((long) session.getAttribute("userId"));
+            try {
+                userService.updateDateLastActive(actionUserId);
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+            }
 
             session.removeAttribute("userId");
 
