@@ -6,6 +6,7 @@ import org.hibernate.HibernateException;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NoResultException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -32,10 +33,11 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
     @Override
     public List<Post> findByUserPagePosted(long userId) throws InternalServerException {
         try {
-            return em.createNativeQuery(FIND_BY_USER_PAGE_POSTED_QUERY)
+            List<Post> posts = em.createNativeQuery(FIND_BY_USER_PAGE_POSTED_QUERY)
                     .setParameter("userId", userId)
                     .getResultList();
 
+            return posts == null ? new ArrayList<>() : posts;
         } catch (HibernateException e) {
             throw new InternalServerException("PostDaoImpl.findByUserPagePosted failed: " + e.getMessage());
         }

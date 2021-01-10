@@ -54,7 +54,7 @@ public class PostServiceImpl implements PostService {
 
         List<Post> posts = postDao.findByUserPagePosted(userId);
 
-        if (posts == null) {
+        if (posts.isEmpty()) {
             throw new NotFoundException("There are no posts on this page");
         }
 
