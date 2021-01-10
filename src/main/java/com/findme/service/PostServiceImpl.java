@@ -8,6 +8,7 @@ import com.findme.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class PostServiceImpl implements PostService {
 
@@ -58,6 +59,8 @@ public class PostServiceImpl implements PostService {
 
     private void validatePostFields(Post post) throws BadRequestException, InternalServerException {
 
+        Pattern urlPattern = Pattern.compile("^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?$");
+
         if (post.getMessage() == null || post.getUserPagePosted() == null) {
             throw new BadRequestException("Message and userPagePosted are required fields");
 
@@ -65,10 +68,9 @@ public class PostServiceImpl implements PostService {
             throw new BadRequestException("Message length must be < 200");
 
         } else if (post.getTaggedLocation() != null && post.getTaggedLocation().length() > 128) {
-            throw new BadRequestException("TaggedLocation length must be < 200");
+            throw new BadRequestException("TaggedLocation length must be < 128");
 
         } else if (!userService.isUserExists(post.getUserPagePosted().getId())) {
-
             throw new BadRequestException("userPagePosted id filed incorrect");
 
         } else if (post.getTaggedUsers() != null) {
@@ -78,6 +80,8 @@ public class PostServiceImpl implements PostService {
                     throw new BadRequestException("Tagged users ids filed incorrect");
                 }
             }
+        } else if (urlPattern.matcher(post.getMessage()).find()) {
+            throw new BadRequestException("Message can`t contain url");
         }
     }
 
