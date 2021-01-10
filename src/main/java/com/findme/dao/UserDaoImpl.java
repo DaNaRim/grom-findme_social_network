@@ -17,6 +17,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
 
     private static final String IS_EXISTS_QUERY = "SELECT EXISTS(SELECT 1 FROM USERS WHERE ID = :id)";
     private static final String FIND_BY_MAIL_QUERY = "SELECT * FROM USERS WHERE MAIL = :mail";
+
     private static final String ARE_THE_PHONE_AND_MAIL_BUSY_QUERY = "SELECT EXISTS(SELECT 1 FROM USERS WHERE PHONE = :phone OR MAIL = :mail)";
 
     @Override
@@ -63,6 +64,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
             throw new InternalServerException("UserDaoImpl.updateDateLastActive failed: " + e.getMessage());
         }
     }
+
 
     @Override
     public boolean areThePhoneAndMailBusy(String phone, String mail) throws InternalServerException {

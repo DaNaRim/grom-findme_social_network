@@ -4,7 +4,6 @@ import com.findme.exception.InternalServerException;
 import com.findme.model.Post;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -25,7 +24,6 @@ public interface PostDao {
 
     List<Post> findByUserPagePostedOnlyFriends(long userId) throws InternalServerException;
 
-    Date findDatePosted(long postId) throws InternalServerException;
 
     Long findUserPostedId(long postId) throws InternalServerException;
 

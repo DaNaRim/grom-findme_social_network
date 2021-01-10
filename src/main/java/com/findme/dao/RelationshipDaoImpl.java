@@ -18,14 +18,16 @@ import static com.findme.model.RelationshipStatus.*;
 public class RelationshipDaoImpl extends Dao<Relationship> implements RelationshipDao {
 
     private static final String FIND_BY_USERS_QUERY = "SELECT * FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId OR USER_FROM = :userToId AND USER_TO = :userFromId";
-    private static final String FIND_ID_BY_USERS_QUERY = "SELECT ID FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId OR USER_FROM = :userToId AND USER_TO = :userFromId";
     private static final String FIND_STATUS_BY_USERS_QUERY = "SELECT STATUS FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId OR USER_FROM = :userToId AND USER_TO = :userFromId";
-    private static final String FIND_ACTION_USER_ID_BY_USERS_QUERY = "SELECT ACTION_USER_ID FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId OR USER_FROM = :userToId AND USER_TO = :userFromId";
-    private static final String FIND_DATE_MODIFY_BY_USERS_QUERY = "SELECT DATE_MODIFY FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId OR USER_FROM = :userToId AND USER_TO = :userFromId";
     private static final String GET_INCOME_REQUESTS_QUERY = "SELECT * FROM RELATIONSHIP WHERE STATUS = 'REQUESTED' AND (USER_FROM = :userId OR USER_TO = :userId) AND ACTION_USER_ID != :userId ORDER BY DATE_MODIFY";
     private static final String GET_OUTCOME_REQUESTS_QUERY = "SELECT * FROM RELATIONSHIP WHERE STATUS = 'REQUESTED' AND ACTION_USER_ID = :userId ORDER BY DATE_MODIFY";
+
+    private static final String FIND_ACTION_USER_ID_BY_USERS_QUERY = "SELECT ACTION_USER_ID FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId OR USER_FROM = :userToId AND USER_TO = :userFromId";
+    private static final String FIND_DATE_MODIFY_BY_USERS_QUERY = "SELECT DATE_MODIFY FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId OR USER_FROM = :userToId AND USER_TO = :userFromId";
     private static final String COUNT_OUTCOME_REQUESTS_QUERY = "SELECT COUNT(*) FROM RELATIONSHIP WHERE STATUS = 'REQUESTED' AND ACTION_USER_ID = :userId";
     private static final String COUNT_FRIENDS_QUERY = "SELECT COUNT(*) FROM RELATIONSHIP WHERE STATUS = 'FRIENDS' AND (USER_FROM = :userId OR USER_TO = :userId)";
+
+    private static final String FIND_ID_BY_USERS_QUERY = "SELECT ID FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId OR USER_FROM = :userToId AND USER_TO = :userFromId";
 
     public RelationshipDaoImpl() {
         super(Relationship.class);
@@ -100,6 +102,33 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     }
 
     @Override
+    public List<Relationship> getIncomeRequests(long userId) throws InternalServerException {
+        try {
+            List<Relationship> incomeRequests = em.createNativeQuery(GET_INCOME_REQUESTS_QUERY)
+                    .setParameter("userId", userId)
+                    .getResultList();
+
+            return incomeRequests == null ? new ArrayList<>() : incomeRequests;
+        } catch (HibernateException e) {
+            throw new InternalServerException("RelationshipDaoImpl.getIncomeRequests failed: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<Relationship> getOutcomeRequests(long userId) throws InternalServerException {
+        try {
+            List<Relationship> outcomeRequests = em.createNativeQuery(GET_OUTCOME_REQUESTS_QUERY)
+                    .setParameter("userId", userId)
+                    .getResultList();
+
+            return outcomeRequests == null ? new ArrayList<>() : outcomeRequests;
+        } catch (HibernateException e) {
+            throw new InternalServerException("RelationshipDaoImpl.getOutcomeRequests failed: " + e.getMessage());
+        }
+    }
+
+
+    @Override
     public Long findActionUserId(long userFromId, long userToId) throws InternalServerException {
         try {
             Integer actionUserId = (Integer) em.createNativeQuery(FIND_ACTION_USER_ID_BY_USERS_QUERY)
@@ -127,32 +156,6 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
             return null;
         } catch (HibernateException e) {
             throw new InternalServerException("RelationshipDaoImpl.findDateModify failed: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public List<Relationship> getIncomeRequests(long userId) throws InternalServerException {
-        try {
-            List<Relationship> incomeRequests = em.createNativeQuery(GET_INCOME_REQUESTS_QUERY)
-                    .setParameter("userId", userId)
-                    .getResultList();
-
-            return incomeRequests == null ? new ArrayList<>() : incomeRequests;
-        } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.getIncomeRequests failed: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public List<Relationship> getOutcomeRequests(long userId) throws InternalServerException {
-        try {
-            List<Relationship> outcomeRequests = em.createNativeQuery(GET_OUTCOME_REQUESTS_QUERY)
-                    .setParameter("userId", userId)
-                    .getResultList();
-
-            return outcomeRequests == null ? new ArrayList<>() : outcomeRequests;
-        } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.getOutcomeRequests failed: " + e.getMessage());
         }
     }
 
