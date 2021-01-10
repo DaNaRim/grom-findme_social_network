@@ -1,8 +1,10 @@
 package com.findme.controller;
 
 import com.findme.exception.BadRequestException;
+import com.findme.exception.NotFoundException;
 import com.findme.exception.UnauthorizedException;
 import com.findme.model.Post;
+import com.findme.model.PostFilter;
 import com.findme.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -95,8 +97,10 @@ public class PostController {
         }
     }
 
-    @GetMapping(path = "/getByPage")
-    public ResponseEntity<String> getPostsOnUserPage(@RequestParam String userIdStr, Model model) {
+    @GetMapping(path = "/getByFilter")
+    public ResponseEntity<String> getPostsOnUserPageByFilter(@RequestParam String userIdStr,
+                                                             @ModelAttribute PostFilter postFilter,
+                                                             Model model) {
         try {
             long userId;
 
@@ -106,13 +110,14 @@ public class PostController {
                 throw new BadRequestException("Fields filed incorrect");
             }
 
-            List<Post> posts = postService.getPostsOnUserPage(userId);
+            List<Post> posts = postService.getPostsOnUserPageByFilter(userId, postFilter);
 
             model.addAttribute("posts", posts);
-
-            return new ResponseEntity<>("Post created", HttpStatus.OK);
+            return new ResponseEntity<>("Posts found", HttpStatus.OK);
         } catch (BadRequestException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

@@ -2,7 +2,9 @@ package com.findme.service;
 
 import com.findme.exception.BadRequestException;
 import com.findme.exception.InternalServerException;
+import com.findme.exception.NotFoundException;
 import com.findme.model.Post;
+import com.findme.model.PostFilter;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,4 +19,7 @@ public interface PostService {
     void deletePost(long actionUserId, long id) throws BadRequestException, InternalServerException;
 
     List<Post> getPostsOnUserPage(long userId) throws InternalServerException;
+
+    List<Post> getPostsOnUserPageByFilter(long userPageId, PostFilter postFilter)
+            throws InternalServerException, NotFoundException;
 }

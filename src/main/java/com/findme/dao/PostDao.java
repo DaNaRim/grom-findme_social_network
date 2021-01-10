@@ -20,6 +20,11 @@ public interface PostDao {
 
     List<Post> findByUserPagePosted(long userId) throws InternalServerException;
 
+    List<Post> findByUserPostedAndUserPagePosted(long userPostedId, long userPagePostedId)
+            throws InternalServerException;
+
+    List<Post> findByUserPagePostedOnlyFriends(long userId) throws InternalServerException;
+
     Date findDatePosted(long postId) throws InternalServerException;
 
     Long findUserPostedId(long postId) throws InternalServerException;

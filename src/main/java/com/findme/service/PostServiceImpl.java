@@ -3,7 +3,9 @@ package com.findme.service;
 import com.findme.dao.PostDao;
 import com.findme.exception.BadRequestException;
 import com.findme.exception.InternalServerException;
+import com.findme.exception.NotFoundException;
 import com.findme.model.Post;
+import com.findme.model.PostFilter;
 import com.findme.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -55,6 +57,32 @@ public class PostServiceImpl implements PostService {
     public List<Post> getPostsOnUserPage(long userId) throws InternalServerException {
 
         return postDao.findByUserPagePosted(userId);
+    }
+
+    @Override
+    public List<Post> getPostsOnUserPageByFilter(long userPageId, PostFilter postFilter)
+            throws NotFoundException, InternalServerException {
+
+        List<Post> posts;
+
+        if (postFilter.isOnlyUserPosts()) {
+            posts = postDao.findByUserPostedAndUserPagePosted(userPageId, userPageId);
+
+        } else if (postFilter.isOnlyFriendsPosts()) {
+            posts = postDao.findByUserPagePostedOnlyFriends(userPageId);
+
+        } else if (postFilter.getUserId() != null) {
+            posts = postDao.findByUserPostedAndUserPagePosted(postFilter.getUserId(), userPageId);
+
+        } else {
+            posts = postDao.findByUserPagePosted(userPageId);
+        }
+
+        if (posts == null) {
+            throw new NotFoundException("Posts not found by this filter params");
+        }
+
+        return posts;
     }
 
     private void validatePostFields(Post post) throws BadRequestException, InternalServerException {
