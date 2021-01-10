@@ -1,7 +1,6 @@
 package com.findme.controller;
 
 import com.findme.exception.BadRequestException;
-import com.findme.exception.NotFoundException;
 import com.findme.exception.UnauthorizedException;
 import com.findme.model.Post;
 import com.findme.service.PostService;
@@ -114,8 +113,6 @@ public class PostController {
             return new ResponseEntity<>("Post created", HttpStatus.OK);
         } catch (BadRequestException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

@@ -3,7 +3,10 @@ package com.findme.controller;
 import com.findme.exception.BadRequestException;
 import com.findme.exception.NotFoundException;
 import com.findme.exception.UnauthorizedException;
+import com.findme.model.Post;
+import com.findme.model.Relationship;
 import com.findme.model.User;
+import com.findme.service.PostService;
 import com.findme.service.RelationshipService;
 import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @Controller
 @RequestMapping(path = "/user")
@@ -21,33 +25,47 @@ public class UserController {
 
     private final UserService userService;
     private final RelationshipService relationshipService;
+    private final PostService postService;
 
     @Autowired
-    public UserController(UserService userService, RelationshipService relationshipService) {
+    public UserController(UserService userService, RelationshipService relationshipService, PostService postService) {
         this.userService = userService;
         this.relationshipService = relationshipService;
+        this.postService = postService;
     }
 
-    @GetMapping(path = "/{userId}")
-    public String profile(@PathVariable String userId, Model model, HttpSession session) {
+    @GetMapping(path = "/{userPageIdStr}")
+    public String profile(@PathVariable String userPageIdStr, Model model, HttpSession session) {
         try {
-            long id;
+            Long actionUserId = (Long) session.getAttribute("userId");
+            boolean isMyPage = false;
+
+            long userPageId;
             try {
-                id = Long.parseLong(userId);
+                userPageId = Long.parseLong(userPageIdStr);
 
             } catch (NumberFormatException e) {
                 throw new BadRequestException("Id`s filed incorrect");
             }
 
-            User user = userService.findById(id);
+            User user = userService.findById(userPageId);
+            List<Post> postsOnPage = postService.getPostsOnUserPage(userPageId);
 
-            if (session.getAttribute("userId") != null) {
+            Relationship ourRelationship = null;
+            if (actionUserId != null) {
 
-                user.setOurRelationship(relationshipService.getOurRelationshipToUser(
-                        (long) session.getAttribute("userId"), id));
+                if (actionUserId == userPageId) {
+                    isMyPage = true;
+                } else {
+                    ourRelationship = relationshipService.getOurRelationshipToUser(
+                            (long) session.getAttribute("userId"), userPageId);
+                }
             }
 
             model.addAttribute("user", user);
+            model.addAttribute("isMyPage", isMyPage);
+            model.addAttribute("ourRelationship", ourRelationship);
+            model.addAttribute("postsOnPage", postsOnPage);
             return "profile";
         } catch (NotFoundException e) {
             model.addAttribute("error", e.getMessage());

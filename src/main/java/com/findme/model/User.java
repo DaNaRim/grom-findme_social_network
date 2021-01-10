@@ -24,7 +24,6 @@ public class User {
 
     private Date dateRegistered;
     private Date dateLastActive;
-    private Relationship ourRelationship;
 
     private List<Message> messagesSent;
     private List<Message> messagesReceived;
@@ -155,15 +154,6 @@ public class User {
 
     public void setDateLastActive(Date dateLastActive) {
         this.dateLastActive = new Date(dateLastActive.getTime());
-    }
-
-    @Transient
-    public Relationship getOurRelationship() {
-        return ourRelationship;
-    }
-
-    public void setOurRelationship(Relationship ourRelationship) {
-        this.ourRelationship = ourRelationship;
     }
 
     @OneToMany(mappedBy = "userFrom")

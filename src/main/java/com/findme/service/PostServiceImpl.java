@@ -3,7 +3,6 @@ package com.findme.service;
 import com.findme.dao.PostDao;
 import com.findme.exception.BadRequestException;
 import com.findme.exception.InternalServerException;
-import com.findme.exception.NotFoundException;
 import com.findme.model.Post;
 import com.findme.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +25,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post createPost(long actionUserId, Post post) throws BadRequestException, InternalServerException {
+
         validateCreatePost(actionUserId, post);
 
         User userPosted = new User();
@@ -37,6 +37,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post updatePost(long actionUserId, Post post) throws BadRequestException, InternalServerException {
+
         validateUpdatePost(actionUserId, post);
 
         return postDao.update(post);
@@ -44,21 +45,16 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void deletePost(long actionUserId, long id) throws BadRequestException, InternalServerException {
+
         validateDeletePost(actionUserId, id);
 
         postDao.delete(postDao.findById(id));
     }
 
     @Override
-    public List<Post> getPostsOnUserPage(long userId) throws NotFoundException, InternalServerException {
+    public List<Post> getPostsOnUserPage(long userId) throws InternalServerException {
 
-        List<Post> posts = postDao.findByUserPagePosted(userId);
-
-        if (posts.isEmpty()) {
-            throw new NotFoundException("There are no posts on this page");
-        }
-
-        return posts;
+        return postDao.findByUserPagePosted(userId);
     }
 
     private void validatePostFields(Post post) throws BadRequestException, InternalServerException {
