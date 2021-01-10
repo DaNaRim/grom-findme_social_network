@@ -98,13 +98,13 @@ public class PostServiceImpl implements PostService {
         } else if (post.getTaggedLocation() != null && post.getTaggedLocation().length() > 128) {
             throw new BadRequestException("TaggedLocation length must be < 128");
 
-        } else if (!userService.isUserExists(post.getUserPagePosted().getId())) {
+        } else if (userService.isUserMissing(post.getUserPagePosted().getId())) {
             throw new BadRequestException("userPagePosted id filed incorrect");
 
         } else if (post.getTaggedUsers() != null) {
 
             for (User user : post.getTaggedUsers()) {
-                if (!userService.isUserExists(user.getId())) {
+                if (userService.isUserMissing(user.getId())) {
                     throw new BadRequestException("Tagged users ids filed incorrect");
                 }
             }

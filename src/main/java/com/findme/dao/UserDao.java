@@ -13,7 +13,7 @@ public interface UserDao {
 
     User update(User user) throws InternalServerException;
 
-    boolean isExists(long id) throws InternalServerException;
+    boolean isUserMissing(long id) throws InternalServerException;
 
     User findByMail(String mail) throws InternalServerException;
 

@@ -28,8 +28,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean isUserExists(long id) throws InternalServerException {
-        return userdao.isExists(id);
+    public boolean isUserMissing(long id) throws InternalServerException {
+        return userdao.isUserMissing(id);
     }
 
     @Override

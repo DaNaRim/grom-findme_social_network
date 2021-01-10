@@ -99,7 +99,7 @@ public class RelationshipServiceImpl implements RelationshipService {
         if (userFromId == userToId) {
             throw new BadRequestException("You can`t change relationship to yourself");
 
-        } else if (!userService.isUserExists(userToId)) {
+        } else if (userService.isUserMissing(userToId)) {
             throw new NotFoundException("User id filed incorrect");
         }
     }

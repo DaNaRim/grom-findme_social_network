@@ -28,14 +28,14 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
     }
 
     @Override
-    public boolean isExists(long id) throws InternalServerException {
+    public boolean isUserMissing(long id) throws InternalServerException {
         try {
-            return (boolean) em.createNativeQuery(IS_EXISTS_QUERY)
+            return !(boolean) em.createNativeQuery(IS_EXISTS_QUERY)
                     .setParameter("id", id)
                     .getSingleResult();
 
         } catch (HibernateException e) {
-            throw new InternalServerException("UserDaoImpl.isExists failed: " + e.getMessage());
+            throw new InternalServerException("UserDaoImpl.isUserMissing failed: " + e.getMessage());
         }
     }
 
