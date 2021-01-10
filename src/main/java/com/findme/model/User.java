@@ -14,22 +14,20 @@ public class User {
     private String phone;
     private String mail;
     private String password;
-    //TODO from existed date
-    private String country;
-    private String city;
 
     private Integer age;
+    private String country; //TODO from existed date
+    private String city;
+    private String school;
+    private String university;
+    private String religion;
+
     private Date dateRegistered;
     private Date dateLastActive;
     private Relationship ourRelationship;
-    private String religion;
-    //TODO from existed date
-    private String school;
-    private String university;
 
     private List<Message> messagesSent;
     private List<Message> messagesReceived;
-
 //    private String[] interests;
 
     @Id
@@ -42,7 +40,7 @@ public class User {
         this.id = id;
     }
 
-    @Column(name = "FIRST_NAME", nullable = false)
+    @Column(name = "FIRST_NAME", nullable = false, length = 30)
     public String getFirstName() {
         return firstName;
     }
@@ -51,7 +49,7 @@ public class User {
         this.firstName = firstName;
     }
 
-    @Column(name = "LAST_NAME", nullable = false)
+    @Column(name = "LAST_NAME", nullable = false, length = 30)
     public String getLastName() {
         return lastName;
     }
@@ -60,7 +58,7 @@ public class User {
         this.lastName = lastName;
     }
 
-    @Column(name = "PHONE", nullable = false)
+    @Column(name = "PHONE", unique = true, nullable = false, length = 15)
     public String getPhone() {
         return phone;
     }
@@ -69,7 +67,7 @@ public class User {
         this.phone = phone;
     }
 
-    @Column(name = "MAIL", nullable = false)
+    @Column(name = "MAIL", unique = true, nullable = false)
     public String getMail() {
         return mail;
     }
@@ -87,7 +85,16 @@ public class User {
         this.password = password;
     }
 
-    @Column(name = "COUNTRY")
+    @Column(name = "AGE")
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    @Column(name = "COUNTRY", length = 30)
     public String getCountry() {
         return country;
     }
@@ -96,7 +103,7 @@ public class User {
         this.country = country;
     }
 
-    @Column(name = "CITY")
+    @Column(name = "CITY", length = 30)
     public String getCity() {
         return city;
     }
@@ -105,13 +112,31 @@ public class User {
         this.city = city;
     }
 
-    @Column(name = "AGE")
-    public Integer getAge() {
-        return age;
+    @Column(name = "SCHOOL", length = 30)
+    public String getSchool() {
+        return school;
     }
 
-    public void setAge(Integer age) {
-        this.age = age;
+    public void setSchool(String school) {
+        this.school = school;
+    }
+
+    @Column(name = "UNIVERSITY", length = 30)
+    public String getUniversity() {
+        return university;
+    }
+
+    public void setUniversity(String university) {
+        this.university = university;
+    }
+
+    @Column(name = "RELIGION", length = 30)
+    public String getReligion() {
+        return religion;
+    }
+
+    public void setReligion(String religion) {
+        this.religion = religion;
     }
 
     @Column(name = "DATE_REGISTERED", insertable = false)
@@ -139,33 +164,6 @@ public class User {
 
     public void setOurRelationship(Relationship ourRelationship) {
         this.ourRelationship = ourRelationship;
-    }
-
-    @Column(name = "RELIGION")
-    public String getReligion() {
-        return religion;
-    }
-
-    public void setReligion(String religion) {
-        this.religion = religion;
-    }
-
-    @Column(name = "SCHOOL")
-    public String getSchool() {
-        return school;
-    }
-
-    public void setSchool(String school) {
-        this.school = school;
-    }
-
-    @Column(name = "UNIVERSITY")
-    public String getUniversity() {
-        return university;
-    }
-
-    public void setUniversity(String university) {
-        this.university = university;
     }
 
     @OneToMany(mappedBy = "userFrom")

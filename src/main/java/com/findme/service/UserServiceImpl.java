@@ -63,29 +63,27 @@ public class UserServiceImpl implements UserService {
         if (user.getFirstName() == null || user.getLastName() == null
                 || user.getPhone() == null || user.getMail() == null
                 || user.getPassword() == null) {
+
             throw new BadRequestException("firstName, lastName, phone, mail and password are required fields");
-        }
-        if (user.getFirstName().length() > 30
+
+        } else if (user.getFirstName().length() > 30
                 || user.getLastName().length() > 30
-                || user.getPhone().length() > 30
-                || user.getMail().length() > 30
-                || user.getPassword().length() > 30
+                || user.getPhone().length() > 15
                 || user.getCountry() != null && user.getCountry().length() > 30
                 || user.getCity() != null && user.getCity().length() > 30
                 || user.getReligion() != null && user.getReligion().length() > 30
                 || user.getSchool() != null && user.getSchool().length() > 30
-                || user.getUniversity() != null && user.getUniversity().length() > 30
-        ) {
-            throw new BadRequestException("fields length must be <= 30");
-        }
-        if (user.getPassword().length() < 8) {
-            throw new BadRequestException("password length must be > 8");
-        }
-        if (user.getAge() != null && (user.getAge() <= 0 || user.getAge() > 150)) {
-            throw new BadRequestException("age filed incorrect");
-        }
+                || user.getUniversity() != null && user.getUniversity().length() > 30) {
 
-        if (userdao.areThePhoneAndMailBusy(user.getPhone(), user.getMail())) {
+            throw new BadRequestException("fields length too long");
+
+        } else if (user.getPassword().length() < 8) {
+            throw new BadRequestException("password length must be > 8");
+
+        } else if (user.getAge() != null && user.getAge() <= 0) {
+            throw new BadRequestException("age filed incorrect");
+
+        } else if (userdao.areThePhoneAndMailBusy(user.getPhone(), user.getMail())) {
             throw new BadRequestException("mail or phone is busy");
         }
     }
