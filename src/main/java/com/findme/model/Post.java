@@ -8,21 +8,41 @@ import java.util.List;
 @Table(name = "POST")
 public class Post {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "MESSAGE", nullable = false)
     private String message;
+
+    @Column(name = "TAGGED_LOCATION")
     private String taggedLocation;
+
+    @ManyToMany
+    @JoinTable(name = "POST_TAGGED_USERS",
+            joinColumns = {@JoinColumn(name = "POST_ID", nullable = false, updatable = false)},
+            inverseJoinColumns = {@JoinColumn(name = "TAGGED_USER_ID", nullable = false, updatable = false)})
     private List<User> taggedUsers;
-    private User userPosted;
+
+    @ManyToOne
+    @JoinColumn(name = "USER_PAGE_POSTED", nullable = false, updatable = false)
     private User userPagePosted;
 
+    //system fields
+
+    @ManyToOne
+    @JoinColumn(name = "USER_POSTED", nullable = false, updatable = false)
+    private User userPosted;
+
+    @Column(name = "DATE_POSTED", insertable = false)
     private Date datePosted;
+
+    @Column(name = "DATE_UPDATED")
     private Date dateUpdated;
 
     //TODO levels permissions
     //TODO comments
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }
@@ -31,7 +51,6 @@ public class Post {
         this.id = id;
     }
 
-    @Column(name = "MESSAGE", nullable = false)
     public String getMessage() {
         return message;
     }
@@ -40,62 +59,28 @@ public class Post {
         this.message = message;
     }
 
-    @Column(name = "TAGGED_LOCATION")
     public String getTaggedLocation() {
         return taggedLocation;
     }
 
-    public void setTaggedLocation(String taggedLocation) {
-        this.taggedLocation = taggedLocation;
-    }
-
-    @ManyToMany
-    @JoinTable(name = "POST_TAGGED_USERS",
-            joinColumns = {@JoinColumn(name = "POST_ID", nullable = false, updatable = false)},
-            inverseJoinColumns = {@JoinColumn(name = "TAGGED_USER_ID", nullable = false, updatable = false)})
     public List<User> getTaggedUsers() {
         return taggedUsers;
     }
 
-    public void setTaggedUsers(List<User> taggedUsers) {
-        this.taggedUsers = taggedUsers;
+    public User getUserPagePosted() {
+        return userPagePosted;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "USER_POSTED", nullable = false, updatable = false)
+    public void setDateUpdated(Date dateUpdated) {
+        this.dateUpdated = new Date(dateUpdated.getTime());
+    }
+
+
     public User getUserPosted() {
         return userPosted;
     }
 
     public void setUserPosted(User userPosted) {
         this.userPosted = userPosted;
-    }
-
-    @ManyToOne
-    @JoinColumn(name = "USER_PAGE_POSTED", nullable = false, updatable = false)
-    public User getUserPagePosted() {
-        return userPagePosted;
-    }
-
-    public void setUserPagePosted(User userPagePosted) {
-        this.userPagePosted = userPagePosted;
-    }
-
-    @Column(name = "DATE_POSTED", insertable = false)
-    public Date getDatePosted() {
-        return new Date(datePosted.getTime());
-    }
-
-    public void setDatePosted(Date datePosted) {
-        this.datePosted = new Date(datePosted.getTime());
-    }
-
-    @Column(name = "DATE_UPDATED")
-    public Date getDateUpdated() {
-        return new Date(dateUpdated.getTime());
-    }
-
-    public void setDateUpdated(Date dateUpdated) {
-        this.dateUpdated = new Date(dateUpdated.getTime());
     }
 }

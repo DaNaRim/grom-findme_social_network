@@ -7,15 +7,27 @@ import java.util.Date;
 @Table(name = "MESSAGE")
 public class Message {
 
-    private Long id;
-    private String text;
-    private Date dateSent;
-    private Date dateRead;
-    private User userFrom;
-    private User userTo;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "TEXT")
+    private String text;
+
+    @Column(name = "DATE_SENT")
+    private Date dateSent;
+
+    @Column(name = "DATE_READ")
+    private Date dateRead;
+
+    @ManyToOne
+    @JoinColumn(name = "USER_FROM", nullable = false, updatable = false)
+    private User userFrom;
+
+    @ManyToOne
+    @JoinColumn(name = "USER_TO", nullable = false, updatable = false)
+    private User userTo;
+
     public Long getId() {
         return id;
     }
@@ -24,7 +36,6 @@ public class Message {
         this.id = id;
     }
 
-    @Column(name = "TEXT")
     public String getText() {
         return text;
     }
@@ -33,7 +44,6 @@ public class Message {
         this.text = text;
     }
 
-    @Column(name = "DATE_SENT")
     public Date getDateSent() {
         return new Date(dateSent.getTime());
     }
@@ -42,7 +52,6 @@ public class Message {
         this.dateSent = new Date(dateSent.getTime());
     }
 
-    @Column(name = "DATE_READ")
     public Date getDateRead() {
         return new Date(dateRead.getTime());
     }
@@ -51,8 +60,6 @@ public class Message {
         this.dateRead = new Date(dateRead.getTime());
     }
 
-    @ManyToOne
-    @JoinColumn(name = "USER_FROM", nullable = false, updatable = false)
     public User getUserFrom() {
         return userFrom;
     }
@@ -61,8 +68,6 @@ public class Message {
         this.userFrom = userFrom;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "USER_TO", nullable = false, updatable = false)
     public User getUserTo() {
         return userTo;
     }

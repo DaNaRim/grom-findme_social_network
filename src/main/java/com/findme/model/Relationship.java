@@ -7,11 +7,28 @@ import java.util.Date;
 @Table(name = "RELATIONSHIP")
 public class Relationship {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "USER_FROM", nullable = false, updatable = false)
     private User userFrom;
+
+    @ManyToOne
+    @JoinColumn(name = "USER_TO", nullable = false, updatable = false)
     private User userTo;
+
+    @Column(name = "STATUS", nullable = false)
+    @Enumerated(EnumType.STRING)
     private RelationshipStatus status;
+
+    //system fields
+
+    @Column(name = "ACTION_USER_ID", nullable = false)
     private Long actionUserId;
+
+    @Column(name = "DATE_MODIFY", nullable = false)
     private Date dateModify;
 
     public Relationship() {
@@ -28,8 +45,6 @@ public class Relationship {
         this.status = status;
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }
@@ -38,28 +53,14 @@ public class Relationship {
         this.id = id;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "USER_FROM", nullable = false, updatable = false)
     public User getUserFrom() {
         return userFrom;
     }
 
-    public void setUserFrom(User userFrom) {
-        this.userFrom = userFrom;
-    }
-
-    @ManyToOne
-    @JoinColumn(name = "USER_TO", nullable = false, updatable = false)
     public User getUserTo() {
         return userTo;
     }
 
-    public void setUserTo(User userTo) {
-        this.userTo = userTo;
-    }
-
-    @Column(name = "STATUS", nullable = false)
-    @Enumerated(EnumType.STRING)
     public RelationshipStatus getStatus() {
         return status;
     }
@@ -68,18 +69,9 @@ public class Relationship {
         this.status = status;
     }
 
-    @Column(name = "ACTION_USER_ID", nullable = false)
-    public Long getActionUserId() {
-        return actionUserId;
-    }
 
     public void setActionUserId(Long actionUserId) {
         this.actionUserId = actionUserId;
-    }
-
-    @Column(name = "DATE_MODIFY", nullable = false)
-    public Date getDateModify() {
-        return new Date(dateModify.getTime());
     }
 
     public void setDateModify(Date dateModify) {
