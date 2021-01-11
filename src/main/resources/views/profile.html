@@ -28,6 +28,9 @@
         <p th:text="${user.university}"></p>
     </div>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.serializeJSON/3.1.1/jquery.serializejson.min.js"></script>
 </body>
 
 <style>
@@ -147,10 +150,10 @@
         e.preventDefault();
         $.ajax({
             type: "POST",
+            contentType: "application/json",
             url: home + "post/create",
-            data: {
-                //post data
-            },
+            data: JSON.stringify($("#some-form").serializeJSON()),
+            dataType: 'json',
             success: function () {
                 alert("Success");
             },
@@ -164,10 +167,10 @@
         e.preventDefault();
         $.ajax({
             type: "PUT",
+            contentType: "application/json",
             url: home + "post/update",
-            data: {
-                //post data
-            },
+            data: JSON.stringify($("#some-form").serializeJSON()),
+            dataType: 'json',
             success: function () {
                 alert("Success");
             },
@@ -196,13 +199,11 @@
         e.preventDefault();
         $.ajax({
             type: "GET",
+            contentType: "application/json",
             url: home + "post/getByFilter",
             userIdStr: user.id,
-            data: {
-                onlyUserPosts: false,
-                onlyFriendsPosts: false, //get data
-                userId: null
-            },
+            data: JSON.stringify($("#some-form").serializeJSON()),
+            dataType: 'json',
             success: function () {
                 alert("Success");
             },

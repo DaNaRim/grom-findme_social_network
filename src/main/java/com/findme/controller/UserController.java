@@ -93,7 +93,7 @@ public class UserController {
 
     @PostMapping(path = "/registration")
     public @ResponseBody
-    ResponseEntity<String> registerUser(@ModelAttribute User user, Model model) {
+    ResponseEntity<String> registerUser(@RequestBody User user, Model model) {
         try {
             User newUser = userService.registerUser(user);
 

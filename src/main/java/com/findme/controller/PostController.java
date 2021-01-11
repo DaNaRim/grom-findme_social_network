@@ -31,7 +31,8 @@ public class PostController {
     }
 
     @PostMapping(path = "/create")
-    public ResponseEntity<String> createPost(@ModelAttribute Post post, Model model, HttpSession session) {
+    public @ResponseBody
+    ResponseEntity<String> createPost(@RequestBody Post post, Model model, HttpSession session) {
         try {
             Long actionUserId = (Long) session.getAttribute("userId");
 
@@ -60,7 +61,8 @@ public class PostController {
     }
 
     @PutMapping(path = "/update")
-    public ResponseEntity<String> updatePost(@ModelAttribute Post post, Model model, HttpSession session) {
+    public @ResponseBody
+    ResponseEntity<String> updatePost(@RequestBody Post post, Model model, HttpSession session) {
         try {
             Long actionUserId = (Long) session.getAttribute("userId");
 
@@ -89,7 +91,8 @@ public class PostController {
     }
 
     @DeleteMapping(path = "/delete")
-    public ResponseEntity<String> deletePost(@RequestParam String postIdStr, HttpSession session) {
+    public @ResponseBody
+    ResponseEntity<String> deletePost(@RequestBody String postIdStr, HttpSession session) {
         try {
             Long actionUserId = (Long) session.getAttribute("userId");
 
@@ -124,10 +127,11 @@ public class PostController {
     }
 
     @GetMapping(path = "/getByFilter")
-    public ResponseEntity<String> getPostsOnUserPageByFilter(@RequestParam String userIdStr,
-                                                             @ModelAttribute PostFilter postFilter,
-                                                             Model model,
-                                                             HttpSession session) {
+    public @ResponseBody
+    ResponseEntity<String> getPostsOnUserPageByFilter(@RequestParam String userIdStr,
+                                                      @RequestBody PostFilter postFilter,
+                                                      Model model,
+                                                      HttpSession session) {
         try {
             Long actionUserId = (Long) session.getAttribute("userId");
 

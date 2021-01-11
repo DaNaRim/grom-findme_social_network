@@ -9,16 +9,17 @@
 <h1>Registration</h1>
 
 <form id="registration-form">
-    <p>firstName <input name="firstName" required type="text"></p>
+    <p>firstName <input name="firstName" required type="text">
     <p>lastName <input name="lastName" required type="text"></p>
     <p>phone <input name="phone" required type="text"></p>
     <p>mail <input name="mail" required type="text"></p>
-    <p>passWord <input name="passWord" required type="password"></p>
+    <p>password <input name="password" required type="password"></p>
 
     <button type="submit">Register</button>
 </form>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.serializeJSON/3.1.1/jquery.serializejson.min.js"></script>
 </body>
 
 <script>
@@ -28,8 +29,10 @@
         e.preventDefault();
         $.ajax({
             type: "POST",
+            contentType: "application/json",
             url: home + "user/registration",
-            data: $('#registration-form').serialize(),
+            data: JSON.stringify($("#registration-form").serializeJSON()),
+            dataType: 'json',
             success: function () {
                 alert('Success');
             },
