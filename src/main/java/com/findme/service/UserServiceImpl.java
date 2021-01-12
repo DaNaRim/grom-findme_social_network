@@ -6,7 +6,9 @@ import com.findme.exception.InternalServerException;
 import com.findme.exception.NotFoundException;
 import com.findme.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 public class UserServiceImpl implements UserService {
 
     private final UserDao userdao;

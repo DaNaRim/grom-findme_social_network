@@ -9,11 +9,13 @@ import com.findme.model.RelationshipStatus;
 import com.findme.model.User;
 import com.findme.validator.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static com.findme.model.RelationshipStatus.*;
 
+@Transactional
 public class RelationshipServiceImpl implements RelationshipService {
 
     private final RelationshipDao relationshipDao;

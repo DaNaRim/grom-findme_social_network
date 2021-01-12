@@ -51,7 +51,7 @@ public class User {
 
     //system fields
 
-    @Column(name = "DATE_REGISTERED", insertable = false)
+    @Column(name = "DATE_REGISTERED", insertable = false, updatable = false)
     private Date dateRegistered;
 
     @Column(name = "DATE_LAST_ACTIVE", nullable = false)
@@ -66,6 +66,13 @@ public class User {
     private List<Message> messagesReceived;
 
 //    private String[] interests;
+
+    public User() {
+    }
+
+    public User(Long id) {
+        this.id = id;
+    }
 
     public Long getId() {
         return id;

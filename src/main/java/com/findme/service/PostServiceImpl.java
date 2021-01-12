@@ -8,10 +8,12 @@ import com.findme.model.Post;
 import com.findme.model.PostFilter;
 import com.findme.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.regex.Pattern;
 
+@Transactional
 public class PostServiceImpl implements PostService {
 
     private final PostDao postDao;
@@ -29,10 +31,6 @@ public class PostServiceImpl implements PostService {
     public Post createPost(long actionUserId, Post post) throws BadRequestException, InternalServerException {
 
         validateCreatePost(actionUserId, post);
-
-        User userPosted = new User();
-        userPosted.setId(actionUserId);
-        post.setUserPosted(userPosted);
 
         return postDao.save(post);
     }
@@ -78,7 +76,7 @@ public class PostServiceImpl implements PostService {
             posts = postDao.findByUserPagePosted(userPageId);
         }
 
-        if (posts == null) {
+        if (posts.isEmpty()) {
             throw new NotFoundException("Posts not found by this filter params");
         }
 
@@ -106,14 +104,23 @@ public class PostServiceImpl implements PostService {
             for (User user : post.getTaggedUsers()) {
                 if (userService.isUserMissing(user.getId())) {
                     throw new BadRequestException("Tagged users ids filed incorrect");
+
+                } else if (user.getId().equals(post.getUserPosted().getId())) {
+                    throw new BadRequestException("You can`t tag yourself");
                 }
             }
-        } else if (urlPattern.matcher(post.getMessage()).find()) {
-            throw new BadRequestException("Message can`t contain url");
+        } else { // checking for contains url
+            for (String str : post.getMessage().split(" ")) {
+                if (urlPattern.matcher(str).find()) {
+                    throw new BadRequestException("Message can`t contain url");
+                }
+            }
         }
     }
 
     private void validateCreatePost(long userPosted, Post post) throws BadRequestException, InternalServerException {
+
+        post.setUserPosted(new User(userPosted));
 
         validatePostFields(post);
 
@@ -127,6 +134,9 @@ public class PostServiceImpl implements PostService {
     }
 
     private void validateUpdatePost(long actionUserId, Post post) throws BadRequestException, InternalServerException {
+
+        Long userPosted = postDao.findUserPostedId(post.getId());
+        post.setUserPosted(new User(userPosted));
 
         validatePostFields(post);
 

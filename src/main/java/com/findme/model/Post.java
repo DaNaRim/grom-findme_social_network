@@ -34,10 +34,10 @@ public class Post {
     @JoinColumn(name = "USER_POSTED", nullable = false, updatable = false)
     private User userPosted;
 
-    @Column(name = "DATE_POSTED", insertable = false)
+    @Column(name = "DATE_POSTED", insertable = false, updatable = false)
     private Date datePosted;
 
-    @Column(name = "DATE_UPDATED")
+    @Column(name = "DATE_UPDATED", insertable = false)
     private Date dateUpdated;
 
     //TODO levels permissions

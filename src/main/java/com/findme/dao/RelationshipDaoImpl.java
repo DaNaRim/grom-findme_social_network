@@ -4,7 +4,6 @@ import com.findme.exception.InternalServerException;
 import com.findme.model.Relationship;
 import com.findme.model.RelationshipStatus;
 import org.hibernate.HibernateException;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NoResultException;
 import java.math.BigInteger;
@@ -14,7 +13,6 @@ import java.util.List;
 
 import static com.findme.model.RelationshipStatus.*;
 
-@Transactional(rollbackFor = {HibernateException.class, InternalServerException.class})
 public class RelationshipDaoImpl extends Dao<Relationship> implements RelationshipDao {
 
     private static final String FIND_BY_USERS_QUERY = "SELECT * FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId OR USER_FROM = :userToId AND USER_TO = :userFromId";

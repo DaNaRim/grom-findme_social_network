@@ -3,14 +3,12 @@ package com.findme.dao;
 import com.findme.exception.InternalServerException;
 import com.findme.model.Post;
 import org.hibernate.HibernateException;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NoResultException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Transactional(rollbackFor = {HibernateException.class, InternalServerException.class})
 public class PostDaoImpl extends Dao<Post> implements PostDao {
 
     private static final String FIND_BY_USER_PAGE_POSTED_QUERY = "SELECT * FROM POST WHERE USER_PAGE_POSTED = :userId ORDER BY DATE_POSTED";
