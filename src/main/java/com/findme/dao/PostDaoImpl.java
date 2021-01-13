@@ -11,13 +11,6 @@ import java.util.List;
 
 public class PostDaoImpl extends Dao<Post> implements PostDao {
 
-    private static final String FIND_BY_USER_PAGE_POSTED_QUERY = "SELECT * FROM POST WHERE USER_PAGE_POSTED = :userId ORDER BY DATE_POSTED";
-    private static final String FIND_BY_USER_POSTED_AND_USER_PAGE_POSTED_QUERY = "SELECT * FROM POST WHERE USER_POSTED = :userPostedId AND USER_PAGE_POSTED = :userPagePostedId ORDER BY DATE_POSTED";
-    private static final String FIND_BY_USER_PAGE_POSTED_ONLY_FRIENDS_QUERY = "SELECT * FROM POST WHERE USER_PAGE_POSTED = :userId AND USER_POSTED != :userId ORDER BY DATE_POSTED";
-
-    private static final String FIND_USER_POSTED_QUERY = "SELECT USER_POSTED FROM POST WHERE ID = :postId";
-    private static final String FIND_USER_PAGE_POSTED_QUERY = "SELECT USER_PAGE_POSTED FROM POST WHERE ID = :postId";
-
     public PostDaoImpl() {
         super(Post.class);
     }
@@ -33,8 +26,8 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
     @Override
     public List<Post> findByUserPagePosted(long userId) throws InternalServerException {
         try {
-            List<Post> posts = em.createNativeQuery(FIND_BY_USER_PAGE_POSTED_QUERY)
-                    .setParameter("userId", userId)
+            List<Post> posts = em.createNamedQuery(Post.QUERY_FIND_BY_USER_PAGE_POSTED)
+                    .setParameter(Post.ATTRIBUTE_USER_PAGE_POSTED_ID, userId)
                     .getResultList();
 
             return posts == null ? new ArrayList<>() : posts;
@@ -47,9 +40,9 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
     public List<Post> findByUserPostedAndUserPagePosted(long userPostedId, long userPagePostedId)
             throws InternalServerException {
         try {
-            List<Post> posts = em.createNativeQuery(FIND_BY_USER_POSTED_AND_USER_PAGE_POSTED_QUERY)
-                    .setParameter("userPostedId", userPostedId)
-                    .setParameter("userPagePostedId", userPagePostedId)
+            List<Post> posts = em.createNamedQuery(Post.QUERY_FIND_BY_USER_POSTED_AND_USER_PAGE_POSTED)
+                    .setParameter(Post.ATTRIBUTE_USER_POSTED_ID, userPostedId)
+                    .setParameter(Post.ATTRIBUTE_USER_PAGE_POSTED_ID, userPagePostedId)
                     .getResultList();
 
             return posts == null ? new ArrayList<>() : posts;
@@ -61,8 +54,8 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
     @Override
     public List<Post> findByUserPagePostedOnlyFriends(long userId) throws InternalServerException {
         try {
-            List<Post> posts = em.createNativeQuery(FIND_BY_USER_PAGE_POSTED_ONLY_FRIENDS_QUERY)
-                    .setParameter("userId", userId)
+            List<Post> posts = em.createNamedQuery(Post.QUERY_FIND_BY_USER_PAGE_POSTED_ONLY_FRIENDS)
+                    .setParameter(Post.ATTRIBUTE_USER_PAGE_POSTED_ID, userId)
                     .getResultList();
 
             return posts == null ? new ArrayList<>() : posts;
@@ -75,8 +68,8 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
     @Override
     public Long findUserPostedId(long postId) throws InternalServerException {
         try {
-            Integer id = (Integer) em.createNativeQuery(FIND_USER_POSTED_QUERY)
-                    .setParameter("postId", postId)
+            Integer id = (Integer) em.createNamedQuery(Post.QUERY_FIND_USER_POSTED_BY_ID)
+                    .setParameter(Post.ATTRIBUTE_ID, postId)
                     .getSingleResult();
 
             return Long.valueOf(id);
@@ -90,8 +83,8 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
     @Override
     public Long findUserPagePostedId(long postId) throws InternalServerException {
         try {
-            Integer id = (Integer) em.createNativeQuery(FIND_USER_PAGE_POSTED_QUERY)
-                    .setParameter("postId", postId)
+            Integer id = (Integer) em.createNamedQuery(Post.QUERY_FIND_USER_PAGE_POSTED_BY_ID)
+                    .setParameter(Post.ATTRIBUTE_ID, postId)
                     .getSingleResult();
 
             return Long.valueOf(id);

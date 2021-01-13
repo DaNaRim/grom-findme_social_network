@@ -13,12 +13,12 @@ public interface UserDao {
 
     User update(User user) throws InternalServerException;
 
-    boolean isUserMissing(long id) throws InternalServerException;
-
     User findByMail(String mail) throws InternalServerException;
+
+    boolean isUserMissing(long id) throws InternalServerException;
 
     void updateDateLastActive(long userId) throws InternalServerException;
 
 
-    boolean areThePhoneAndMailBusy(String phone, String mail) throws InternalServerException;
+    boolean arePhoneAndMailBusy(String phone, String mail) throws InternalServerException;
 }

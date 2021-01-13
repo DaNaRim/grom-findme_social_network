@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
         } else if (user.getAge() != null && user.getAge() <= 0) {
             throw new BadRequestException("age filed incorrect");
 
-        } else if (userdao.areThePhoneAndMailBusy(user.getPhone(), user.getMail())) {
+        } else if (userdao.arePhoneAndMailBusy(user.getPhone(), user.getMail())) {
             throw new BadRequestException("mail or phone is busy");
         }
     }

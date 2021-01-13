@@ -5,8 +5,28 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "USERS")
+@Table(name = "Users", schema = "public")
+@NamedNativeQueries({
+        @NamedNativeQuery(name = User.QUERY_FIND_BY_MAIL,
+                query = "SELECT * FROM Users WHERE mail = :" + User.ATTRIBUTE_MAIL,
+                resultClass = User.class),
+
+        @NamedNativeQuery(name = User.QUERY_IS_EXISTS,
+                query = "SELECT EXISTS(SELECT 1 FROM Users WHERE id = :" + User.ATTRIBUTE_ID + ")"),
+
+        @NamedNativeQuery(name = User.QUERY_ARE_PHONE_AND_MAIL_BUSY,
+                query = "SELECT EXISTS(SELECT 1 FROM Users WHERE phone = :" + User.ATTRIBUTE_PHONE +
+                        " OR mail = :" + User.ATTRIBUTE_MAIL + ")")
+})
 public class User {
+
+    public static final String QUERY_FIND_BY_MAIL = "User.findByMail";
+    public static final String QUERY_IS_EXISTS = "User.isExists";
+    public static final String QUERY_ARE_PHONE_AND_MAIL_BUSY = "User.arePhoneAndMailBusy";
+
+    public static final String ATTRIBUTE_ID = "id";
+    public static final String ATTRIBUTE_PHONE = "phone";
+    public static final String ATTRIBUTE_MAIL = "mail";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,47 +34,47 @@ public class User {
 
     //required fields
 
-    @Column(name = "FIRST_NAME", nullable = false, length = 30)
+    @Column(name = "first_name", nullable = false, length = 30)
     private String firstName;
 
-    @Column(name = "LAST_NAME", nullable = false, length = 30)
+    @Column(name = "last_name", nullable = false, length = 30)
     private String lastName;
 
-    @Column(name = "PHONE", unique = true, nullable = false, length = 15)
+    @Column(name = "phone", unique = true, nullable = false, length = 15)
     private String phone;
 
-    @Column(name = "MAIL", unique = true, nullable = false)
+    @Column(name = "mail", unique = true, nullable = false)
     private String mail;
 
-    @Column(name = "PASSWORD", nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
     //optional fields
 
-    @Column(name = "AGE")
+    @Column(name = "age")
     private Integer age;
 
-    @Column(name = "COUNTRY", length = 30)
+    @Column(name = "country", length = 30)
     private String country; //TODO from existed date
 
-    @Column(name = "CITY", length = 30)
+    @Column(name = "city", length = 30)
     private String city;
 
-    @Column(name = "SCHOOL", length = 30)
+    @Column(name = "school", length = 30)
     private String school;
 
-    @Column(name = "UNIVERSITY", length = 30)
+    @Column(name = "university", length = 30)
     private String university;
 
-    @Column(name = "RELIGION", length = 30)
+    @Column(name = "religion", length = 30)
     private String religion;
 
     //system fields
 
-    @Column(name = "DATE_REGISTERED", insertable = false, updatable = false)
+    @Column(name = "date_registered", insertable = false, updatable = false)
     private Date dateRegistered;
 
-    @Column(name = "DATE_LAST_ACTIVE", nullable = false)
+    @Column(name = "date_last_active", nullable = false)
     private Date dateLastActive;
 
     //unrealized fields

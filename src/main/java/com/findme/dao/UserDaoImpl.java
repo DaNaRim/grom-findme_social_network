@@ -9,11 +9,6 @@ import java.util.Date;
 
 public class UserDaoImpl extends Dao<User> implements UserDao {
 
-    private static final String IS_EXISTS_QUERY = "SELECT EXISTS(SELECT 1 FROM USERS WHERE ID = :id)";
-    private static final String FIND_BY_MAIL_QUERY = "SELECT * FROM USERS WHERE MAIL = :mail";
-
-    private static final String ARE_THE_PHONE_AND_MAIL_BUSY_QUERY = "SELECT EXISTS(SELECT 1 FROM USERS WHERE PHONE = :phone OR MAIL = :mail)";
-
     public UserDaoImpl() {
         super(User.class);
     }
@@ -26,28 +21,28 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
     }
 
     @Override
-    public boolean isUserMissing(long id) throws InternalServerException {
-        try {
-            return !(boolean) em.createNativeQuery(IS_EXISTS_QUERY)
-                    .setParameter("id", id)
-                    .getSingleResult();
-
-        } catch (HibernateException e) {
-            throw new InternalServerException("UserDaoImpl.isUserMissing failed: " + e.getMessage());
-        }
-    }
-
-    @Override
     public User findByMail(String mail) throws InternalServerException {
         try {
-            return (User) em.createNativeQuery(FIND_BY_MAIL_QUERY, User.class)
-                    .setParameter("mail", mail)
+            return em.createNamedQuery(User.QUERY_FIND_BY_MAIL, User.class)
+                    .setParameter(User.ATTRIBUTE_MAIL, mail)
                     .getSingleResult();
 
         } catch (NoResultException e) {
             return null;
         } catch (HibernateException e) {
             throw new InternalServerException("UserDaoImpl.findByMail failed: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean isUserMissing(long id) throws InternalServerException {
+        try {
+            return !(boolean) em.createNamedQuery(User.QUERY_IS_EXISTS)
+                    .setParameter(User.ATTRIBUTE_ID, id)
+                    .getSingleResult();
+
+        } catch (HibernateException e) {
+            throw new InternalServerException("UserDaoImpl.isUserMissing failed: " + e.getMessage());
         }
     }
 
@@ -65,15 +60,15 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
 
 
     @Override
-    public boolean areThePhoneAndMailBusy(String phone, String mail) throws InternalServerException {
+    public boolean arePhoneAndMailBusy(String phone, String mail) throws InternalServerException {
         try {
-            return (boolean) em.createNativeQuery(ARE_THE_PHONE_AND_MAIL_BUSY_QUERY)
-                    .setParameter("phone", phone)
-                    .setParameter("mail", mail)
+            return (boolean) em.createNamedQuery(User.QUERY_ARE_PHONE_AND_MAIL_BUSY)
+                    .setParameter(User.ATTRIBUTE_PHONE, phone)
+                    .setParameter(User.ATTRIBUTE_MAIL, mail)
                     .getSingleResult();
 
         } catch (HibernateException e) {
-            throw new InternalServerException("UserDaoImpl.areThePhoneAndMailBusy failed: " + e.getMessage());
+            throw new InternalServerException("UserDaoImpl.arePhoneAndMailBusy failed: " + e.getMessage());
         }
     }
 }

@@ -15,18 +15,6 @@ import static com.findme.model.RelationshipStatus.*;
 
 public class RelationshipDaoImpl extends Dao<Relationship> implements RelationshipDao {
 
-    private static final String FIND_BY_USERS_QUERY = "SELECT * FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId OR USER_FROM = :userToId AND USER_TO = :userFromId";
-    private static final String FIND_STATUS_BY_USERS_QUERY = "SELECT STATUS FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId OR USER_FROM = :userToId AND USER_TO = :userFromId";
-    private static final String GET_INCOME_REQUESTS_QUERY = "SELECT * FROM RELATIONSHIP WHERE STATUS = 'REQUESTED' AND (USER_FROM = :userId OR USER_TO = :userId) AND ACTION_USER_ID != :userId ORDER BY DATE_MODIFY";
-    private static final String GET_OUTCOME_REQUESTS_QUERY = "SELECT * FROM RELATIONSHIP WHERE STATUS = 'REQUESTED' AND ACTION_USER_ID = :userId ORDER BY DATE_MODIFY";
-
-    private static final String FIND_ACTION_USER_ID_BY_USERS_QUERY = "SELECT ACTION_USER_ID FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId OR USER_FROM = :userToId AND USER_TO = :userFromId";
-    private static final String FIND_DATE_MODIFY_BY_USERS_QUERY = "SELECT DATE_MODIFY FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId OR USER_FROM = :userToId AND USER_TO = :userFromId";
-    private static final String COUNT_OUTCOME_REQUESTS_QUERY = "SELECT COUNT(*) FROM RELATIONSHIP WHERE STATUS = 'REQUESTED' AND ACTION_USER_ID = :userId";
-    private static final String COUNT_FRIENDS_QUERY = "SELECT COUNT(*) FROM RELATIONSHIP WHERE STATUS = 'FRIENDS' AND (USER_FROM = :userId OR USER_TO = :userId)";
-
-    private static final String FIND_ID_BY_USERS_QUERY = "SELECT ID FROM RELATIONSHIP WHERE USER_FROM = :userFromId AND USER_TO = :userToId OR USER_FROM = :userToId AND USER_TO = :userFromId";
-
     public RelationshipDaoImpl() {
         super(Relationship.class);
     }
@@ -71,9 +59,9 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     @Override
     public Relationship findByUsers(long userFromId, long userToId) throws InternalServerException {
         try {
-            return (Relationship) em.createNativeQuery(FIND_BY_USERS_QUERY, Relationship.class)
-                    .setParameter("userFromId", userFromId)
-                    .setParameter("userToId", userToId)
+            return em.createNamedQuery(Relationship.QUERY_FIND_BY_USERS, Relationship.class)
+                    .setParameter(Relationship.ATTRIBUTE_USER_FROM_ID, userFromId)
+                    .setParameter(Relationship.ATTRIBUTE_USER_TO_ID, userToId)
                     .getSingleResult();
 
         } catch (NoResultException e) {
@@ -86,9 +74,9 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     @Override
     public RelationshipStatus findStatus(long userFromId, long userToId) throws InternalServerException {
         try {
-            String relationshipStatus = (String) em.createNativeQuery(FIND_STATUS_BY_USERS_QUERY)
-                    .setParameter("userFromId", userFromId)
-                    .setParameter("userToId", userToId)
+            String relationshipStatus = (String) em.createNamedQuery(Relationship.QUERY_FIND_STATUS_BY_USERS)
+                    .setParameter(Relationship.ATTRIBUTE_USER_FROM_ID, userFromId)
+                    .setParameter(Relationship.ATTRIBUTE_USER_TO_ID, userToId)
                     .getSingleResult();
 
             return RelationshipStatus.valueOf(relationshipStatus);
@@ -102,8 +90,8 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     @Override
     public List<Relationship> getIncomeRequests(long userId) throws InternalServerException {
         try {
-            List<Relationship> incomeRequests = em.createNativeQuery(GET_INCOME_REQUESTS_QUERY)
-                    .setParameter("userId", userId)
+            List<Relationship> incomeRequests = em.createNamedQuery(Relationship.QUERY_GET_INCOME_REQUESTS_BY_ACTION_USER_ID)
+                    .setParameter(Relationship.ATTRIBUTE_ACTION_USER_ID, userId)
                     .getResultList();
 
             return incomeRequests == null ? new ArrayList<>() : incomeRequests;
@@ -115,8 +103,8 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     @Override
     public List<Relationship> getOutcomeRequests(long userId) throws InternalServerException {
         try {
-            List<Relationship> outcomeRequests = em.createNativeQuery(GET_OUTCOME_REQUESTS_QUERY)
-                    .setParameter("userId", userId)
+            List<Relationship> outcomeRequests = em.createNamedQuery(Relationship.QUERY_GET_OUTCOME_REQUESTS_BY_ACTION_USER_ID)
+                    .setParameter(Relationship.ATTRIBUTE_ACTION_USER_ID, userId)
                     .getResultList();
 
             return outcomeRequests == null ? new ArrayList<>() : outcomeRequests;
@@ -129,9 +117,9 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     @Override
     public Long findActionUserId(long userFromId, long userToId) throws InternalServerException {
         try {
-            Integer actionUserId = (Integer) em.createNativeQuery(FIND_ACTION_USER_ID_BY_USERS_QUERY)
-                    .setParameter("userFromId", userFromId)
-                    .setParameter("userToId", userToId)
+            Integer actionUserId = (Integer) em.createNamedQuery(Relationship.QUERY_FIND_ACTION_USER_ID_BY_USERS)
+                    .setParameter(Relationship.ATTRIBUTE_USER_FROM_ID, userFromId)
+                    .setParameter(Relationship.ATTRIBUTE_USER_TO_ID, userToId)
                     .getSingleResult();
 
             return actionUserId.longValue();
@@ -145,9 +133,9 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     @Override
     public Date findDateModify(long userFromId, long userToId) throws InternalServerException {
         try {
-            return (Date) em.createNativeQuery(FIND_DATE_MODIFY_BY_USERS_QUERY)
-                    .setParameter("userFromId", userFromId)
-                    .setParameter("userToId", userToId)
+            return (Date) em.createNamedQuery(Relationship.QUERY_FIND_DATE_MODIFY_BY_USERS)
+                    .setParameter(Relationship.ATTRIBUTE_USER_FROM_ID, userFromId)
+                    .setParameter(Relationship.ATTRIBUTE_USER_TO_ID, userToId)
                     .getSingleResult();
 
         } catch (NoResultException e) {
@@ -160,8 +148,8 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     @Override
     public int countOutcomeRequests(long userId) throws InternalServerException {
         try {
-            BigInteger outcomeRequests = (BigInteger) em.createNativeQuery(COUNT_OUTCOME_REQUESTS_QUERY)
-                    .setParameter("userId", userId)
+            BigInteger outcomeRequests = (BigInteger) em.createNamedQuery(Relationship.QUERY_COUNT_OUTCOME_REQUESTS_BY_ACTION_USER_ID)
+                    .setParameter(Relationship.ATTRIBUTE_ACTION_USER_ID, userId)
                     .getSingleResult();
 
             return outcomeRequests.intValue();
@@ -173,8 +161,8 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     @Override
     public int countFriends(long userId) throws InternalServerException {
         try {
-            BigInteger friends = (BigInteger) em.createNativeQuery(COUNT_FRIENDS_QUERY)
-                    .setParameter("userId", userId)
+            BigInteger friends = (BigInteger) em.createNamedQuery(Relationship.QUERY_COUNT_FRIENDS_BY_USER_ID)
+                    .setParameter(Relationship.ATTRIBUTE_USER_ID, userId)
                     .getSingleResult();
 
             return friends.intValue();
@@ -185,9 +173,9 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
 
     private Long findIdByUsers(long userFromId, long userToId) throws InternalServerException {
         try {
-            Integer id = (Integer) em.createNativeQuery(FIND_ID_BY_USERS_QUERY)
-                    .setParameter("userFromId", userFromId)
-                    .setParameter("userToId", userToId)
+            Integer id = (Integer) em.createNamedQuery(Relationship.QUERY_FIND_ID_BY_USERS)
+                    .setParameter(Relationship.ATTRIBUTE_USER_FROM_ID, userFromId)
+                    .setParameter(Relationship.ATTRIBUTE_USER_TO_ID, userToId)
                     .getSingleResult();
 
             return Long.valueOf(id);
