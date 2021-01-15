@@ -28,6 +28,9 @@ import java.util.List;
                 resultClass = Post.class),
 
 
+        @NamedNativeQuery(name = Post.QUERY_IS_EXISTS,
+                query = "SELECT EXISTS(SELECT 1 FROM Post WHERE id = :" + Post.ATTRIBUTE_ID + ")"),
+
         @NamedNativeQuery(name = Post.QUERY_FIND_USER_POSTED_BY_ID,
                 query = "SELECT user_posted FROM Post WHERE id = :" + Post.ATTRIBUTE_ID),
 
@@ -40,6 +43,7 @@ public class Post {
     public static final String QUERY_FIND_BY_USER_POSTED_AND_USER_PAGE_POSTED = "Post.findByUserPostedAndUserPagePosted";
     public static final String QUERY_FIND_BY_USER_PAGE_POSTED_ONLY_FRIENDS = "Post.findByUserPagePostedOnlyFriends";
 
+    public static final String QUERY_IS_EXISTS = "Post.isExists";
     public static final String QUERY_FIND_USER_POSTED_BY_ID = "Post.findUserPostedById";
     public static final String QUERY_FIND_USER_PAGE_POSTED_BY_ID = "Post.findUserPagePostedById";
 

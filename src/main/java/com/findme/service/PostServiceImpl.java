@@ -140,10 +140,10 @@ public class PostServiceImpl implements PostService {
 
         validatePostFields(post);
 
-        if (postDao.findById(post.getId()) == null) {
+        if (postDao.isPostMissing(post.getId())) {
             throw new BadRequestException("Post id filed incorrect");
 
-        } else if (actionUserId != post.getUserPosted().getId()) {
+        } else if (actionUserId != postDao.findUserPostedId(post.getId())) {
             throw new BadRequestException("You can`t update post that you don`t posted");
         }
     }
@@ -151,7 +151,7 @@ public class PostServiceImpl implements PostService {
     private void validateDeletePost(long actionUserId, long postId)
             throws BadRequestException, InternalServerException {
 
-        if (postDao.findById(postId) == null) {
+        if (postDao.isPostMissing(postId)) {
             throw new BadRequestException("Post id filed incorrect");
 
         } else if (actionUserId != postDao.findUserPostedId(postId)

@@ -67,6 +67,18 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
 
 
     @Override
+    public boolean isPostMissing(long id) throws InternalServerException {
+        try {
+            return !(boolean) em.createNamedQuery(Post.QUERY_IS_EXISTS)
+                    .setParameter(Post.ATTRIBUTE_ID, id)
+                    .getSingleResult();
+
+        } catch (HibernateException e) {
+            throw new InternalServerException("PostDaoImpl.isUserMissing failed: " + e.getMessage());
+        }
+    }
+
+    @Override
     public Long findUserPostedId(long postId) throws InternalServerException {
         try {
             Integer id = (Integer) em.createNamedQuery(Post.QUERY_FIND_USER_POSTED_BY_ID)

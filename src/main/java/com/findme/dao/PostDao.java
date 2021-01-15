@@ -25,6 +25,8 @@ public interface PostDao {
     List<Post> findByUserPagePostedOnlyFriends(long userId) throws InternalServerException;
 
 
+    boolean isPostMissing(long id) throws InternalServerException;
+
     Long findUserPostedId(long postId) throws InternalServerException;
 
     Long findUserPagePostedId(long postId) throws InternalServerException;
