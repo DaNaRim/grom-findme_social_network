@@ -7,7 +7,7 @@ import java.util.Date;
 @Table(name = "Relationship", schema = "public")
 @NamedNativeQueries({
         @NamedNativeQuery(name = Relationship.QUERY_FIND_BY_USERS,
-                query = "SELECT FROM Relationship " +
+                query = "SELECT * FROM Relationship " +
                         "WHERE user_from = :" + Relationship.ATTRIBUTE_USER_FROM_ID +
                         " AND user_to = :" + Relationship.ATTRIBUTE_USER_TO_ID +
                         " OR user_from = :" + Relationship.ATTRIBUTE_USER_TO_ID +
