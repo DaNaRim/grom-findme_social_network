@@ -90,9 +90,10 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     @Override
     public List<Relationship> getIncomeRequests(long userId) throws InternalServerException {
         try {
-            List<Relationship> incomeRequests = em.createNamedQuery(Relationship.QUERY_GET_INCOME_REQUESTS_BY_ACTION_USER_ID)
-                    .setParameter(Relationship.ATTRIBUTE_ACTION_USER_ID, userId)
-                    .getResultList();
+            List<Relationship> incomeRequests =
+                    em.createNamedQuery(Relationship.QUERY_GET_INCOME_REQUESTS_BY_ACTION_USER_ID, Relationship.class)
+                            .setParameter(Relationship.ATTRIBUTE_ACTION_USER_ID, userId)
+                            .getResultList();
 
             return incomeRequests == null ? new ArrayList<>() : incomeRequests;
         } catch (HibernateException e) {
@@ -103,9 +104,10 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     @Override
     public List<Relationship> getOutcomeRequests(long userId) throws InternalServerException {
         try {
-            List<Relationship> outcomeRequests = em.createNamedQuery(Relationship.QUERY_GET_OUTCOME_REQUESTS_BY_ACTION_USER_ID)
-                    .setParameter(Relationship.ATTRIBUTE_ACTION_USER_ID, userId)
-                    .getResultList();
+            List<Relationship> outcomeRequests =
+                    em.createNamedQuery(Relationship.QUERY_GET_OUTCOME_REQUESTS_BY_ACTION_USER_ID, Relationship.class)
+                            .setParameter(Relationship.ATTRIBUTE_ACTION_USER_ID, userId)
+                            .getResultList();
 
             return outcomeRequests == null ? new ArrayList<>() : outcomeRequests;
         } catch (HibernateException e) {
@@ -148,9 +150,10 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     @Override
     public int countOutcomeRequests(long userId) throws InternalServerException {
         try {
-            BigInteger outcomeRequests = (BigInteger) em.createNamedQuery(Relationship.QUERY_COUNT_OUTCOME_REQUESTS_BY_ACTION_USER_ID)
-                    .setParameter(Relationship.ATTRIBUTE_ACTION_USER_ID, userId)
-                    .getSingleResult();
+            BigInteger outcomeRequests =
+                    (BigInteger) em.createNamedQuery(Relationship.QUERY_COUNT_OUTCOME_REQUESTS_BY_ACTION_USER_ID)
+                            .setParameter(Relationship.ATTRIBUTE_ACTION_USER_ID, userId)
+                            .getSingleResult();
 
             return outcomeRequests.intValue();
         } catch (HibernateException e) {
