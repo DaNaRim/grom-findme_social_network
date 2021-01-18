@@ -102,7 +102,7 @@ public class PostServiceImpl implements PostService {
         } else if (post.getTaggedUsers() != null) {
 
             for (User user : post.getTaggedUsers()) {
-                if (userService.isUserMissing(user.getId())) {
+                if (user.getId() == null || userService.isUserMissing(user.getId())) {
                     throw new BadRequestException("Tagged users ids filed incorrect");
 
                 } else if (user.getId().equals(post.getUserPosted().getId())) {
