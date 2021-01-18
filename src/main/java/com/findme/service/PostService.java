@@ -18,7 +18,7 @@ public interface PostService {
 
     void deletePost(long actionUserId, long id) throws BadRequestException, InternalServerException;
 
-    List<Post> getPostsOnUserPage(long userId) throws InternalServerException;
+    List<Post> getPostsOnUserPage(long userId, long startFrom) throws InternalServerException;
 
     List<Post> getPostsOnUserPageByFilter(long userPageId, PostFilter postFilter)
             throws InternalServerException, NotFoundException;

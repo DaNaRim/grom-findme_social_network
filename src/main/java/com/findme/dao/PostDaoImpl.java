@@ -24,10 +24,11 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
     }
 
     @Override
-    public List<Post> findByUserPagePosted(long userId) throws InternalServerException {
+    public List<Post> findByUserPagePosted(long userId, long startFrom) throws InternalServerException {
         try {
             List<Post> posts = em.createNamedQuery(Post.QUERY_FIND_BY_USER_PAGE_POSTED, Post.class)
                     .setParameter(Post.ATTRIBUTE_USER_PAGE_POSTED_ID, userId)
+                    .setParameter(Post.ATTRIBUTE_START_FROM, startFrom)
                     .getResultList();
 
             return posts == null ? new ArrayList<>() : posts;
@@ -37,12 +38,13 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
     }
 
     @Override
-    public List<Post> findByUserPostedAndUserPagePosted(long userPostedId, long userPagePostedId)
+    public List<Post> findByUserPostedAndUserPagePosted(long userPostedId, long userPagePostedId, long startFrom)
             throws InternalServerException {
         try {
             List<Post> posts = em.createNamedQuery(Post.QUERY_FIND_BY_USER_POSTED_AND_USER_PAGE_POSTED, Post.class)
                     .setParameter(Post.ATTRIBUTE_USER_POSTED_ID, userPostedId)
                     .setParameter(Post.ATTRIBUTE_USER_PAGE_POSTED_ID, userPagePostedId)
+                    .setParameter(Post.ATTRIBUTE_START_FROM, startFrom)
                     .getResultList();
 
             return posts == null ? new ArrayList<>() : posts;
@@ -53,10 +55,11 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
     }
 
     @Override
-    public List<Post> findByUserPagePostedOnlyFriends(long userId) throws InternalServerException {
+    public List<Post> findByUserPagePostedOnlyFriends(long userId, long startFrom) throws InternalServerException {
         try {
             List<Post> posts = em.createNamedQuery(Post.QUERY_FIND_BY_USER_PAGE_POSTED_ONLY_FRIENDS, Post.class)
                     .setParameter(Post.ATTRIBUTE_USER_PAGE_POSTED_ID, userId)
+                    .setParameter(Post.ATTRIBUTE_START_FROM, startFrom)
                     .getResultList();
 
             return posts == null ? new ArrayList<>() : posts;

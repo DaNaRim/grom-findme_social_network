@@ -49,7 +49,7 @@ public class UserController {
             }
 
             User user = userService.findById(userPageId);
-            List<Post> postsOnPage = postService.getPostsOnUserPage(userPageId);
+            List<Post> postsOnPage = postService.getPostsOnUserPage(userPageId, 0);
 
             Relationship ourRelationship = null;
             if (actionUserId != null) {

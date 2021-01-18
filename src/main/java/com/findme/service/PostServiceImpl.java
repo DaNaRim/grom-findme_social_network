@@ -52,28 +52,29 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> getPostsOnUserPage(long userId) throws InternalServerException {
+    public List<Post> getPostsOnUserPage(long userId, long startFrom) throws InternalServerException {
 
-        return postDao.findByUserPagePosted(userId);
+        return postDao.findByUserPagePosted(userId, startFrom);
     }
 
     @Override
     public List<Post> getPostsOnUserPageByFilter(long userPageId, PostFilter postFilter)
             throws NotFoundException, InternalServerException {
 
+        long startFrom = postFilter.getStartFrom() == null ? 0 : postFilter.getStartFrom();
         List<Post> posts;
 
         if (postFilter.isOnlyUserPosts()) {
-            posts = postDao.findByUserPostedAndUserPagePosted(userPageId, userPageId);
+            posts = postDao.findByUserPostedAndUserPagePosted(userPageId, userPageId, startFrom);
 
         } else if (postFilter.isOnlyFriendsPosts()) {
-            posts = postDao.findByUserPagePostedOnlyFriends(userPageId);
+            posts = postDao.findByUserPagePostedOnlyFriends(userPageId, startFrom);
 
         } else if (postFilter.getUserId() != null) {
-            posts = postDao.findByUserPostedAndUserPagePosted(postFilter.getUserId(), userPageId);
+            posts = postDao.findByUserPostedAndUserPagePosted(postFilter.getUserId(), userPageId, startFrom);
 
         } else {
-            posts = postDao.findByUserPagePosted(userPageId);
+            posts = postDao.findByUserPagePosted(userPageId, startFrom);
         }
 
         if (posts.isEmpty()) {

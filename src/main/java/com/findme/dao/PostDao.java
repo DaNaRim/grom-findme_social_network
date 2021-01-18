@@ -17,12 +17,12 @@ public interface PostDao {
 
     void delete(Post post) throws InternalServerException;
 
-    List<Post> findByUserPagePosted(long userId) throws InternalServerException;
+    List<Post> findByUserPagePosted(long userId, long startFrom) throws InternalServerException;
 
-    List<Post> findByUserPostedAndUserPagePosted(long userPostedId, long userPagePostedId)
+    List<Post> findByUserPostedAndUserPagePosted(long userPostedId, long userPagePostedId, long startFrom)
             throws InternalServerException;
 
-    List<Post> findByUserPagePostedOnlyFriends(long userId) throws InternalServerException;
+    List<Post> findByUserPagePostedOnlyFriends(long userId, long startFrom) throws InternalServerException;
 
 
     boolean isPostMissing(long id) throws InternalServerException;

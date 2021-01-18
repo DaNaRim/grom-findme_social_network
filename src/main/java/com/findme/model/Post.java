@@ -10,21 +10,27 @@ import java.util.List;
         @NamedNativeQuery(name = Post.QUERY_FIND_BY_USER_PAGE_POSTED,
                 query = "SELECT * FROM Post " +
                         "WHERE user_page_posted = :" + Post.ATTRIBUTE_USER_PAGE_POSTED_ID +
-                        " ORDER BY date_posted",
+                        " ORDER BY date_posted" +
+                        " OFFSET :" + Post.ATTRIBUTE_START_FROM +
+                        " LIMIT 10",
                 resultClass = Post.class),
 
         @NamedNativeQuery(name = Post.QUERY_FIND_BY_USER_POSTED_AND_USER_PAGE_POSTED,
                 query = "SELECT * FROM Post " +
                         "WHERE user_posted = :" + Post.ATTRIBUTE_USER_POSTED_ID +
                         " AND user_page_posted = :" + Post.ATTRIBUTE_USER_PAGE_POSTED_ID +
-                        " ORDER BY date_posted",
+                        " ORDER BY date_posted" +
+                        " OFFSET :" + Post.ATTRIBUTE_START_FROM +
+                        " LIMIT 10",
                 resultClass = Post.class),
 
         @NamedNativeQuery(name = Post.QUERY_FIND_BY_USER_PAGE_POSTED_ONLY_FRIENDS,
                 query = "SELECT * FROM Post " +
                         "WHERE user_page_posted = :" + Post.ATTRIBUTE_USER_PAGE_POSTED_ID +
                         " AND user_posted != :" + Post.ATTRIBUTE_USER_PAGE_POSTED_ID +
-                        " ORDER BY date_posted",
+                        " ORDER BY date_posted" +
+                        " OFFSET :" + Post.ATTRIBUTE_START_FROM +
+                        " LIMIT 10",
                 resultClass = Post.class),
 
 
@@ -51,6 +57,8 @@ public class Post {
     public static final String ATTRIBUTE_ID = "id";
     public static final String ATTRIBUTE_USER_PAGE_POSTED_ID = "userPagePosted";
     public static final String ATTRIBUTE_USER_POSTED_ID = "userPosted";
+
+    public static final String ATTRIBUTE_START_FROM = "startFrom";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
