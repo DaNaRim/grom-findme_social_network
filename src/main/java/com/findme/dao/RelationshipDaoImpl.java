@@ -69,7 +69,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
         } catch (NoResultException e) {
             return null;
         } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.findByUsers failed: " + e.getMessage());
+            throw new InternalServerException("RelationshipDaoImpl.findByUsers failed", e);
         }
     }
 
@@ -85,7 +85,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
         } catch (NoResultException e) {
             return null;
         } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.findStatus failed: " + e.getMessage());
+            throw new InternalServerException("RelationshipDaoImpl.findStatus failed", e);
         }
     }
 
@@ -99,7 +99,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
 
             return incomeRequests == null ? new ArrayList<>() : incomeRequests;
         } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.getIncomeRequests failed: " + e.getMessage());
+            throw new InternalServerException("RelationshipDaoImpl.getIncomeRequests failed", e);
         }
     }
 
@@ -113,7 +113,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
 
             return outcomeRequests == null ? new ArrayList<>() : outcomeRequests;
         } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.getOutcomeRequests failed: " + e.getMessage());
+            throw new InternalServerException("RelationshipDaoImpl.getOutcomeRequests failed", e);
         }
     }
 
@@ -130,7 +130,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
         } catch (NoResultException e) {
             return null;
         } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.findActionUserId failed: " + e.getMessage());
+            throw new InternalServerException("RelationshipDaoImpl.findActionUserId failed", e);
         }
     }
 
@@ -145,7 +145,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
         } catch (NoResultException e) {
             return null;
         } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.findDateModify failed: " + e.getMessage());
+            throw new InternalServerException("RelationshipDaoImpl.findDateModify failed", e);
         }
     }
 
@@ -159,7 +159,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
 
             return outcomeRequests.intValue();
         } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.countOutcomeRequests failed: " + e.getMessage());
+            throw new InternalServerException("RelationshipDaoImpl.countOutcomeRequests failed", e);
         }
     }
 
@@ -172,7 +172,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
 
             return friends.intValue();
         } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.countFriends failed: " + e.getMessage());
+            throw new InternalServerException("RelationshipDaoImpl.countFriends failed", e);
         }
     }
 
@@ -187,7 +187,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
         } catch (NoResultException e) {
             return null;
         } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.findIdByUsers failed: " + e.getMessage());
+            throw new InternalServerException("RelationshipDaoImpl.findIdByUsers failed", e);
         }
     }
 }

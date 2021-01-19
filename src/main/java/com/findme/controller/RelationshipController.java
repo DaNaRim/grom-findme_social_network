@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 
 @Controller
@@ -60,16 +62,15 @@ public class RelationshipController {
 
             return new ResponseEntity<>(relationship, HttpStatus.OK);
         } catch (UnauthorizedException e) {
-
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (NotFoundException e) {
-
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (BadRequestException e) {
-
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            System.err.println(sw.toString());
             return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -105,16 +106,15 @@ public class RelationshipController {
 
             return new ResponseEntity<>(relationship, HttpStatus.OK);
         } catch (UnauthorizedException e) {
-
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (NotFoundException e) {
-
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (BadRequestException e) {
-
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            System.err.println(sw.toString());
             return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -145,7 +145,10 @@ public class RelationshipController {
             model.addAttribute("error", e.getMessage());
             return "404";
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            System.err.println(sw.toString());
+
             model.addAttribute("error", "Something went wrong");
             return "500";
         }
@@ -177,7 +180,10 @@ public class RelationshipController {
             model.addAttribute("error", e.getMessage());
             return "404";
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            System.err.println(sw.toString());
+
             model.addAttribute("error", "Something went wrong");
             return "500";
         }

@@ -33,7 +33,7 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
 
             return posts == null ? new ArrayList<>() : posts;
         } catch (HibernateException e) {
-            throw new InternalServerException("PostDaoImpl.findByUserPagePosted failed: " + e.getMessage());
+            throw new InternalServerException("PostDaoImpl.findByUserPagePosted failed", e);
         }
     }
 
@@ -49,8 +49,7 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
 
             return posts == null ? new ArrayList<>() : posts;
         } catch (HibernateException e) {
-            throw new InternalServerException("PostDaoImpl.findByUserPostedAndUserPagePosted failed: "
-                    + e.getMessage());
+            throw new InternalServerException("PostDaoImpl.findByUserPostedAndUserPagePosted failed", e);
         }
     }
 
@@ -64,7 +63,7 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
 
             return posts == null ? new ArrayList<>() : posts;
         } catch (HibernateException e) {
-            throw new InternalServerException("PostDaoImpl.findByUserPagePostedOnlyFriends failed: " + e.getMessage());
+            throw new InternalServerException("PostDaoImpl.findByUserPagePostedOnlyFriends failed", e);
         }
     }
 
@@ -77,7 +76,7 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
                     .getSingleResult();
 
         } catch (HibernateException e) {
-            throw new InternalServerException("PostDaoImpl.isUserMissing failed: " + e.getMessage());
+            throw new InternalServerException("PostDaoImpl.isUserMissing failed", e);
         }
     }
 
@@ -92,7 +91,7 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
         } catch (NoResultException e) {
             return null;
         } catch (HibernateException e) {
-            throw new InternalServerException("PostDaoImpl.findUserPostedId failed: " + e.getMessage());
+            throw new InternalServerException("PostDaoImpl.findUserPostedId failed", e);
         }
     }
 
@@ -107,7 +106,7 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
         } catch (NoResultException e) {
             return null;
         } catch (HibernateException e) {
-            throw new InternalServerException("PostDaoImpl.findUserPagePostedId failed: " + e.getMessage());
+            throw new InternalServerException("PostDaoImpl.findUserPagePostedId failed", e);
         }
     }
 }

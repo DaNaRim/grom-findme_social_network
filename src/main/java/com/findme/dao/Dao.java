@@ -23,7 +23,7 @@ public abstract class Dao<T> {
 
             return entity;
         } catch (HibernateException e) {
-            throw new InternalServerException("Dao.save failed: " + e.getMessage());
+            throw new InternalServerException("Dao.save failed", e);
         }
     }
 
@@ -32,7 +32,7 @@ public abstract class Dao<T> {
             return em.find(this.tClass, id);
 
         } catch (HibernateException e) {
-            throw new InternalServerException("Dao.findById failed: " + e.getMessage());
+            throw new InternalServerException("Dao.findById failed", e);
         }
     }
 
@@ -41,7 +41,7 @@ public abstract class Dao<T> {
             return em.merge(entity);
 
         } catch (HibernateException e) {
-            throw new InternalServerException("Dao.update failed: " + e.getMessage());
+            throw new InternalServerException("Dao.update failed", e);
         }
     }
 
@@ -50,7 +50,7 @@ public abstract class Dao<T> {
             em.remove(em.merge(entity));
 
         } catch (HibernateException e) {
-            throw new InternalServerException("Dao.delete failed: " + e.getMessage());
+            throw new InternalServerException("Dao.delete failed", e);
         }
     }
 }
