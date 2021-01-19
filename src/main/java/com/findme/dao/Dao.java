@@ -10,12 +10,12 @@ public abstract class Dao<T> {
 
     private final Class<T> tClass;
 
+    @PersistenceContext
+    protected EntityManager em;
+
     public Dao(Class<T> tClass) {
         this.tClass = tClass;
     }
-
-    @PersistenceContext
-    protected EntityManager em;
 
     public T save(T entity) throws InternalServerException {
         try {
