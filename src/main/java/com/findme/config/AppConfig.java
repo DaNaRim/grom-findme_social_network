@@ -1,7 +1,17 @@
 package com.findme.config;
 
-import com.findme.dao.*;
-import com.findme.service.*;
+import com.findme.dao.PostDao;
+import com.findme.dao.PostDaoImpl;
+import com.findme.dao.RelationshipDao;
+import com.findme.dao.RelationshipDaoImpl;
+import com.findme.dao.UserDao;
+import com.findme.dao.UserDaoImpl;
+import com.findme.service.PostService;
+import com.findme.service.PostServiceImpl;
+import com.findme.service.RelationshipService;
+import com.findme.service.RelationshipServiceImpl;
+import com.findme.service.UserService;
+import com.findme.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;

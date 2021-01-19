@@ -7,13 +7,21 @@ import com.findme.exception.NotFoundException;
 import com.findme.model.Relationship;
 import com.findme.model.RelationshipStatus;
 import com.findme.model.User;
-import com.findme.validator.*;
+import com.findme.validator.CancelValidator;
+import com.findme.validator.DeleteValidator;
+import com.findme.validator.FriendsValidator;
+import com.findme.validator.RejectValidator;
+import com.findme.validator.RelationshipValidator;
+import com.findme.validator.RelationshipValidatorParams;
+import com.findme.validator.RequestValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.findme.model.RelationshipStatus.*;
+import static com.findme.model.RelationshipStatus.DELETED;
+import static com.findme.model.RelationshipStatus.FRIENDS;
+import static com.findme.model.RelationshipStatus.REQUESTED;
 
 @Transactional
 public class RelationshipServiceImpl implements RelationshipService {

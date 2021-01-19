@@ -1,16 +1,17 @@
 package com.findme.validator;
 
 import com.findme.exception.BadRequestException;
-import com.findme.model.RelationshipStatus;
 
-import static com.findme.model.RelationshipStatus.*;
+import static com.findme.model.RelationshipStatus.FRIENDS;
+import static com.findme.model.RelationshipStatus.REJECTED;
+import static com.findme.model.RelationshipStatus.REQUESTED;
 
 public class RequestValidator extends RelationshipValidator {
 
     @Override
     public void checkParams(RelationshipValidatorParams params) throws BadRequestException {
 
-        if (params.getNewStatus() == RelationshipStatus.REQUESTED) {
+        if (params.getNewStatus() == REQUESTED) {
 
             if (params.getCurrentStatus() == REQUESTED
                     && !params.getNewActionUserId().equals(params.getOldActionUserId())) {
