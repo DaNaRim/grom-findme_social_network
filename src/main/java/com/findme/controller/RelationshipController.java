@@ -35,7 +35,7 @@ public class RelationshipController {
     }
 
     @PostMapping(path = "/add")
-    public ResponseEntity<String> addRelationship(@RequestParam String userToIdStr, Model model, HttpSession session) {
+    public ResponseEntity<Object> addRelationship(@RequestParam String userToIdStr, HttpSession session) {
         try {
             Long actionUserId = (Long) session.getAttribute("userId");
 
@@ -58,8 +58,7 @@ public class RelationshipController {
                 System.err.println(e.getMessage());
             }
 
-            model.addAttribute("relationship", relationship);
-            return new ResponseEntity<>("Friend request sent", HttpStatus.OK);
+            return new ResponseEntity<>(relationship, HttpStatus.OK);
         } catch (UnauthorizedException e) {
 
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
@@ -76,9 +75,8 @@ public class RelationshipController {
     }
 
     @PutMapping(path = "/update")
-    public ResponseEntity<String> updateRelationship(@RequestParam String userToIdStr,
+    public ResponseEntity<Object> updateRelationship(@RequestParam String userToIdStr,
                                                      @RequestParam String status,
-                                                     Model model,
                                                      HttpSession session) {
         try {
             Long actionUserId = (Long) session.getAttribute("userId");
@@ -105,8 +103,7 @@ public class RelationshipController {
                 System.err.println(e.getMessage());
             }
 
-            model.addAttribute("relationship", relationship);
-            return new ResponseEntity<>("Relationship updated", HttpStatus.OK);
+            return new ResponseEntity<>(relationship, HttpStatus.OK);
         } catch (UnauthorizedException e) {
 
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);

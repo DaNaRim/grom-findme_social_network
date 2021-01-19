@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,7 +38,7 @@ public class PostController {
 
     @PostMapping(path = "/create")
     public @ResponseBody
-    ResponseEntity<String> createPost(@RequestBody Post post, Model model, HttpSession session) {
+    ResponseEntity<Object> createPost(@RequestBody Post post, HttpSession session) {
         try {
             Long actionUserId = (Long) session.getAttribute("userId");
 
@@ -55,8 +54,7 @@ public class PostController {
                 System.err.println(e.getMessage());
             }
 
-            model.addAttribute("post", newPost);
-            return new ResponseEntity<>("Post created", HttpStatus.CREATED);
+            return new ResponseEntity<>(newPost, HttpStatus.CREATED);
         } catch (BadRequestException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (UnauthorizedException e) {
@@ -69,7 +67,7 @@ public class PostController {
 
     @PutMapping(path = "/update")
     public @ResponseBody
-    ResponseEntity<String> updatePost(@RequestBody Post post, Model model, HttpSession session) {
+    ResponseEntity<Object> updatePost(@RequestBody Post post, HttpSession session) {
         try {
             Long actionUserId = (Long) session.getAttribute("userId");
 
@@ -85,8 +83,7 @@ public class PostController {
                 System.err.println(e.getMessage());
             }
 
-            model.addAttribute("post", updatedPost);
-            return new ResponseEntity<>("Post updated", HttpStatus.OK);
+            return new ResponseEntity<>(updatedPost, HttpStatus.OK);
         } catch (BadRequestException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (UnauthorizedException e) {
@@ -135,9 +132,8 @@ public class PostController {
 
     @GetMapping(path = "/getByFilter")
     public @ResponseBody
-    ResponseEntity<String> getPostsOnUserPageByFilter(@RequestParam String userIdStr,
+    ResponseEntity<Object> getPostsOnUserPageByFilter(@RequestParam String userIdStr,
                                                       @RequestBody PostFilter postFilter,
-                                                      Model model,
                                                       HttpSession session) {
         try {
             Long actionUserId = (Long) session.getAttribute("userId");
@@ -160,8 +156,7 @@ public class PostController {
                 }
             }
 
-            model.addAttribute("posts", posts);
-            return new ResponseEntity<>("Posts found", HttpStatus.OK);
+            return new ResponseEntity<>(posts, HttpStatus.OK);
         } catch (BadRequestException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (NotFoundException e) {

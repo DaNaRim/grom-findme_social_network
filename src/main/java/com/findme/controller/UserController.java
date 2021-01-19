@@ -99,12 +99,11 @@ public class UserController {
 
     @PostMapping(path = "/registration")
     public @ResponseBody
-    ResponseEntity<String> registerUser(@RequestBody User user, Model model) {
+    ResponseEntity<Object> registerUser(@RequestBody User user, Model model) {
         try {
             User newUser = userService.registerUser(user);
 
-            model.addAttribute("user", newUser);
-            return new ResponseEntity<>("Registration success", HttpStatus.CREATED);
+            return new ResponseEntity<>(newUser, HttpStatus.CREATED);
         } catch (BadRequestException e) {
 
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
