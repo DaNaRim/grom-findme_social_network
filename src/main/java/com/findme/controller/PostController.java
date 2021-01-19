@@ -53,7 +53,9 @@ public class PostController {
             try {
                 userService.updateDateLastActive(actionUserId);
             } catch (Exception e) {
-                System.err.println(e.getMessage());
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                System.err.println(sw.toString());
             }
 
             return new ResponseEntity<>(newPost, HttpStatus.CREATED);
@@ -84,7 +86,9 @@ public class PostController {
             try {
                 userService.updateDateLastActive(actionUserId);
             } catch (Exception e) {
-                System.err.println(e.getMessage());
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                System.err.println(sw.toString());
             }
 
             return new ResponseEntity<>(updatedPost, HttpStatus.OK);
@@ -122,7 +126,9 @@ public class PostController {
             try {
                 userService.updateDateLastActive(actionUserId);
             } catch (Exception e) {
-                System.err.println(e.getMessage());
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                System.err.println(sw.toString());
             }
 
             return new ResponseEntity<>("Post deleted", HttpStatus.OK);
@@ -160,7 +166,9 @@ public class PostController {
                 try {
                     userService.updateDateLastActive(actionUserId);
                 } catch (Exception e) {
-                    System.err.println(e.getMessage());
+                    StringWriter sw = new StringWriter();
+                    e.printStackTrace(new PrintWriter(sw));
+                    System.err.println(sw.toString());
                 }
             }
 

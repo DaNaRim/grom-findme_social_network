@@ -57,7 +57,9 @@ public class RelationshipController {
             try {
                 userService.updateDateLastActive(actionUserId);
             } catch (Exception e) {
-                System.err.println(e.getMessage());
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                System.err.println(sw.toString());
             }
 
             return new ResponseEntity<>(relationship, HttpStatus.OK);
@@ -101,7 +103,9 @@ public class RelationshipController {
             try {
                 userService.updateDateLastActive(actionUserId);
             } catch (Exception e) {
-                System.err.println(e.getMessage());
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                System.err.println(sw.toString());
             }
 
             return new ResponseEntity<>(relationship, HttpStatus.OK);
@@ -133,7 +137,9 @@ public class RelationshipController {
             try {
                 userService.updateDateLastActive(actionUserId);
             } catch (Exception e) {
-                System.err.println(e.getMessage());
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                System.err.println(sw.toString());
             }
 
             model.addAttribute("incomeRequests", relationships);
@@ -168,7 +174,9 @@ public class RelationshipController {
             try {
                 userService.updateDateLastActive(actionUserId);
             } catch (Exception e) {
-                System.err.println(e.getMessage());
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                System.err.println(sw.toString());
             }
 
             model.addAttribute("outcomeRequests", relationships);
