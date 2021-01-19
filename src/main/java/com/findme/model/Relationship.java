@@ -18,67 +18,67 @@ import java.util.Date;
 @Table(name = "Relationship", schema = "public")
 @NamedNativeQueries({
         @NamedNativeQuery(name = Relationship.QUERY_FIND_BY_USERS,
-                query = "SELECT * FROM Relationship " +
-                        "WHERE user_from = :" + Relationship.ATTRIBUTE_USER_FROM_ID +
-                        " AND user_to = :" + Relationship.ATTRIBUTE_USER_TO_ID +
-                        " OR user_from = :" + Relationship.ATTRIBUTE_USER_TO_ID +
-                        " AND user_to = :" + Relationship.ATTRIBUTE_USER_FROM_ID,
+                query = "SELECT * FROM Relationship"
+                        + " WHERE user_from = :" + Relationship.ATTRIBUTE_USER_FROM_ID
+                        + " AND user_to = :" + Relationship.ATTRIBUTE_USER_TO_ID
+                        + " OR user_from = :" + Relationship.ATTRIBUTE_USER_TO_ID
+                        + " AND user_to = :" + Relationship.ATTRIBUTE_USER_FROM_ID,
                 resultClass = Relationship.class),
 
         @NamedNativeQuery(name = Relationship.QUERY_FIND_STATUS_BY_USERS,
-                query = "SELECT status FROM Relationship " +
-                        "WHERE user_from = :" + Relationship.ATTRIBUTE_USER_FROM_ID +
-                        " AND user_to = :" + Relationship.ATTRIBUTE_USER_TO_ID +
-                        " OR user_from = :" + Relationship.ATTRIBUTE_USER_TO_ID +
-                        " AND user_to = :" + Relationship.ATTRIBUTE_USER_FROM_ID),
+                query = "SELECT status FROM Relationship"
+                        + " WHERE user_from = :" + Relationship.ATTRIBUTE_USER_FROM_ID
+                        + " AND user_to = :" + Relationship.ATTRIBUTE_USER_TO_ID
+                        + " OR user_from = :" + Relationship.ATTRIBUTE_USER_TO_ID
+                        + " AND user_to = :" + Relationship.ATTRIBUTE_USER_FROM_ID),
 
         @NamedNativeQuery(name = Relationship.QUERY_GET_INCOME_REQUESTS_BY_ACTION_USER_ID,
-                query = "SELECT * FROM Relationship " +
-                        "WHERE status = 'REQUESTED' " +
-                        "AND action_user_id != :" + Relationship.ATTRIBUTE_ACTION_USER_ID +
-                        " ORDER BY date_modify",
+                query = "SELECT * FROM Relationship"
+                        + " WHERE status = 'REQUESTED'"
+                        + " AND action_user_id != :" + Relationship.ATTRIBUTE_ACTION_USER_ID
+                        + " ORDER BY date_modify",
                 resultClass = Relationship.class),
 
         @NamedNativeQuery(name = Relationship.QUERY_GET_OUTCOME_REQUESTS_BY_ACTION_USER_ID,
-                query = "SELECT * FROM Relationship " +
-                        "WHERE status = 'REQUESTED' " +
-                        "AND action_user_id = :" + Relationship.ATTRIBUTE_ACTION_USER_ID +
-                        " ORDER BY date_modify",
+                query = "SELECT * FROM Relationship"
+                        + " WHERE status = 'REQUESTED'"
+                        + " AND action_user_id = :" + Relationship.ATTRIBUTE_ACTION_USER_ID
+                        + " ORDER BY date_modify",
                 resultClass = Relationship.class),
 
 
         @NamedNativeQuery(name = Relationship.QUERY_FIND_ACTION_USER_ID_BY_USERS,
-                query = "SELECT action_user_id FROM Relationship " +
-                        "WHERE user_from = :" + Relationship.ATTRIBUTE_USER_FROM_ID +
-                        " AND user_to = :" + Relationship.ATTRIBUTE_USER_TO_ID +
-                        " OR user_from = :" + Relationship.ATTRIBUTE_USER_TO_ID +
-                        " AND user_to = :" + Relationship.ATTRIBUTE_USER_FROM_ID),
+                query = "SELECT action_user_id FROM Relationship"
+                        + " WHERE user_from = :" + Relationship.ATTRIBUTE_USER_FROM_ID
+                        + " AND user_to = :" + Relationship.ATTRIBUTE_USER_TO_ID
+                        + " OR user_from = :" + Relationship.ATTRIBUTE_USER_TO_ID
+                        + " AND user_to = :" + Relationship.ATTRIBUTE_USER_FROM_ID),
 
         @NamedNativeQuery(name = Relationship.QUERY_FIND_DATE_MODIFY_BY_USERS,
-                query = "SELECT date_modify FROM Relationship " +
-                        "WHERE user_from = :" + Relationship.ATTRIBUTE_USER_FROM_ID +
-                        " AND user_to = :" + Relationship.ATTRIBUTE_USER_TO_ID +
-                        " OR user_from = :" + Relationship.ATTRIBUTE_USER_TO_ID +
-                        " AND user_to = :" + Relationship.ATTRIBUTE_USER_FROM_ID),
+                query = "SELECT date_modify FROM Relationship"
+                        + " WHERE user_from = :" + Relationship.ATTRIBUTE_USER_FROM_ID
+                        + " AND user_to = :" + Relationship.ATTRIBUTE_USER_TO_ID
+                        + " OR user_from = :" + Relationship.ATTRIBUTE_USER_TO_ID
+                        + " AND user_to = :" + Relationship.ATTRIBUTE_USER_FROM_ID),
 
         @NamedNativeQuery(name = Relationship.QUERY_COUNT_OUTCOME_REQUESTS_BY_ACTION_USER_ID,
-                query = "SELECT COUNT(*) FROM Relationship " +
-                        "WHERE status = 'REQUESTED' " +
-                        "AND action_user_id = :" + Relationship.ATTRIBUTE_ACTION_USER_ID),
+                query = "SELECT COUNT(*) FROM Relationship"
+                        + " WHERE status = 'REQUESTED'"
+                        + " AND action_user_id = :" + Relationship.ATTRIBUTE_ACTION_USER_ID),
 
         @NamedNativeQuery(name = Relationship.QUERY_COUNT_FRIENDS_BY_USER_ID,
-                query = "SELECT COUNT(*) FROM Relationship " +
-                        "WHERE status = 'FRIENDS' " +
-                        "AND (user_from = :" + Relationship.ATTRIBUTE_USER_ID +
-                        " OR user_to = :" + Relationship.ATTRIBUTE_USER_ID + ")"),
+                query = "SELECT COUNT(*) FROM Relationship"
+                        + " WHERE status = 'FRIENDS'"
+                        + " AND (user_from = :" + Relationship.ATTRIBUTE_USER_ID
+                        + " OR user_to = :" + Relationship.ATTRIBUTE_USER_ID + ")"),
 
 
         @NamedNativeQuery(name = Relationship.QUERY_FIND_ID_BY_USERS,
-                query = "SELECT id FROM Relationship " +
-                        "WHERE user_from = :" + Relationship.ATTRIBUTE_USER_FROM_ID +
-                        " AND user_to = :" + Relationship.ATTRIBUTE_USER_TO_ID +
-                        " OR user_from = :" + Relationship.ATTRIBUTE_USER_TO_ID +
-                        " AND user_to = :" + Relationship.ATTRIBUTE_USER_FROM_ID)
+                query = "SELECT id FROM Relationship"
+                        + " WHERE user_from = :" + Relationship.ATTRIBUTE_USER_FROM_ID
+                        + " AND user_to = :" + Relationship.ATTRIBUTE_USER_TO_ID
+                        + " OR user_from = :" + Relationship.ATTRIBUTE_USER_TO_ID
+                        + " AND user_to = :" + Relationship.ATTRIBUTE_USER_FROM_ID)
 })
 public class Relationship {
 

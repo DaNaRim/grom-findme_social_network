@@ -23,8 +23,8 @@ import java.util.List;
                 query = "SELECT EXISTS(SELECT 1 FROM Users WHERE id = :" + User.ATTRIBUTE_ID + ")"),
 
         @NamedNativeQuery(name = User.QUERY_ARE_PHONE_AND_MAIL_BUSY,
-                query = "SELECT EXISTS(SELECT 1 FROM Users WHERE phone = :" + User.ATTRIBUTE_PHONE +
-                        " OR mail = :" + User.ATTRIBUTE_MAIL + ")")
+                query = "SELECT EXISTS(SELECT 1 FROM Users WHERE phone = :" + User.ATTRIBUTE_PHONE
+                        + " OR mail = :" + User.ATTRIBUTE_MAIL + ")")
 })
 public class User {
 
