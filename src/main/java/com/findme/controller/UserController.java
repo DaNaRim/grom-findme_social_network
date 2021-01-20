@@ -17,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -105,11 +106,42 @@ public class UserController {
 
     @PostMapping(path = "/registration")
     public @ResponseBody
-    ResponseEntity<Object> registerUser(@RequestBody User user, Model model) {
+    ResponseEntity<Object> registerUser(@RequestBody User user) {
         try {
             User newUser = userService.registerUser(user);
 
             return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+        } catch (BadRequestException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            System.err.println(sw.toString());
+            return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping(path = "/updateUser")
+    public @ResponseBody
+    ResponseEntity<Object> updateUser(@RequestBody User user, HttpSession session) {
+        try {
+            Long actionUserId = (Long) session.getAttribute("userId");
+
+            if (actionUserId == null) {
+                throw new UnauthorizedException("You must be authorized to do that");
+            }
+
+            User updatedUser = userService.updateUser(actionUserId, user);
+
+            try {
+                userService.updateDateLastActive(actionUserId);
+            } catch (Exception e) {
+                StringWriter sw = new StringWriter();
+                e.printStackTrace(new PrintWriter(sw));
+                System.err.println(sw.toString());
+            }
+
+            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
         } catch (BadRequestException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {

@@ -22,15 +22,33 @@ import java.util.List;
         @NamedNativeQuery(name = User.QUERY_IS_EXISTS,
                 query = "SELECT EXISTS(SELECT 1 FROM Users WHERE id = :" + User.ATTRIBUTE_ID + ")"),
 
+
         @NamedNativeQuery(name = User.QUERY_ARE_PHONE_AND_MAIL_BUSY,
                 query = "SELECT EXISTS(SELECT 1 FROM Users WHERE phone = :" + User.ATTRIBUTE_PHONE
-                        + " OR mail = :" + User.ATTRIBUTE_MAIL + ")")
+                        + " OR mail = :" + User.ATTRIBUTE_MAIL + ")"),
+
+        @NamedNativeQuery(name = User.QUERY_IS_PHONE_BUSY,
+                query = "SELECT EXISTS(SELECT 1 FROM Users WHERE phone = :" + User.ATTRIBUTE_PHONE + ")"),
+
+        @NamedNativeQuery(name = User.QUERY_IS_MAIL_BUSY,
+                query = "SELECT EXISTS(SELECT 1 FROM Users WHERE mail = :" + User.ATTRIBUTE_MAIL + ")"),
+
+        @NamedNativeQuery(name = User.QUERY_FIND_PHONE,
+                query = "SELECT phone FROM Users WHERE id = :" + User.ATTRIBUTE_ID),
+
+        @NamedNativeQuery(name = User.QUERY_FIND_MAIL,
+                query = "SELECT mail FROM Users WHERE id = :" + User.ATTRIBUTE_ID),
 })
 public class User {
 
     public static final String QUERY_FIND_BY_MAIL = "User.findByMail";
     public static final String QUERY_IS_EXISTS = "User.isExists";
+
     public static final String QUERY_ARE_PHONE_AND_MAIL_BUSY = "User.arePhoneAndMailBusy";
+    public static final String QUERY_IS_PHONE_BUSY = "User.isPhoneBusy";
+    public static final String QUERY_IS_MAIL_BUSY = "User.isMailBusy";
+    public static final String QUERY_FIND_PHONE = "User.findPhone";
+    public static final String QUERY_FIND_MAIL = "User.findMail";
 
     public static final String ATTRIBUTE_ID = "id";
     public static final String ATTRIBUTE_PHONE = "phone";

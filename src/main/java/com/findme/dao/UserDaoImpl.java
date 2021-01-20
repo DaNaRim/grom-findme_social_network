@@ -71,4 +71,56 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
             throw new InternalServerException("UserDaoImpl.arePhoneAndMailBusy failed", e);
         }
     }
+
+    @Override
+    public boolean isPhoneBusy(String phone) throws InternalServerException {
+        try {
+            return (boolean) em.createNamedQuery(User.QUERY_IS_PHONE_BUSY)
+                    .setParameter(User.ATTRIBUTE_PHONE, phone)
+                    .getSingleResult();
+
+        } catch (HibernateException e) {
+            throw new InternalServerException("UserDaoImpl.isPhoneBusy failed", e);
+        }
+    }
+
+    @Override
+    public boolean isMailBusy(String mail) throws InternalServerException {
+        try {
+            return (boolean) em.createNamedQuery(User.QUERY_IS_MAIL_BUSY)
+                    .setParameter(User.ATTRIBUTE_MAIL, mail)
+                    .getSingleResult();
+
+        } catch (HibernateException e) {
+            throw new InternalServerException("UserDaoImpl.isMailBusy failed", e);
+        }
+    }
+
+    @Override
+    public String findPhone(long id) throws InternalServerException {
+        try {
+            return (String) em.createNamedQuery(User.QUERY_FIND_PHONE)
+                    .setParameter(User.ATTRIBUTE_ID, id)
+                    .getSingleResult();
+
+        } catch (NoResultException e) {
+            return null;
+        } catch (HibernateException e) {
+            throw new InternalServerException("UserDaoImpl.findPhone failed", e);
+        }
+    }
+
+    @Override
+    public String findMail(long id) throws InternalServerException {
+        try {
+            return (String) em.createNamedQuery(User.QUERY_FIND_MAIL)
+                    .setParameter(User.ATTRIBUTE_ID, id)
+                    .getSingleResult();
+
+        } catch (NoResultException e) {
+            return null;
+        } catch (HibernateException e) {
+            throw new InternalServerException("UserDaoImpl.findMail failed", e);
+        }
+    }
 }

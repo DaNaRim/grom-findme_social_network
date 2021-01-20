@@ -15,6 +15,8 @@ public interface UserService {
 
     User registerUser(User user) throws BadRequestException, InternalServerException;
 
+    User updateUser(long actionUserId, User user) throws BadRequestException, InternalServerException;
+
     User login(String mail, String password) throws BadRequestException, InternalServerException;
 
     void updateDateLastActive(long userId) throws InternalServerException;

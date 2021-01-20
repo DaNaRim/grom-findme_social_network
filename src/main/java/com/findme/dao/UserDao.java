@@ -21,4 +21,12 @@ public interface UserDao {
 
 
     boolean arePhoneAndMailBusy(String phone, String mail) throws InternalServerException;
+
+    boolean isPhoneBusy(String phone) throws InternalServerException;
+
+    boolean isMailBusy(String mail) throws InternalServerException;
+
+    String findPhone(long id) throws InternalServerException;
+
+    String findMail(long id) throws InternalServerException;
 }

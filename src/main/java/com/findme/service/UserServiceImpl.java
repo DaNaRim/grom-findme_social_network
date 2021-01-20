@@ -36,9 +36,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User registerUser(User user) throws BadRequestException, InternalServerException {
-        validateUser(user);
+        validateCreateUser(user);
 
         return userdao.save(user);
+    }
+
+    @Override
+    public User updateUser(long actionUserId, User user) throws BadRequestException, InternalServerException {
+        validateUpdateUser(actionUserId, user);
+
+        return userdao.update(user);
     }
 
     @Override
@@ -58,7 +65,7 @@ public class UserServiceImpl implements UserService {
         userdao.updateDateLastActive(userId);
     }
 
-    private void validateUser(User user) throws BadRequestException, InternalServerException {
+    private void validateUserFields(User user) throws BadRequestException {
 
         if (user.getFirstName() == null || user.getLastName() == null
                 || user.getPhone() == null || user.getMail() == null
@@ -82,9 +89,37 @@ public class UserServiceImpl implements UserService {
 
         } else if (user.getAge() != null && user.getAge() <= 0) {
             throw new BadRequestException("age filed incorrect");
+        }
+    }
 
-        } else if (userdao.arePhoneAndMailBusy(user.getPhone(), user.getMail())) {
+    private void validateCreateUser(User user) throws BadRequestException, InternalServerException {
+
+        validateUserFields(user);
+
+        if (userdao.arePhoneAndMailBusy(user.getPhone(), user.getMail())) {
             throw new BadRequestException("mail or phone is busy");
+        }
+    }
+
+    private void validateUpdateUser(long actionUserId, User user) throws BadRequestException, InternalServerException {
+
+        validateUserFields(user);
+
+        if (user.getId() == null) {
+            throw new BadRequestException("user Id must be filed");
+        }
+
+        String oldPhone = userdao.findPhone(user.getId());
+        String oldMail = userdao.findMail(user.getId());
+
+        if (actionUserId != user.getId()) {
+            throw new BadRequestException("You can update only yourself");
+
+        } else if (!user.getPhone().equals(oldPhone) && userdao.isPhoneBusy(user.getPhone())) {
+            throw new BadRequestException("phone is busy");
+
+        } else if (!user.getMail().equals(oldMail) && userdao.isMailBusy(user.getMail())) {
+            throw new BadRequestException("mail is busy");
         }
     }
 }
