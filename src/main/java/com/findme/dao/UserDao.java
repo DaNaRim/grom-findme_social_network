@@ -4,6 +4,8 @@ import com.findme.exception.InternalServerException;
 import com.findme.model.User;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface UserDao {
 
@@ -16,6 +18,8 @@ public interface UserDao {
     User findByMail(String mail) throws InternalServerException;
 
     boolean isUserMissing(long id) throws InternalServerException;
+
+    boolean isUsersMissing(List<User> users) throws InternalServerException;
 
     void updateDateLastActive(long userId) throws InternalServerException;
 

@@ -102,13 +102,13 @@ public class PostServiceImpl implements PostService {
 
         } else if (post.getTaggedUsers() != null) {
 
-            for (User user : post.getTaggedUsers()) {
-                if (user.getId() == null || userService.isUserMissing(user.getId())) {
-                    throw new BadRequestException("Tagged users ids filed incorrect");
+            User userPosted = new User(post.getUserPosted().getId());
 
-                } else if (user.getId().equals(post.getUserPosted().getId())) {
-                    throw new BadRequestException("You can`t tag yourself");
-                }
+            if (post.getTaggedUsers().contains(userPosted)) {
+                throw new BadRequestException("You can`t tag yourself");
+
+            } else if (userService.isUsersMissing(post.getTaggedUsers())) {
+                throw new BadRequestException("Tagged users ids filed incorrect");
             }
         } else { // checking for contains url
             for (String str : post.getMessage().split(" ")) {

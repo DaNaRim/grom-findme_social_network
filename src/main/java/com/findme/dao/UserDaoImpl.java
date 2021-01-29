@@ -6,6 +6,7 @@ import org.hibernate.HibernateException;
 
 import javax.persistence.NoResultException;
 import java.util.Date;
+import java.util.List;
 
 public class UserDaoImpl extends Dao<User> implements UserDao {
 
@@ -36,6 +37,22 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
 
         } catch (HibernateException e) {
             throw new InternalServerException("UserDaoImpl.isUserMissing failed", e);
+        }
+    }
+
+    @Override
+    public boolean isUsersMissing(List<User> users) throws InternalServerException {
+
+        if (users.isEmpty()) return false;
+
+        try {
+            return !(boolean) em.createNativeQuery(User.getIsUsersMissingQuery(users))
+                    .getSingleResult();
+
+        } catch (NoResultException e) {
+            return true;
+        } catch (HibernateException e) {
+            throw new InternalServerException("UserDaoImpl.isUsersMissing failed", e);
         }
     }
 

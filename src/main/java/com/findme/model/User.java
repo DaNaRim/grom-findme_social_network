@@ -11,6 +11,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "Users", schema = "public")
@@ -176,5 +177,30 @@ public class User {
 
     public void setDateLastActive(Date dateLastActive) {
         this.dateLastActive = new Date(dateLastActive.getTime());
+    }
+
+    public static String getIsUsersMissingQuery(List<User> users) {
+
+        StringBuilder query = new StringBuilder();
+        for (User user : users) {
+            query.append("SELECT EXISTS(SELECT 1 FROM Users WHERE id = ").append(user.getId()).append(")");
+            query.append(" INTERSECT ");
+        }
+        query.delete(query.lastIndexOf(" INTERSECT "), query.length());
+
+        return query.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

@@ -8,6 +8,8 @@ import com.findme.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Transactional
 public class UserServiceImpl implements UserService {
 
@@ -32,6 +34,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean isUserMissing(long id) throws InternalServerException {
         return userdao.isUserMissing(id);
+    }
+
+    @Override
+    public boolean isUsersMissing(List<User> users) throws InternalServerException {
+        return userdao.isUsersMissing(users);
     }
 
     @Override

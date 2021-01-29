@@ -6,12 +6,16 @@ import com.findme.exception.NotFoundException;
 import com.findme.model.User;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public interface UserService {
 
     User findById(long id) throws NotFoundException, InternalServerException;
 
     boolean isUserMissing(long id) throws InternalServerException;
+
+    boolean isUsersMissing(List<User> users) throws InternalServerException;
 
     User registerUser(User user) throws BadRequestException, InternalServerException;
 
