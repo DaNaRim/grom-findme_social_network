@@ -120,11 +120,8 @@ public class PostController {
     @GetMapping(path = "/getByFilter")
     public @ResponseBody
     ResponseEntity<Object> getPostsOnUserPageByFilter(@RequestParam String userIdStr,
-                                                      @RequestBody PostFilter postFilter,
-                                                      HttpSession session) {
+                                                      @RequestBody PostFilter postFilter) {
         try {
-            Long actionUserId = (Long) session.getAttribute("userId");
-
             long userId;
 
             try {

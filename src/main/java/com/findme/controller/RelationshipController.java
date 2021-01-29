@@ -6,7 +6,6 @@ import com.findme.exception.UnauthorizedException;
 import com.findme.model.Relationship;
 import com.findme.model.RelationshipStatus;
 import com.findme.service.RelationshipService;
-import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,12 +27,10 @@ import java.util.List;
 public class RelationshipController {
 
     private final RelationshipService relationshipService;
-    private final UserService userService;
 
     @Autowired
-    public RelationshipController(RelationshipService relationshipService, UserService userService) {
+    public RelationshipController(RelationshipService relationshipService) {
         this.relationshipService = relationshipService;
-        this.userService = userService;
     }
 
     @PostMapping(path = "/add")
