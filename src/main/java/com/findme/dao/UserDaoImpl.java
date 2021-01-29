@@ -14,13 +14,6 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
     }
 
     @Override
-    public User save(User entity) throws InternalServerException {
-        entity.setDateLastActive(new Date());
-
-        return super.save(entity);
-    }
-
-    @Override
     public User findByMail(String mail) throws InternalServerException {
         try {
             return em.createNamedQuery(User.QUERY_FIND_BY_MAIL, User.class)

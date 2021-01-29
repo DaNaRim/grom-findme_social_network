@@ -100,7 +100,7 @@ public class User {
     @Column(name = "date_registered", insertable = false, updatable = false)
     private Date dateRegistered;
 
-    @Column(name = "date_last_active", nullable = false)
+    @Column(name = "date_last_active", insertable = false, nullable = false)
     private Date dateLastActive;
 
     //unrealized fields

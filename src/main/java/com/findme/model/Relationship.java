@@ -121,7 +121,7 @@ public class Relationship {
     @Column(name = "action_user_id", nullable = false)
     private Long actionUserId;
 
-    @Column(name = "date_modify", nullable = false)
+    @Column(name = "date_modify", insertable = false, nullable = false)
     private Date dateModify;
 
     public Relationship() {
