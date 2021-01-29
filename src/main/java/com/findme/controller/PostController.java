@@ -6,7 +6,6 @@ import com.findme.exception.UnauthorizedException;
 import com.findme.model.Post;
 import com.findme.model.PostFilter;
 import com.findme.service.PostService;
-import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,12 +29,10 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
-    private final UserService userService;
 
     @Autowired
-    public PostController(PostService postService, UserService userService) {
+    public PostController(PostService postService) {
         this.postService = postService;
-        this.userService = userService;
     }
 
     @PostMapping(path = "/create")
@@ -49,14 +46,6 @@ public class PostController {
             }
 
             Post newPost = postService.createPost(actionUserId, post);
-
-            try {
-                userService.updateDateLastActive(actionUserId);
-            } catch (Exception e) {
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                System.err.println(sw.toString());
-            }
 
             return new ResponseEntity<>(newPost, HttpStatus.CREATED);
         } catch (BadRequestException e) {
@@ -82,14 +71,6 @@ public class PostController {
             }
 
             Post updatedPost = postService.updatePost(actionUserId, post);
-
-            try {
-                userService.updateDateLastActive(actionUserId);
-            } catch (Exception e) {
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                System.err.println(sw.toString());
-            }
 
             return new ResponseEntity<>(updatedPost, HttpStatus.OK);
         } catch (BadRequestException e) {
@@ -123,14 +104,6 @@ public class PostController {
 
             postService.deletePost(actionUserId, postId);
 
-            try {
-                userService.updateDateLastActive(actionUserId);
-            } catch (Exception e) {
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                System.err.println(sw.toString());
-            }
-
             return new ResponseEntity<>("Post deleted", HttpStatus.OK);
         } catch (BadRequestException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -161,16 +134,6 @@ public class PostController {
             }
 
             List<Post> posts = postService.getPostsOnUserPageByFilter(userId, postFilter);
-
-            if (actionUserId != null) {
-                try {
-                    userService.updateDateLastActive(actionUserId);
-                } catch (Exception e) {
-                    StringWriter sw = new StringWriter();
-                    e.printStackTrace(new PrintWriter(sw));
-                    System.err.println(sw.toString());
-                }
-            }
 
             return new ResponseEntity<>(posts, HttpStatus.OK);
         } catch (BadRequestException e) {

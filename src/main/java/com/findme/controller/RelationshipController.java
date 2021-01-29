@@ -54,14 +54,6 @@ public class RelationshipController {
 
             Relationship relationship = relationshipService.addRelationship(actionUserId, userToId);
 
-            try {
-                userService.updateDateLastActive(actionUserId);
-            } catch (Exception e) {
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                System.err.println(sw.toString());
-            }
-
             return new ResponseEntity<>(relationship, HttpStatus.OK);
         } catch (UnauthorizedException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
@@ -100,14 +92,6 @@ public class RelationshipController {
             Relationship relationship =
                     relationshipService.updateRelationShip(actionUserId, userToId, relationshipStatus);
 
-            try {
-                userService.updateDateLastActive(actionUserId);
-            } catch (Exception e) {
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                System.err.println(sw.toString());
-            }
-
             return new ResponseEntity<>(relationship, HttpStatus.OK);
         } catch (UnauthorizedException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
@@ -133,14 +117,6 @@ public class RelationshipController {
             }
 
             List<Relationship> relationships = relationshipService.getIncomeRequests(actionUserId);
-
-            try {
-                userService.updateDateLastActive(actionUserId);
-            } catch (Exception e) {
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                System.err.println(sw.toString());
-            }
 
             model.addAttribute("incomeRequests", relationships);
             return "incomeRequests";
@@ -170,14 +146,6 @@ public class RelationshipController {
             }
 
             List<Relationship> relationships = relationshipService.getOutcomeRequests(actionUserId);
-
-            try {
-                userService.updateDateLastActive(actionUserId);
-            } catch (Exception e) {
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                System.err.println(sw.toString());
-            }
 
             model.addAttribute("outcomeRequests", relationships);
             return "outcomeRequests";

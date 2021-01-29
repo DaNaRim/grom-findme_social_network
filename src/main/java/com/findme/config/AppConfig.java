@@ -1,5 +1,6 @@
 package com.findme.config;
 
+import com.findme.controller.interceptor.UpdateUserDateLastActiveInterceptor;
 import com.findme.dao.PostDao;
 import com.findme.dao.PostDaoImpl;
 import com.findme.dao.RelationshipDao;
@@ -26,6 +27,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.spring5.SpringTemplateEngine;
@@ -113,6 +115,11 @@ public class AppConfig implements WebMvcConfigurer {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(emf);
         return transactionManager;
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new UpdateUserDateLastActiveInterceptor(userService()));
     }
 
     @Bean

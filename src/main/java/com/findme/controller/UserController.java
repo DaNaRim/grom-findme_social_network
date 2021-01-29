@@ -69,14 +69,6 @@ public class UserController {
                     ourRelationship = relationshipService.getOurRelationshipToUser(
                             (long) session.getAttribute("userId"), userPageId);
                 }
-
-                try {
-                    userService.updateDateLastActive(actionUserId);
-                } catch (Exception e) {
-                    StringWriter sw = new StringWriter();
-                    e.printStackTrace(new PrintWriter(sw));
-                    System.err.println(sw.toString());
-                }
             }
 
             model.addAttribute("user", user);
@@ -133,14 +125,6 @@ public class UserController {
 
             User updatedUser = userService.updateUser(actionUserId, user);
 
-            try {
-                userService.updateDateLastActive(actionUserId);
-            } catch (Exception e) {
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                System.err.println(sw.toString());
-            }
-
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);
         } catch (BadRequestException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -171,14 +155,6 @@ public class UserController {
 
             session.setAttribute("userId", user.getId());
 
-            try {
-                userService.updateDateLastActive(user.getId());
-            } catch (Exception e) {
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                System.err.println(sw.toString());
-            }
-
             return new ResponseEntity<>("Login success", HttpStatus.OK);
         } catch (BadRequestException e) {
 
@@ -199,14 +175,6 @@ public class UserController {
 
             if (actionUserId == null) {
                 throw new UnauthorizedException("You`re not log in");
-            }
-
-            try {
-                userService.updateDateLastActive(actionUserId);
-            } catch (Exception e) {
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                System.err.println(sw.toString());
             }
 
             session.removeAttribute("userId");
