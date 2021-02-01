@@ -5,8 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.Date;
@@ -15,45 +13,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "Users", schema = "public")
-@NamedNativeQueries({
-        @NamedNativeQuery(name = User.QUERY_FIND_BY_MAIL,
-                query = "SELECT * FROM Users WHERE mail = :" + User.ATTRIBUTE_MAIL,
-                resultClass = User.class),
-
-        @NamedNativeQuery(name = User.QUERY_IS_EXISTS,
-                query = "SELECT EXISTS(SELECT 1 FROM Users WHERE id = :" + User.ATTRIBUTE_ID + ")"),
-
-
-        @NamedNativeQuery(name = User.QUERY_ARE_PHONE_AND_MAIL_BUSY,
-                query = "SELECT EXISTS(SELECT 1 FROM Users WHERE phone = :" + User.ATTRIBUTE_PHONE
-                        + " OR mail = :" + User.ATTRIBUTE_MAIL + ")"),
-
-        @NamedNativeQuery(name = User.QUERY_IS_PHONE_BUSY,
-                query = "SELECT EXISTS(SELECT 1 FROM Users WHERE phone = :" + User.ATTRIBUTE_PHONE + ")"),
-
-        @NamedNativeQuery(name = User.QUERY_IS_MAIL_BUSY,
-                query = "SELECT EXISTS(SELECT 1 FROM Users WHERE mail = :" + User.ATTRIBUTE_MAIL + ")"),
-
-        @NamedNativeQuery(name = User.QUERY_FIND_PHONE,
-                query = "SELECT phone FROM Users WHERE id = :" + User.ATTRIBUTE_ID),
-
-        @NamedNativeQuery(name = User.QUERY_FIND_MAIL,
-                query = "SELECT mail FROM Users WHERE id = :" + User.ATTRIBUTE_ID),
-})
 public class User {
-
-    public static final String QUERY_FIND_BY_MAIL = "User.findByMail";
-    public static final String QUERY_IS_EXISTS = "User.isExists";
-
-    public static final String QUERY_ARE_PHONE_AND_MAIL_BUSY = "User.arePhoneAndMailBusy";
-    public static final String QUERY_IS_PHONE_BUSY = "User.isPhoneBusy";
-    public static final String QUERY_IS_MAIL_BUSY = "User.isMailBusy";
-    public static final String QUERY_FIND_PHONE = "User.findPhone";
-    public static final String QUERY_FIND_MAIL = "User.findMail";
-
-    public static final String ATTRIBUTE_ID = "id";
-    public static final String ATTRIBUTE_PHONE = "phone";
-    public static final String ATTRIBUTE_MAIL = "mail";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -177,18 +137,6 @@ public class User {
 
     public void setDateLastActive(Date dateLastActive) {
         this.dateLastActive = new Date(dateLastActive.getTime());
-    }
-
-    public static String getIsUsersMissingQuery(List<User> users) {
-
-        StringBuilder query = new StringBuilder();
-        for (User user : users) {
-            query.append("SELECT EXISTS(SELECT 1 FROM Users WHERE id = ").append(user.getId()).append(")");
-            query.append(" INTERSECT ");
-        }
-        query.delete(query.lastIndexOf(" INTERSECT "), query.length());
-
-        return query.toString();
     }
 
     @Override

@@ -9,67 +9,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
 import javax.persistence.Table;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "Post", schema = "public")
-@NamedNativeQueries({
-        @NamedNativeQuery(name = Post.QUERY_FIND_BY_USER_PAGE_POSTED,
-                query = "SELECT * FROM Post"
-                        + " WHERE user_page_posted = :" + Post.ATTRIBUTE_USER_PAGE_POSTED_ID
-                        + " ORDER BY date_posted"
-                        + " OFFSET :" + Post.ATTRIBUTE_START_FROM
-                        + " LIMIT 10",
-                resultClass = Post.class),
-
-        @NamedNativeQuery(name = Post.QUERY_FIND_BY_USER_POSTED_AND_USER_PAGE_POSTED,
-                query = "SELECT * FROM Post"
-                        + " WHERE user_posted = :" + Post.ATTRIBUTE_USER_POSTED_ID
-                        + " AND user_page_posted = :" + Post.ATTRIBUTE_USER_PAGE_POSTED_ID
-                        + " ORDER BY date_posted"
-                        + " OFFSET :" + Post.ATTRIBUTE_START_FROM
-                        + " LIMIT 10",
-                resultClass = Post.class),
-
-        @NamedNativeQuery(name = Post.QUERY_FIND_BY_USER_PAGE_POSTED_ONLY_FRIENDS,
-                query = "SELECT * FROM Post"
-                        + " WHERE user_page_posted = :" + Post.ATTRIBUTE_USER_PAGE_POSTED_ID
-                        + " AND user_posted != :" + Post.ATTRIBUTE_USER_PAGE_POSTED_ID
-                        + " ORDER BY date_posted"
-                        + " OFFSET :" + Post.ATTRIBUTE_START_FROM
-                        + " LIMIT 10",
-                resultClass = Post.class),
-
-
-        @NamedNativeQuery(name = Post.QUERY_IS_EXISTS,
-                query = "SELECT EXISTS(SELECT 1 FROM Post WHERE id = :" + Post.ATTRIBUTE_ID + ")"),
-
-        @NamedNativeQuery(name = Post.QUERY_FIND_USER_POSTED_BY_ID,
-                query = "SELECT user_posted FROM Post WHERE id = :" + Post.ATTRIBUTE_ID),
-
-        @NamedNativeQuery(name = Post.QUERY_FIND_USER_PAGE_POSTED_BY_ID,
-                query = "SELECT user_page_posted FROM Post WHERE id = :" + Post.ATTRIBUTE_ID)
-})
 public class Post {
-
-    public static final String QUERY_FIND_BY_USER_PAGE_POSTED = "Post.findByUserPagePosted";
-    public static final String QUERY_FIND_BY_USER_POSTED_AND_USER_PAGE_POSTED = "Post.findByUserPostedAndUserPagePosted";
-    public static final String QUERY_FIND_BY_USER_PAGE_POSTED_ONLY_FRIENDS = "Post.findByUserPagePostedOnlyFriends";
-
-    public static final String QUERY_IS_EXISTS = "Post.isExists";
-    public static final String QUERY_FIND_USER_POSTED_BY_ID = "Post.findUserPostedById";
-    public static final String QUERY_FIND_USER_PAGE_POSTED_BY_ID = "Post.findUserPagePostedById";
-
-
-    public static final String ATTRIBUTE_ID = "id";
-    public static final String ATTRIBUTE_USER_PAGE_POSTED_ID = "userPagePosted";
-    public static final String ATTRIBUTE_USER_POSTED_ID = "userPosted";
-
-    public static final String ATTRIBUTE_START_FROM = "startFrom";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
