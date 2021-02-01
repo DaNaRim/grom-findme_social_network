@@ -88,28 +88,29 @@ public class PostServiceImpl implements PostService {
 
         Pattern urlPattern = Pattern.compile("^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?$");
 
+        User userPosted = new User(post.getUserPosted().getId());
+
         if (post.getMessage() == null || post.getUserPagePosted() == null) {
             throw new BadRequestException("Message and userPagePosted are required fields");
 
         } else if (post.getMessage().length() > 200) {
-            throw new BadRequestException("Message length must be < 200");
+            throw new BadRequestException("Message length must be less than 200 characters");
 
         } else if (post.getTaggedLocation() != null && post.getTaggedLocation().length() > 128) {
-            throw new BadRequestException("TaggedLocation length must be < 128");
+            throw new BadRequestException("TaggedLocation length must be less than 128 characters");
 
         } else if (userService.isUserMissing(post.getUserPagePosted().getId())) {
             throw new BadRequestException("userPagePosted id filed incorrect");
 
-        } else if (post.getTaggedUsers() != null) {
+        } else if (post.getTaggedUsers() != null && post.getTaggedUsers().size() > 10) {
+            throw new BadRequestException("You can tag a maximum of 10 users");
 
-            User userPosted = new User(post.getUserPosted().getId());
+        } else if (post.getTaggedUsers() != null && post.getTaggedUsers().contains(userPosted)) {
+            throw new BadRequestException("You can`t tag yourself");
 
-            if (post.getTaggedUsers().contains(userPosted)) {
-                throw new BadRequestException("You can`t tag yourself");
+        } else if (post.getTaggedUsers() != null && userService.isUsersMissing(post.getTaggedUsers())) {
+            throw new BadRequestException("Tagged users ids filed incorrect");
 
-            } else if (userService.isUsersMissing(post.getTaggedUsers())) {
-                throw new BadRequestException("Tagged users ids filed incorrect");
-            }
         } else { // checking for contains url
             for (String str : post.getMessage().split(" ")) {
                 if (urlPattern.matcher(str).find()) {

@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException("fields length too long");
 
         } else if (user.getPassword().length() < 8) {
-            throw new BadRequestException("password length must be > 8");
+            throw new BadRequestException("password length must be greater than 8");
 
         } else if (user.getAge() != null && user.getAge() <= 0) {
             throw new BadRequestException("age filed incorrect");
