@@ -60,7 +60,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
 
         StringBuilder query = new StringBuilder();
         for (User user : users) {
-            query.append("SELECT EXISTS(SELECT 1 FROM Users WHERE id = ").append(user.getId()).append(")");
+            query.append("SELECT 1 FROM Users WHERE id = ").append(user.getId());
             query.append(" INTERSECT ");
         }
         query.delete(query.lastIndexOf(" INTERSECT "), query.length());
@@ -107,19 +107,9 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
     }
 
     @Override
-    public boolean isUsersMissing(List<User> users) throws InternalServerException {
-
-        if (users.isEmpty()) return false;
-
-        try {
-            return !(boolean) em.createNativeQuery(getIsUsersMissingQuery(users))
-                    .getSingleResult();
-
-        } catch (NoResultException e) {
-            return true;
-        } catch (HibernateException e) {
-            throw new InternalServerException("UserDaoImpl.isUsersMissing failed", e);
-        }
+    public User update(User user) throws InternalServerException {
+        user.setDateLastActive(new Date());
+        return super.update(user);
     }
 
     @Override
@@ -184,6 +174,23 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
             return null;
         } catch (HibernateException e) {
             throw new InternalServerException("UserDaoImpl.findMail failed", e);
+        }
+    }
+
+    @Override
+    public boolean isUsersMissing(List<User> users) throws InternalServerException {
+
+        if (users.isEmpty()) return false;
+
+        try {
+            Integer result = (Integer) em.createNativeQuery(getIsUsersMissingQuery(users))
+                    .getSingleResult();
+
+            return result != 1;
+        } catch (NoResultException e) {
+            return true;
+        } catch (HibernateException e) {
+            throw new InternalServerException("UserDaoImpl.isUsersMissing failed", e);
         }
     }
 }

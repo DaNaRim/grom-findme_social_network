@@ -49,8 +49,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(long actionUserId, User user) throws BadRequestException, InternalServerException {
-        validateUpdateUser(actionUserId, user);
+    public User updateUser(User user) throws BadRequestException, InternalServerException {
+        validateUpdateUser(user);
 
         return userdao.update(user);
     }
@@ -108,21 +108,14 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void validateUpdateUser(long actionUserId, User user) throws BadRequestException, InternalServerException {
+    private void validateUpdateUser(User user) throws BadRequestException, InternalServerException {
 
         validateUserFields(user);
-
-        if (user.getId() == null) {
-            throw new BadRequestException("user Id must be filed");
-        }
 
         String oldPhone = userdao.findPhone(user.getId());
         String oldMail = userdao.findMail(user.getId());
 
-        if (actionUserId != user.getId()) {
-            throw new BadRequestException("You can update only yourself");
-
-        } else if (!user.getPhone().equals(oldPhone) && userdao.isPhoneBusy(user.getPhone())) {
+        if (!user.getPhone().equals(oldPhone) && userdao.isPhoneBusy(user.getPhone())) {
             throw new BadRequestException("phone is busy");
 
         } else if (!user.getMail().equals(oldMail) && userdao.isMailBusy(user.getMail())) {

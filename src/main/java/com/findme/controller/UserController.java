@@ -123,11 +123,14 @@ public class UserController {
                 throw new UnauthorizedException("You must be authorized to do that");
             }
 
-            User updatedUser = userService.updateUser(actionUserId, user);
+            user.setId(actionUserId);
+            User updatedUser = userService.updateUser(user);
 
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);
         } catch (BadRequestException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (UnauthorizedException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));

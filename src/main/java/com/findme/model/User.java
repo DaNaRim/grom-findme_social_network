@@ -38,22 +38,22 @@ public class User {
 
     //optional fields
 
-    @Column(name = "age")
+    @Column(name = "age", insertable = false)
     private Integer age;
 
-    @Column(name = "country", length = 30)
+    @Column(name = "country", insertable = false, length = 30)
     private String country; //TODO from existed date
 
-    @Column(name = "city", length = 30)
+    @Column(name = "city", insertable = false, length = 30)
     private String city;
 
-    @Column(name = "school", length = 30)
+    @Column(name = "school", insertable = false, length = 30)
     private String school;
 
-    @Column(name = "university", length = 30)
+    @Column(name = "university", insertable = false, length = 30)
     private String university;
 
-    @Column(name = "religion", length = 30)
+    @Column(name = "religion", insertable = false, length = 30)
     private String religion;
 
     //system fields
