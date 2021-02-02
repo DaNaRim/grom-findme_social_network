@@ -2,6 +2,7 @@ package com.findme.dao;
 
 import com.findme.exception.InternalServerException;
 import com.findme.model.Post;
+import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 
 import javax.persistence.MappedSuperclass;
@@ -87,6 +88,12 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
                     .setParameter(ATTRIBUTE_START_FROM, startFrom)
                     .getResultList();
 
+            if (posts != null) {
+                for (Post post : posts) {
+                    Hibernate.initialize(post.getTaggedUsers());
+                }
+            }
+
             return posts == null ? new ArrayList<>() : posts;
         } catch (HibernateException e) {
             throw new InternalServerException("PostDaoImpl.findByUserPagePosted failed", e);
@@ -103,6 +110,12 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
                     .setParameter(ATTRIBUTE_START_FROM, startFrom)
                     .getResultList();
 
+            if (posts != null) {
+                for (Post post : posts) {
+                    Hibernate.initialize(post.getTaggedUsers());
+                }
+            }
+
             return posts == null ? new ArrayList<>() : posts;
         } catch (HibernateException e) {
             throw new InternalServerException("PostDaoImpl.findByUserPostedAndUserPagePosted failed", e);
@@ -116,6 +129,12 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
                     .setParameter(ATTRIBUTE_USER_PAGE_POSTED_ID, userId)
                     .setParameter(ATTRIBUTE_START_FROM, startFrom)
                     .getResultList();
+
+            if (posts != null) {
+                for (Post post : posts) {
+                    Hibernate.initialize(post.getTaggedUsers());
+                }
+            }
 
             return posts == null ? new ArrayList<>() : posts;
         } catch (HibernateException e) {
