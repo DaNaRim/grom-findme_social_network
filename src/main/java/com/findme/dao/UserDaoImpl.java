@@ -62,18 +62,10 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
         super(User.class);
     }
 
-    private static String getIsUsersMissingQuery(List<Long> usersIds) {
-
-        StringBuilder query = new StringBuilder();
-        query.append("SELECT EXISTS(");
-        for (Long id : usersIds) {
-            query.append("SELECT 1 FROM Users WHERE id = ").append(id);
-            query.append(" INTERSECT ");
-        }
-        query.delete(query.lastIndexOf(" INTERSECT "), query.length());
-        query.append(")");
-
-        return query.toString();
+    @Override
+    public User update(User user) throws InternalServerException {
+        user.setDateLastActive(new Date());
+        return super.update(user);
     }
 
     @Override
@@ -102,11 +94,6 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
         }
     }
 
-    @Override
-    public User update(User user) throws InternalServerException {
-        user.setDateLastActive(new Date());
-        return super.update(user);
-    }
 
     @Override
     public boolean isUsersMissing(List<Long> usersIds) throws InternalServerException {
@@ -119,6 +106,19 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
 
         } catch (HibernateException e) {
             throw new InternalServerException("UserDaoImpl.isUsersMissing failed", e);
+        }
+    }
+
+    @Override
+    public void updateDateLastActive(long userId) throws InternalServerException {
+        try {
+            em.createNamedQuery(QUERY_UPDATE_DATE_LAST_ACTIVE)
+                    .setParameter(ATTRIBUTE_DATE_LAST_ACTIVE, new Date())
+                    .setParameter(ATTRIBUTE_ID, userId)
+                    .executeUpdate();
+
+        } catch (HibernateException e) {
+            throw new InternalServerException("UserDaoImpl.updateDateLastActive failed", e);
         }
     }
 
@@ -188,16 +188,17 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
         }
     }
 
-    @Override
-    public void updateDateLastActive(long userId) throws InternalServerException {
-        try {
-            em.createNamedQuery(QUERY_UPDATE_DATE_LAST_ACTIVE)
-                    .setParameter(ATTRIBUTE_DATE_LAST_ACTIVE, new Date())
-                    .setParameter(ATTRIBUTE_ID, userId)
-                    .executeUpdate();
+    private static String getIsUsersMissingQuery(List<Long> usersIds) {
 
-        } catch (HibernateException e) {
-            throw new InternalServerException("UserDaoImpl.updateDateLastActive failed", e);
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT EXISTS(");
+        for (Long id : usersIds) {
+            query.append("SELECT 1 FROM Users WHERE id = ").append(id);
+            query.append(" INTERSECT ");
         }
+        query.delete(query.lastIndexOf(" INTERSECT "), query.length());
+        query.append(")");
+
+        return query.toString();
     }
 }
