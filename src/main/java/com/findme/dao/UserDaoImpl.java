@@ -20,6 +20,10 @@ import java.util.List;
         @NamedNativeQuery(name = UserDaoImpl.QUERY_IS_EXISTS,
                 query = "SELECT EXISTS(SELECT 1 FROM Users WHERE id = :" + UserDaoImpl.ATTRIBUTE_ID + ")"),
 
+        @NamedNativeQuery(name = UserDaoImpl.QUERY_UPDATE_DATE_LAST_ACTIVE,
+                query = "UPDATE Users SET date_last_active = :" + UserDaoImpl.ATTRIBUTE_DATE_LAST_ACTIVE +
+                        " WHERE id = :" + UserDaoImpl.ATTRIBUTE_ID),
+
 
         @NamedNativeQuery(name = UserDaoImpl.QUERY_ARE_PHONE_AND_MAIL_BUSY,
                 query = "SELECT EXISTS(SELECT 1 FROM Users WHERE phone = :" + UserDaoImpl.ATTRIBUTE_PHONE
@@ -41,6 +45,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
 
     public static final String QUERY_FIND_BY_MAIL = "findByMail";
     public static final String QUERY_IS_EXISTS = "isExists";
+    public static final String QUERY_UPDATE_DATE_LAST_ACTIVE = "updateDateLastActive";
 
     public static final String QUERY_ARE_PHONE_AND_MAIL_BUSY = "arePhoneAndMailBusy";
     public static final String QUERY_IS_PHONE_BUSY = "isPhoneBusy";
@@ -51,6 +56,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
     public static final String ATTRIBUTE_ID = "id";
     public static final String ATTRIBUTE_PHONE = "phone";
     public static final String ATTRIBUTE_MAIL = "mail";
+    public static final String ATTRIBUTE_DATE_LAST_ACTIVE = "dateLastActive";
 
     public UserDaoImpl() {
         super(User.class);
@@ -60,7 +66,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
 
         StringBuilder query = new StringBuilder();
         for (User user : users) {
-            query.append("SELECT 1 FROM Users WHERE id = ").append(user.getId());
+            query.append("SELECT EXISTS(SELECT 1 FROM Users WHERE id = ").append(user.getId()).append(")");
             query.append(" INTERSECT ");
         }
         query.delete(query.lastIndexOf(" INTERSECT "), query.length());
@@ -95,21 +101,25 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
     }
 
     @Override
-    public void updateDateLastActive(long userId) throws InternalServerException {
-        try {
-            User user = findById(userId);
-            user.setDateLastActive(new Date());
-
-            em.merge(user);
-        } catch (HibernateException e) {
-            throw new InternalServerException("UserDaoImpl.updateDateLastActive failed", e);
-        }
-    }
-
-    @Override
     public User update(User user) throws InternalServerException {
         user.setDateLastActive(new Date());
         return super.update(user);
+    }
+
+    @Override
+    public boolean isUsersMissing(List<User> users) throws InternalServerException {
+
+        if (users.isEmpty()) return false;
+
+        try {
+            return !(boolean) em.createNativeQuery(getIsUsersMissingQuery(users))
+                    .getSingleResult();
+
+        } catch (NoResultException e) {
+            return true;
+        } catch (HibernateException e) {
+            throw new InternalServerException("UserDaoImpl.isUsersMissing failed", e);
+        }
     }
 
     @Override
@@ -178,19 +188,15 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
     }
 
     @Override
-    public boolean isUsersMissing(List<User> users) throws InternalServerException {
-
-        if (users.isEmpty()) return false;
-
+    public void updateDateLastActive(long userId) throws InternalServerException {
         try {
-            Integer result = (Integer) em.createNativeQuery(getIsUsersMissingQuery(users))
-                    .getSingleResult();
+            em.createNamedQuery(QUERY_UPDATE_DATE_LAST_ACTIVE)
+                    .setParameter(ATTRIBUTE_DATE_LAST_ACTIVE, new Date())
+                    .setParameter(ATTRIBUTE_ID, userId)
+                    .executeUpdate();
 
-            return result != 1;
-        } catch (NoResultException e) {
-            return true;
         } catch (HibernateException e) {
-            throw new InternalServerException("UserDaoImpl.isUsersMissing failed", e);
+            throw new InternalServerException("UserDaoImpl.updateDateLastActive failed", e);
         }
     }
 }
