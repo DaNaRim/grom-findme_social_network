@@ -19,7 +19,7 @@ public interface UserDao {
 
     boolean isUserMissing(long id) throws InternalServerException;
 
-    boolean isUsersMissing(List<User> users) throws InternalServerException;
+    boolean isUsersMissing(List<Long> usersIds) throws InternalServerException;
 
     void updateDateLastActive(long userId) throws InternalServerException;
 

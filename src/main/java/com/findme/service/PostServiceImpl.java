@@ -10,6 +10,7 @@ import com.findme.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -90,6 +91,11 @@ public class PostServiceImpl implements PostService {
 
         User userPosted = new User(post.getUserPosted().getId());
 
+        List<Long> taggedUserIds = new ArrayList<>();
+        for (User user : post.getTaggedUsers()) {
+            taggedUserIds.add(user.getId());
+        }
+
         if (post.getMessage() == null || post.getUserPagePosted() == null) {
             throw new BadRequestException("Message and userPagePosted are required fields");
 
@@ -108,7 +114,7 @@ public class PostServiceImpl implements PostService {
         } else if (post.getTaggedUsers() != null && post.getTaggedUsers().contains(userPosted)) {
             throw new BadRequestException("You can`t tag yourself");
 
-        } else if (post.getTaggedUsers() != null && userService.isUsersMissing(post.getTaggedUsers())) {
+        } else if (post.getTaggedUsers() != null && userService.isUsersMissing(taggedUserIds)) {
             throw new BadRequestException("Tagged users ids filed incorrect");
 
         } else { // checking for contains url

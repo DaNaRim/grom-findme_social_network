@@ -15,7 +15,7 @@ public interface UserService {
 
     boolean isUserMissing(long id) throws InternalServerException;
 
-    boolean isUsersMissing(List<User> users) throws InternalServerException;
+    boolean isUsersMissing(List<Long> usersIds) throws InternalServerException;
 
     User registerUser(User user) throws BadRequestException, InternalServerException;
 

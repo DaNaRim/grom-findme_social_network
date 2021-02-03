@@ -62,14 +62,16 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
         super(User.class);
     }
 
-    private static String getIsUsersMissingQuery(List<User> users) {
+    private static String getIsUsersMissingQuery(List<Long> usersIds) {
 
         StringBuilder query = new StringBuilder();
-        for (User user : users) {
-            query.append("SELECT EXISTS(SELECT 1 FROM Users WHERE id = ").append(user.getId()).append(")");
+        query.append("SELECT EXISTS(");
+        for (Long id : usersIds) {
+            query.append("SELECT 1 FROM Users WHERE id = ").append(id);
             query.append(" INTERSECT ");
         }
         query.delete(query.lastIndexOf(" INTERSECT "), query.length());
+        query.append(")");
 
         return query.toString();
     }
@@ -107,16 +109,14 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
     }
 
     @Override
-    public boolean isUsersMissing(List<User> users) throws InternalServerException {
+    public boolean isUsersMissing(List<Long> usersIds) throws InternalServerException {
 
-        if (users.isEmpty()) return false;
+        if (usersIds.isEmpty()) return false;
 
         try {
-            return !(boolean) em.createNativeQuery(getIsUsersMissingQuery(users))
+            return !(boolean) em.createNativeQuery(getIsUsersMissingQuery(usersIds))
                     .getSingleResult();
 
-        } catch (NoResultException e) {
-            return true;
         } catch (HibernateException e) {
             throw new InternalServerException("UserDaoImpl.isUsersMissing failed", e);
         }
@@ -134,6 +134,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
             throw new InternalServerException("UserDaoImpl.arePhoneAndMailBusy failed", e);
         }
     }
+
 
     @Override
     public boolean isPhoneBusy(String phone) throws InternalServerException {
