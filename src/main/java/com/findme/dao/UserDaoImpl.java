@@ -8,6 +8,7 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.NamedNativeQueries;
 import javax.persistence.NamedNativeQuery;
 import javax.persistence.NoResultException;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
@@ -101,9 +102,10 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
         if (usersIds.isEmpty()) return false;
 
         try {
-            return !(boolean) em.createNativeQuery(getIsUsersMissingQuery(usersIds))
+            BigInteger countExistsUsers = (BigInteger) em.createNativeQuery(getIsUsersMissingQuery(usersIds))
                     .getSingleResult();
 
+            return countExistsUsers.intValue() != usersIds.size();
         } catch (HibernateException e) {
             throw new InternalServerException("UserDaoImpl.isUsersMissing failed", e);
         }
@@ -191,12 +193,11 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
     private static String getIsUsersMissingQuery(List<Long> usersIds) {
 
         StringBuilder query = new StringBuilder();
-        query.append("SELECT EXISTS(");
+        query.append("SELECT COUNT(*) FROM Users WHERE ").append(ATTRIBUTE_ID).append(" IN(");
         for (Long id : usersIds) {
-            query.append("SELECT 1 FROM Users WHERE id = ").append(id);
-            query.append(" INTERSECT ");
+            query.append(id).append(", ");
         }
-        query.delete(query.lastIndexOf(" INTERSECT "), query.length());
+        query.delete(query.lastIndexOf(", "), query.length());
         query.append(")");
 
         return query.toString();
