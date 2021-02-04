@@ -1,4 +1,4 @@
-package com.findme.controller.interceptor;
+package com.findme.util;
 
 import com.findme.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

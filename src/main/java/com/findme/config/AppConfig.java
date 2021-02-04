@@ -1,6 +1,5 @@
 package com.findme.config;
 
-import com.findme.controller.interceptor.UpdateUserDateLastActiveInterceptor;
 import com.findme.dao.PostDao;
 import com.findme.dao.PostDaoImpl;
 import com.findme.dao.RelationshipDao;
@@ -13,6 +12,7 @@ import com.findme.service.RelationshipService;
 import com.findme.service.RelationshipServiceImpl;
 import com.findme.service.UserService;
 import com.findme.service.UserServiceImpl;
+import com.findme.util.UpdateUserDateLastActiveInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
