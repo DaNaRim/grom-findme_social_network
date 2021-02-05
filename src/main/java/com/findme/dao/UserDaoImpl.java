@@ -18,8 +18,11 @@ import java.util.List;
                 query = "SELECT * FROM Users WHERE mail = :" + UserDaoImpl.ATTRIBUTE_MAIL,
                 resultClass = User.class),
 
-        @NamedNativeQuery(name = UserDaoImpl.QUERY_IS_EXISTS,
+        @NamedNativeQuery(name = UserDaoImpl.QUERY_IS_USER_EXISTS,
                 query = "SELECT EXISTS(SELECT 1 FROM Users WHERE id = :" + UserDaoImpl.ATTRIBUTE_ID + ")"),
+
+        @NamedNativeQuery(name = UserDaoImpl.QUERY_IS_USERS_EXISTS,
+                query = "SELECT COUNT(*) FROM Users WHERE id IN :" + UserDaoImpl.ATTRIBUTE_LIST_ID),
 
         @NamedNativeQuery(name = UserDaoImpl.QUERY_UPDATE_DATE_LAST_ACTIVE,
                 query = "UPDATE Users SET date_last_active = :" + UserDaoImpl.ATTRIBUTE_DATE_LAST_ACTIVE +
@@ -45,7 +48,8 @@ import java.util.List;
 public class UserDaoImpl extends Dao<User> implements UserDao {
 
     public static final String QUERY_FIND_BY_MAIL = "findByMail";
-    public static final String QUERY_IS_EXISTS = "isExists";
+    public static final String QUERY_IS_USER_EXISTS = "isUserExists";
+    public static final String QUERY_IS_USERS_EXISTS = "isUsersExists";
     public static final String QUERY_UPDATE_DATE_LAST_ACTIVE = "updateDateLastActive";
 
     public static final String QUERY_ARE_PHONE_AND_MAIL_BUSY = "arePhoneAndMailBusy";
@@ -55,6 +59,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
     public static final String QUERY_FIND_MAIL = "findMail";
 
     public static final String ATTRIBUTE_ID = "id";
+    public static final String ATTRIBUTE_LIST_ID = "listId";
     public static final String ATTRIBUTE_PHONE = "phone";
     public static final String ATTRIBUTE_MAIL = "mail";
     public static final String ATTRIBUTE_DATE_LAST_ACTIVE = "dateLastActive";
@@ -86,7 +91,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
     @Override
     public boolean isUserMissing(long id) throws InternalServerException {
         try {
-            return !(boolean) em.createNamedQuery(QUERY_IS_EXISTS)
+            return !(boolean) em.createNamedQuery(QUERY_IS_USER_EXISTS)
                     .setParameter(ATTRIBUTE_ID, id)
                     .getSingleResult();
 
@@ -102,7 +107,8 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
         if (usersIds.isEmpty()) return false;
 
         try {
-            BigInteger countExistsUsers = (BigInteger) em.createNativeQuery(getIsUsersMissingQuery(usersIds))
+            BigInteger countExistsUsers = (BigInteger) em.createNamedQuery(QUERY_IS_USERS_EXISTS)
+                    .setParameter(ATTRIBUTE_LIST_ID, usersIds)
                     .getSingleResult();
 
             return countExistsUsers.intValue() != usersIds.size();
@@ -188,18 +194,5 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
         } catch (HibernateException e) {
             throw new InternalServerException("UserDaoImpl.findMail failed", e);
         }
-    }
-
-    private static String getIsUsersMissingQuery(List<Long> usersIds) {
-
-        StringBuilder query = new StringBuilder();
-        query.append("SELECT COUNT(*) FROM Users WHERE ").append(ATTRIBUTE_ID).append(" IN(");
-        for (Long id : usersIds) {
-            query.append(id).append(", ");
-        }
-        query.delete(query.lastIndexOf(", "), query.length());
-        query.append(")");
-
-        return query.toString();
     }
 }
