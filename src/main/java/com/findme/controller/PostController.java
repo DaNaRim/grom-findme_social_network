@@ -144,4 +144,36 @@ public class PostController {
             return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping(path = "/feed")
+    public @ResponseBody
+    ResponseEntity<Object> getFeeds(@RequestParam String startFromStr, HttpSession session) {
+        try {
+            Long actionUserId = (Long) session.getAttribute("userId");
+            long startFrom;
+
+            if (actionUserId == null) {
+                throw new UnauthorizedException("You must be authorized to do that");
+            }
+
+            try {
+                startFrom = Long.parseLong(startFromStr);
+            } catch (NumberFormatException e) {
+                throw new BadRequestException("Fields filed incorrect");
+            }
+
+            List<Post> posts = postService.getFeeds(actionUserId, startFrom);
+
+            return new ResponseEntity<>(posts, HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (UnauthorizedException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            System.err.println(sw.toString());
+            return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

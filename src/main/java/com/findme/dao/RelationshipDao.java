@@ -31,4 +31,6 @@ public interface RelationshipDao {
     int countOutcomeRequests(long userId) throws InternalServerException;
 
     int countFriends(long userId) throws InternalServerException;
+
+    List<Long> getFriendIds(long userId) throws InternalServerException;
 }

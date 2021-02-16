@@ -41,6 +41,14 @@ import java.util.List;
                         + " LIMIT 10",
                 resultClass = Post.class),
 
+        @NamedNativeQuery(name = PostDaoImpl.QUERY_FIND_BY_USERS_POSTED,
+                query = "SELECT * FROM Post"
+                        + " WHERE user_posted IN :" + PostDaoImpl.ATTRIBUTE_USER_POSTED_IDS
+                        + " ORDER BY date_posted"
+                        + " OFFSET :" + PostDaoImpl.ATTRIBUTE_START_FROM
+                        + " LIMIT 10",
+                resultClass = Post.class),
+
 
         @NamedNativeQuery(name = PostDaoImpl.QUERY_IS_EXISTS,
                 query = "SELECT EXISTS(SELECT 1 FROM Post WHERE id = :" + PostDaoImpl.ATTRIBUTE_ID + ")"),
@@ -56,15 +64,16 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
     public static final String QUERY_FIND_BY_USER_PAGE_POSTED = "Post.findByUserPagePosted";
     public static final String QUERY_FIND_BY_USER_POSTED_AND_USER_PAGE_POSTED = "Post.findByUserPostedAndUserPagePosted";
     public static final String QUERY_FIND_BY_USER_PAGE_POSTED_ONLY_FRIENDS = "Post.findByUserPagePostedOnlyFriends";
+    public static final String QUERY_FIND_BY_USERS_POSTED = "Post.findByUsersPosted";
 
     public static final String QUERY_IS_EXISTS = "Post.isExists";
     public static final String QUERY_FIND_USER_POSTED_BY_ID = "Post.findUserPostedById";
     public static final String QUERY_FIND_USER_PAGE_POSTED_BY_ID = "Post.findUserPagePostedById";
 
-
     public static final String ATTRIBUTE_ID = "id";
     public static final String ATTRIBUTE_USER_PAGE_POSTED_ID = "userPagePosted";
     public static final String ATTRIBUTE_USER_POSTED_ID = "userPosted";
+    public static final String ATTRIBUTE_USER_POSTED_IDS = "userPostedIds";
 
     public static final String ATTRIBUTE_START_FROM = "startFrom";
 
@@ -139,6 +148,26 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
             return posts == null ? new ArrayList<>() : posts;
         } catch (HibernateException e) {
             throw new InternalServerException("PostDaoImpl.findByUserPagePostedOnlyFriends failed", e);
+        }
+    }
+
+    @Override
+    public List<Post> findByUserPostedIds(List<Long> userIds, long startFrom) throws InternalServerException {
+        try {
+            List<Post> posts = em.createNamedQuery(QUERY_FIND_BY_USERS_POSTED, Post.class)
+                    .setParameter(ATTRIBUTE_USER_POSTED_IDS, userIds)
+                    .setParameter(ATTRIBUTE_START_FROM, startFrom)
+                    .getResultList();
+
+            if (posts != null) {
+                for (Post post : posts) {
+                    Hibernate.initialize(post.getTaggedUsers());
+                }
+            }
+
+            return posts == null ? new ArrayList<>() : posts;
+        } catch (HibernateException e) {
+            throw new InternalServerException("PostDaoImpl.findByUserPostedIds failed", e);
         }
     }
 

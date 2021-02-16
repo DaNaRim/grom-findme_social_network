@@ -103,6 +103,11 @@ public class RelationshipServiceImpl implements RelationshipService {
         return status == FRIENDS;
     }
 
+    @Override
+    public List<Long> getFriendIds(long userId) throws InternalServerException {
+        return relationshipDao.getFriendIds(userId);
+    }
+
     private void validateFields(long userFromId, long userToId)
             throws NotFoundException, BadRequestException, InternalServerException {
 

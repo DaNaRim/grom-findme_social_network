@@ -25,4 +25,6 @@ public interface RelationshipService {
     List<Relationship> getOutcomeRequests(long userId) throws InternalServerException, NotFoundException;
 
     boolean areUsersFriends(long userFromId, long userToId) throws InternalServerException;
+
+    List<Long> getFriendIds(long userId) throws InternalServerException;
 }

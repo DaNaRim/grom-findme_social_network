@@ -22,4 +22,6 @@ public interface PostService {
 
     List<Post> getPostsOnUserPageByFilter(long userPageId, PostFilter postFilter)
             throws InternalServerException, NotFoundException;
+
+    List<Post> getFeeds(long userId, long startFrom) throws InternalServerException, NotFoundException;
 }

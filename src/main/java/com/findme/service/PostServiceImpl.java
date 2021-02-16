@@ -85,6 +85,21 @@ public class PostServiceImpl implements PostService {
         return posts;
     }
 
+    @Override
+    public List<Post> getFeeds(long userId, long startFrom) throws NotFoundException, InternalServerException {
+
+        List<Long> friendsIds = relationshipService.getFriendIds(userId);
+        friendsIds.add(userId);
+
+        List<Post> posts = postDao.findByUserPostedIds(friendsIds, startFrom);
+
+        if (posts.isEmpty()) {
+            throw new NotFoundException("No posts to show");
+        }
+
+        return posts;
+    }
+
     private void validatePostFields(Post post) throws BadRequestException, InternalServerException {
 
         Pattern urlPattern = Pattern.compile("^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?$");
