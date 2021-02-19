@@ -129,13 +129,19 @@ public class AppConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public UserService userService() {
-        return new UserServiceImpl(userDao());
+    public RelationshipDao relationshipDao() {
+        return new RelationshipDaoImpl();
     }
 
     @Bean
-    public RelationshipDao relationshipDao() {
-        return new RelationshipDaoImpl();
+    public PostDao postDao() {
+        return new PostDaoImpl();
+    }
+
+
+    @Bean
+    public UserService userService() {
+        return new UserServiceImpl(userDao());
     }
 
     @Bean
@@ -144,12 +150,8 @@ public class AppConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public PostDao postDao() {
-        return new PostDaoImpl();
-    }
-
-    @Bean
     public PostService postService() {
         return new PostServiceImpl(postDao(), userService(), relationshipService());
     }
+
 }
