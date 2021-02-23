@@ -9,6 +9,8 @@ import com.findme.model.User;
 import com.findme.service.PostService;
 import com.findme.service.RelationshipService;
 import com.findme.service.UserService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +26,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.List;
 
 @Controller
@@ -35,6 +35,8 @@ public class UserController {
     private final UserService userService;
     private final RelationshipService relationshipService;
     private final PostService postService;
+
+    private static final Logger logger = LogManager.getLogger(UserController.class);
 
     @Autowired
     public UserController(UserService userService, RelationshipService relationshipService, PostService postService) {
@@ -83,9 +85,7 @@ public class UserController {
             model.addAttribute("error", e.getMessage());
             return "400";
         } catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            System.err.println(sw.toString());
+            logger.error(e);
             model.addAttribute("error", "Something went wrong");
             return "500";
         }
@@ -106,9 +106,7 @@ public class UserController {
         } catch (BadRequestException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            System.err.println(sw.toString());
+            logger.error(e);
             return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -132,9 +130,7 @@ public class UserController {
         } catch (UnauthorizedException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            System.err.println(sw.toString());
+            logger.error(e);
             return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -154,6 +150,8 @@ public class UserController {
                 throw new BadRequestException("You`re already log in");
             }
 
+            if (true) throw new Exception("Oops!");
+
             User user = userService.login(mail, password);
 
             session.setAttribute("userId", user.getId());
@@ -163,9 +161,7 @@ public class UserController {
 
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            System.err.println(sw.toString());
+            logger.error(e);
             return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -187,9 +183,7 @@ public class UserController {
 
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            System.err.println(sw.toString());
+            logger.error(e);
             return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
