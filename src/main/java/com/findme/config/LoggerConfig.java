@@ -8,7 +8,6 @@ import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Order;
 import org.apache.logging.log4j.core.config.builder.api.AppenderComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
-import org.apache.logging.log4j.core.config.builder.api.LayoutComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.api.RootLoggerComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
@@ -22,21 +21,37 @@ public class LoggerConfig extends ConfigurationFactory {
     static Configuration createConfiguration(final String name, ConfigurationBuilder<BuiltConfiguration> builder) {
         builder.setConfigurationName(name);
 
-        LayoutComponentBuilder standard = builder.newLayout("PatternLayout");
-        standard.addAttribute("pattern", "[%d] %level %c{1}: %m");
+//        LayoutComponentBuilder standard = builder.newLayout("PatternLayout")
+//                .addAttribute("pattern", "[%d] %level %c{1}: %m%n");
 
-        AppenderComponentBuilder console = builder.newAppender("stdout", "Console");
-        console.add(standard);
+        AppenderComponentBuilder console = builder.newAppender("stdout", "Console")
+                .add(builder.newLayout("PatternLayout")
+                        .addAttribute("pattern", "%d [%t] %-5p %c - %m%n"));
         builder.add(console);
 
-        AppenderComponentBuilder file = builder.newAppender("log", "File");
-        file.addAttribute("fileName", "target/logging.log");
-        file.add(standard);
+        AppenderComponentBuilder file = builder.newAppender("log", "File")
+                .addAttribute("fileName", "C:/Users/Назар/IdeaProjects/findme/logs/logging.log")
+                .add(builder.newLayout("PatternLayout")
+                        .addAttribute("pattern", "%d [%t] %-5p %c - %m%n"));
         builder.add(file);
 
-        RootLoggerComponentBuilder rootLogger = builder.newRootLogger(Level.ERROR);
-        rootLogger.add(builder.newAppenderRef("stdout"));
-        rootLogger.add(builder.newAppenderRef("log"));
+        AppenderComponentBuilder rolling = builder.newAppender("rolling", "RollingFile")
+                .addAttribute("fileName", "C:/Users/Назар/IdeaProjects/findme/logs/rolling.log")
+                .addAttribute("filePattern", "rolling-%d{MM-dd-yy}.log.gz")
+                .add(builder.newLayout("PatternLayout")
+                        .addAttribute("pattern", "%d [%t] %-5p %c - %m%n"))
+                .addComponent(builder.newComponent("Policies")
+                        .addComponent(builder.newComponent("CronTriggeringPolicy")
+                                .addAttribute("schedule", "0 0 0 * * ?"))
+                        .addComponent(builder.newComponent("SizeBasedTriggeringPolicy")
+                                .addAttribute("size", "2M")));
+        builder.add(rolling);
+
+
+        RootLoggerComponentBuilder rootLogger = builder.newRootLogger(Level.ERROR)
+                .add(builder.newAppenderRef("stdout"))
+                .add(builder.newAppenderRef("log"))
+                .add(builder.newAppenderRef("rolling"));
         builder.add(rootLogger);
 
         return builder.build();
@@ -58,48 +73,3 @@ public class LoggerConfig extends ConfigurationFactory {
         return new String[]{"*"};
     }
 }
-
-/*
-    static Configuration createConfiguration(final String name, ConfigurationBuilder<BuiltConfiguration> builder) {
-        builder.setConfigurationName(name);
-
-        LayoutComponentBuilder standard = builder.newLayout("PatternLayout");
-        standard.addAttribute("pattern", "[%d] %level %c{1}: %m");
-
-        AppenderComponentBuilder console = builder.newAppender("stdout", "Console");
-        console.add(standard);
-
-//        FilterComponentBuilder flow = builder.newFilter("MarkerFilter",
-//                Filter.Result.ACCEPT, Filter.Result.DENY);
-//        flow.addAttribute("marker", "FLOW");
-//        console.add(flow);
-
-        builder.add(console);
-
-        AppenderComponentBuilder file = builder.newAppender("log", "File");
-        file.addAttribute("fileName", "target/logging.log");
-        file.add(standard);
-        builder.add(file);
-
-//        AppenderComponentBuilder rolling = builder.newAppender("rolling", "RollingFile");
-//        rolling.addAttribute("fileName", "rolling.log");
-//        rolling.addAttribute("filePattern", "rolling-%d{MM-dd-yy}.log.gz");
-//
-//        ComponentBuilder triggeringPolicies = builder.newComponent("Policies")
-//                .addComponent(builder.newComponent("CronTriggeringPolicy")
-//                        .addAttribute("schedule", "0 0 0 * * ?"))
-//                .addComponent(builder.newComponent("SizeBasedTriggeringPolicy")
-//                        .addAttribute("size", "100M"));
-//        rolling.addComponent(triggeringPolicies);
-//
-//        builder.add(rolling);
-
-        RootLoggerComponentBuilder rootLogger = builder.newRootLogger(Level.ERROR);
-        rootLogger.add(builder.newAppenderRef("stdout"));
-        rootLogger.add(builder.newAppenderRef("log"));
-//        rootLogger.add(builder.newAppenderRef("rolling"));
-        builder.add(rootLogger);
-
-        return builder.build();
-    }
- */

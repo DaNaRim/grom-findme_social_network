@@ -150,7 +150,7 @@ public class UserController {
                 throw new BadRequestException("You`re already log in");
             }
 
-            if (true) throw new Exception("Oops!");
+//            if (true) throw new Exception("Oops!");
 
             User user = userService.login(mail, password);
 

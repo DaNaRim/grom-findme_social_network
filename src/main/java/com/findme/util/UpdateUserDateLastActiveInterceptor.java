@@ -1,19 +1,21 @@
 package com.findme.util;
 
 import com.findme.service.UserService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 @Component
 public class UpdateUserDateLastActiveInterceptor implements HandlerInterceptor {
 
     private final UserService userService;
+
+    private static final Logger logger = LogManager.getLogger(UpdateUserDateLastActiveInterceptor.class);
 
     @Autowired
     public UpdateUserDateLastActiveInterceptor(UserService userService) {
@@ -31,9 +33,7 @@ public class UpdateUserDateLastActiveInterceptor implements HandlerInterceptor {
             try {
                 userService.updateDateLastActive(userId);
             } catch (Exception e) {
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                System.err.println(sw.toString());
+                logger.warn(e);
             }
         }
         return true;

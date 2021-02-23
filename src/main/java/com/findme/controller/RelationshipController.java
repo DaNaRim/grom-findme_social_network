@@ -6,6 +6,8 @@ import com.findme.exception.UnauthorizedException;
 import com.findme.model.Relationship;
 import com.findme.model.RelationshipStatus;
 import com.findme.service.RelationshipService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.List;
 
 @Controller
@@ -27,6 +27,8 @@ import java.util.List;
 public class RelationshipController {
 
     private final RelationshipService relationshipService;
+
+    private static final Logger logger = LogManager.getLogger(RelationshipController.class);
 
     @Autowired
     public RelationshipController(RelationshipService relationshipService) {
@@ -59,9 +61,7 @@ public class RelationshipController {
         } catch (BadRequestException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            System.err.println(sw.toString());
+            logger.error(e);
             return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -97,9 +97,7 @@ public class RelationshipController {
         } catch (BadRequestException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            System.err.println(sw.toString());
+            logger.error(e);
             return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -124,10 +122,7 @@ public class RelationshipController {
             model.addAttribute("error", e.getMessage());
             return "404";
         } catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            System.err.println(sw.toString());
-
+            logger.error(e);
             model.addAttribute("error", "Something went wrong");
             return "500";
         }
@@ -153,10 +148,7 @@ public class RelationshipController {
             model.addAttribute("error", e.getMessage());
             return "404";
         } catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            System.err.println(sw.toString());
-
+            logger.error(e);
             model.addAttribute("error", "Something went wrong");
             return "500";
         }
