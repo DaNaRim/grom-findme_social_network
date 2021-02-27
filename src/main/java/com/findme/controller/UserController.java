@@ -85,7 +85,7 @@ public class UserController {
             model.addAttribute("error", e.getMessage());
             return "400";
         } catch (Exception e) {
-            logger.error(e);
+            logger.error(e.getLocalizedMessage(), e);
             model.addAttribute("error", "Something went wrong");
             return "500";
         }
@@ -106,7 +106,7 @@ public class UserController {
         } catch (BadRequestException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            logger.error(e);
+            logger.error(e.getLocalizedMessage(), e);
             return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -130,7 +130,7 @@ public class UserController {
         } catch (UnauthorizedException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
-            logger.error(e);
+            logger.error(e.getLocalizedMessage(), e);
             return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -150,8 +150,6 @@ public class UserController {
                 throw new BadRequestException("You`re already log in");
             }
 
-//            if (true) throw new Exception("Oops!");
-
             User user = userService.login(mail, password);
 
             session.setAttribute("userId", user.getId());
@@ -161,7 +159,7 @@ public class UserController {
 
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            logger.error(e);
+            logger.error(e.getLocalizedMessage(), e);
             return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -183,7 +181,7 @@ public class UserController {
 
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
-            logger.error(e);
+            logger.error(e.getLocalizedMessage(), e);
             return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

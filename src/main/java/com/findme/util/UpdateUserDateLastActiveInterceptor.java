@@ -33,7 +33,7 @@ public class UpdateUserDateLastActiveInterceptor implements HandlerInterceptor {
             try {
                 userService.updateDateLastActive(userId);
             } catch (Exception e) {
-                logger.warn(e);
+                logger.error(e.getLocalizedMessage(), e);
             }
         }
         return true;
