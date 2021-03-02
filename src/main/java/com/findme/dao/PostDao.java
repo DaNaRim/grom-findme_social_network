@@ -24,7 +24,7 @@ public interface PostDao {
 
     List<Post> findByUserPagePostedOnlyFriends(long userId, long startFrom) throws InternalServerException;
 
-    List<Post> findByUserPostedIds(List<Long> userIds, long startFrom) throws InternalServerException;
+    List<Post> getFeedsByUser(long userId, long startFrom) throws InternalServerException;
 
 
     boolean isPostMissing(long id) throws InternalServerException;

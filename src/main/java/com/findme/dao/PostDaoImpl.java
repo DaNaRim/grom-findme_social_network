@@ -41,9 +41,17 @@ import java.util.List;
                         + " LIMIT 10",
                 resultClass = Post.class),
 
-        @NamedNativeQuery(name = PostDaoImpl.QUERY_FIND_BY_USERS_POSTED,
+        @NamedNativeQuery(name = PostDaoImpl.QUERY_GET_FEEDS_BY_USER,
                 query = "SELECT * FROM Post"
-                        + " WHERE user_posted IN :" + PostDaoImpl.ATTRIBUTE_USER_POSTED_IDS
+                        + " WHERE user_posted IN ("
+                        + "     SELECT user_from FROM Relationship"
+                        + "     WHERE user_to = :" + PostDaoImpl.ATTRIBUTE_USER_ID
+                        + "       AND status = 'FRIENDS'"
+                        + "     UNION"
+                        + "     SELECT user_to FROM Relationship"
+                        + "     WHERE user_from = :" + PostDaoImpl.ATTRIBUTE_USER_ID
+                        + "       AND status = 'FRIENDS')"
+                        + "    OR user_posted = :" + PostDaoImpl.ATTRIBUTE_USER_ID
                         + " ORDER BY date_posted"
                         + " OFFSET :" + PostDaoImpl.ATTRIBUTE_START_FROM
                         + " LIMIT 10",
@@ -64,7 +72,7 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
     public static final String QUERY_FIND_BY_USER_PAGE_POSTED = "Post.findByUserPagePosted";
     public static final String QUERY_FIND_BY_USER_POSTED_AND_USER_PAGE_POSTED = "Post.findByUserPostedAndUserPagePosted";
     public static final String QUERY_FIND_BY_USER_PAGE_POSTED_ONLY_FRIENDS = "Post.findByUserPagePostedOnlyFriends";
-    public static final String QUERY_FIND_BY_USERS_POSTED = "Post.findByUsersPosted";
+    public static final String QUERY_GET_FEEDS_BY_USER = "Post.getFeedsByUser";
 
     public static final String QUERY_IS_EXISTS = "Post.isExists";
     public static final String QUERY_FIND_USER_POSTED_BY_ID = "Post.findUserPostedById";
@@ -73,7 +81,7 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
     public static final String ATTRIBUTE_ID = "id";
     public static final String ATTRIBUTE_USER_PAGE_POSTED_ID = "userPagePosted";
     public static final String ATTRIBUTE_USER_POSTED_ID = "userPosted";
-    public static final String ATTRIBUTE_USER_POSTED_IDS = "userPostedIds";
+    public static final String ATTRIBUTE_USER_ID = "userId"; // for feeds
 
     public static final String ATTRIBUTE_START_FROM = "startFrom";
 
@@ -152,10 +160,10 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
     }
 
     @Override
-    public List<Post> findByUserPostedIds(List<Long> userIds, long startFrom) throws InternalServerException {
+    public List<Post> getFeedsByUser(long userId, long startFrom) throws InternalServerException {
         try {
-            List<Post> posts = em.createNamedQuery(QUERY_FIND_BY_USERS_POSTED, Post.class)
-                    .setParameter(ATTRIBUTE_USER_POSTED_IDS, userIds)
+            List<Post> posts = em.createNamedQuery(QUERY_GET_FEEDS_BY_USER, Post.class)
+                    .setParameter(ATTRIBUTE_USER_ID, userId)
                     .setParameter(ATTRIBUTE_START_FROM, startFrom)
                     .getResultList();
 
@@ -167,7 +175,7 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
 
             return posts == null ? new ArrayList<>() : posts;
         } catch (HibernateException e) {
-            throw new InternalServerException("PostDaoImpl.findByUserPostedIds failed", e);
+            throw new InternalServerException("PostDaoImpl.getFeedsByUser failed", e);
         }
     }
 

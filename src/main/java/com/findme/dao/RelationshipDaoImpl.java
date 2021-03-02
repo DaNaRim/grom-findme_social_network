@@ -81,16 +81,7 @@ import static com.findme.model.RelationshipStatus.REQUESTED;
                         + " WHERE user_from = :" + RelationshipDaoImpl.ATTRIBUTE_USER_FROM_ID
                         + " AND user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_TO_ID
                         + " OR user_from = :" + RelationshipDaoImpl.ATTRIBUTE_USER_TO_ID
-                        + " AND user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_FROM_ID),
-
-        @NamedNativeQuery(name = RelationshipDaoImpl.QUERY_FIND_USER_FRIEND_IDS,
-                query = "SELECT user_from FROM Relationship"
-                        + " WHERE user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_ID
-                        + " AND status = 'FRIENDS'"
-                        + " UNION"
-                        + " SELECT user_to FROM Relationship"
-                        + " WHERE user_from = :" + RelationshipDaoImpl.ATTRIBUTE_USER_ID
-                        + " AND status = 'FRIENDS'")
+                        + " AND user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_FROM_ID)
 })
 public class RelationshipDaoImpl extends Dao<Relationship> implements RelationshipDao {
 
@@ -103,7 +94,6 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     public static final String QUERY_FIND_DATE_MODIFY_BY_USERS = "findDateModifyByUsers";
     public static final String QUERY_COUNT_OUTCOME_REQUESTS_BY_ACTION_USER_ID = "countOutcomeRequestsByActionUserId";
     public static final String QUERY_COUNT_FRIENDS_BY_USER_ID = "countFriendsByUserId";
-    public static final String QUERY_FIND_USER_FRIEND_IDS = "findUserFriendIds";
 
     public static final String QUERY_FIND_ID_BY_USERS = "findIdByUsers";
 
@@ -269,19 +259,6 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
             return friends.intValue();
         } catch (HibernateException e) {
             throw new InternalServerException("RelationshipDaoImpl.countFriends failed", e);
-        }
-    }
-
-    @Override
-    public List<Long> getFriendIds(long userId) throws InternalServerException {
-        try {
-            List<Long> friendIds = em.createNamedQuery(QUERY_FIND_USER_FRIEND_IDS)
-                    .setParameter(ATTRIBUTE_USER_ID, userId)
-                    .getResultList();
-
-            return friendIds == null ? new ArrayList<>() : friendIds;
-        } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.getFriendIds failed", e);
         }
     }
 

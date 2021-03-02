@@ -26,5 +26,4 @@ public interface RelationshipService {
 
     boolean areUsersFriends(long userFromId, long userToId) throws InternalServerException;
 
-    List<Long> getFriendIds(long userId) throws InternalServerException;
 }

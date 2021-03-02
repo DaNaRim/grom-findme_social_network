@@ -88,10 +88,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<Post> getFeeds(long userId, long startFrom) throws NotFoundException, InternalServerException {
 
-        List<Long> friendsIds = relationshipService.getFriendIds(userId);
-        friendsIds.add(userId);
-
-        List<Post> posts = postDao.findByUserPostedIds(friendsIds, startFrom);
+        List<Post> posts = postDao.getFeedsByUser(userId, startFrom);
 
         if (posts.isEmpty()) {
             throw new NotFoundException("No posts to show");
