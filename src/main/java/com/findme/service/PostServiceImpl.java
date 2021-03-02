@@ -7,12 +7,17 @@ import com.findme.exception.NotFoundException;
 import com.findme.model.Post;
 import com.findme.model.PostFilter;
 import com.findme.model.User;
+import com.findme.validator.postValidator.MessageValidator;
+import com.findme.validator.postValidator.PostValidator;
+import com.findme.validator.postValidator.PostValidatorParams;
+import com.findme.validator.postValidator.TaggedLocationValidator;
+import com.findme.validator.postValidator.TaggedUsersValidator;
+import com.findme.validator.postValidator.UserPagePostedValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Transactional
 public class PostServiceImpl implements PostService {
@@ -99,43 +104,22 @@ public class PostServiceImpl implements PostService {
 
     private void validatePostFields(Post post) throws BadRequestException, InternalServerException {
 
-        Pattern urlPattern = Pattern.compile("^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?$");
+        List<Long> taggedUserIds = post.getTaggedUsers().stream().map(User::getId).collect(Collectors.toList());
 
-        User userPosted = new User(post.getUserPosted().getId());
+        PostValidator postValidator = new MessageValidator();
+        postValidator.linkWith(new TaggedLocationValidator())
+                .linkWith(new TaggedUsersValidator(userService))
+                .linkWith(new UserPagePostedValidator(userService));
 
-        List<Long> taggedUserIds = new ArrayList<>();
-        for (User user : post.getTaggedUsers()) {
-            taggedUserIds.add(user.getId());
-        }
+        PostValidatorParams params = new PostValidatorParams.Builder()
+                .withMessage(post.getMessage())
+                .withTaggedLocation(post.getTaggedLocation())
+                .withTaggedUsersIds(taggedUserIds)
+                .withUserPagePostedId(post.getUserPagePosted().getId())
+                .withUserPostedId(post.getUserPosted().getId())
+                .build();
 
-        if (post.getMessage() == null || post.getUserPagePosted() == null) {
-            throw new BadRequestException("Message and userPagePosted are required fields");
-
-        } else if (post.getMessage().length() > 200) {
-            throw new BadRequestException("Message length must be less than 200 characters");
-
-        } else if (post.getTaggedLocation() != null && post.getTaggedLocation().length() > 128) {
-            throw new BadRequestException("TaggedLocation length must be less than 128 characters");
-
-        } else if (userService.isUserMissing(post.getUserPagePosted().getId())) {
-            throw new BadRequestException("userPagePosted id filed incorrect");
-
-        } else if (post.getTaggedUsers() != null && post.getTaggedUsers().size() > 10) {
-            throw new BadRequestException("You can tag a maximum of 10 users");
-
-        } else if (post.getTaggedUsers() != null && post.getTaggedUsers().contains(userPosted)) {
-            throw new BadRequestException("You can`t tag yourself");
-
-        } else if (post.getTaggedUsers() != null && userService.isUsersMissing(taggedUserIds)) {
-            throw new BadRequestException("Tagged users ids filed incorrect");
-
-        } else { // checking for contains url
-            for (String str : post.getMessage().split(" ")) {
-                if (urlPattern.matcher(str).find()) {
-                    throw new BadRequestException("Message can`t contain url");
-                }
-            }
-        }
+        postValidator.check(params);
     }
 
     private void validateCreatePost(long userPosted, Post post) throws BadRequestException, InternalServerException {

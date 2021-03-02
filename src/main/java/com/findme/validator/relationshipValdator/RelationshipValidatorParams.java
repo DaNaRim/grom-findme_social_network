@@ -1,4 +1,4 @@
-package com.findme.validator;
+package com.findme.validator.relationshipValdator;
 
 import com.findme.model.RelationshipStatus;
 
