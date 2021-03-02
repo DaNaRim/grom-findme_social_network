@@ -17,10 +17,7 @@ public class TaggedUsersValidator extends PostValidator {
 
         if (params.getTaggedUsersIds() != null) {
 
-            if (params.getTaggedUsersIds().size() > 10) {
-                throw new BadRequestException("You can tag a maximum of 10 users");
-
-            } else if (params.getTaggedUsersIds().contains(params.getUserPostedId())) {
+            if (params.getTaggedUsersIds().contains(params.getUserPostedId())) {
                 throw new BadRequestException("You can`t tag yourself");
 
             } else if (userService.isUsersMissing(params.getTaggedUsersIds())) {
