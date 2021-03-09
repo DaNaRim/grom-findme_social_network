@@ -36,17 +36,14 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
                     + " LIMIT 10";
 
     private static final String QUERY_GET_FEEDS_BY_USER =
-            "SELECT * FROM Post"
-                    + " WHERE user_posted IN ("
-                    + "     SELECT user_from FROM Relationship"
-                    + "     WHERE user_to = :" + PostDaoImpl.ATTRIBUTE_USER_ID
-                    + "       AND status = 'FRIENDS'"
-                    + "     UNION"
-                    + "     SELECT user_to FROM Relationship"
-                    + "     WHERE user_from = :" + PostDaoImpl.ATTRIBUTE_USER_ID
-                    + "       AND status = 'FRIENDS')"
-                    + "    OR user_posted = :" + PostDaoImpl.ATTRIBUTE_USER_ID
-                    + " ORDER BY date_posted"
+            "SELECT p.* FROM Post p"
+                    + " JOIN Relationship r"
+                    + "   ON r.user_from = :" + PostDaoImpl.ATTRIBUTE_USER_ID
+                    + "       AND r.user_to = p.user_posted"
+                    + "     OR r.user_from = p.user_posted"
+                    + "       AND r.user_to = :" + PostDaoImpl.ATTRIBUTE_USER_ID
+                    + " WHERE r.status = 'FRIENDS'"
+                    + " ORDER BY p.date_posted"
                     + " OFFSET :" + PostDaoImpl.ATTRIBUTE_START_FROM
                     + " LIMIT 10";
 
