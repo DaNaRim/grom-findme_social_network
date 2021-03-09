@@ -91,15 +91,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> getFeeds(long userId, long startFrom) throws NotFoundException, InternalServerException {
-
-        List<Post> posts = postDao.getFeedsByUser(userId, startFrom);
-
-        if (posts.isEmpty()) {
-            throw new NotFoundException("No posts to show");
-        }
-
-        return posts;
+    public List<Post> getFeeds(long userId, long startFrom) throws InternalServerException {
+        return postDao.getFeedsByUser(userId, startFrom);
     }
 
     private void validatePostFields(Post post) throws BadRequestException, InternalServerException {
