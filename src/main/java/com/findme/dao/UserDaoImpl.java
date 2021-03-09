@@ -4,65 +4,49 @@ import com.findme.exception.InternalServerException;
 import com.findme.model.User;
 import org.hibernate.HibernateException;
 
-import javax.persistence.MappedSuperclass;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
 import javax.persistence.NoResultException;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
-@MappedSuperclass
-@NamedNativeQueries({
-        @NamedNativeQuery(name = UserDaoImpl.QUERY_FIND_BY_MAIL,
-                query = "SELECT * FROM Users WHERE mail = :" + UserDaoImpl.ATTRIBUTE_MAIL,
-                resultClass = User.class),
-
-        @NamedNativeQuery(name = UserDaoImpl.QUERY_IS_USER_EXISTS,
-                query = "SELECT EXISTS(SELECT 1 FROM Users WHERE id = :" + UserDaoImpl.ATTRIBUTE_ID + ")"),
-
-        @NamedNativeQuery(name = UserDaoImpl.QUERY_IS_USERS_EXISTS,
-                query = "SELECT COUNT(*) FROM Users WHERE id IN :" + UserDaoImpl.ATTRIBUTE_LIST_ID),
-
-        @NamedNativeQuery(name = UserDaoImpl.QUERY_UPDATE_DATE_LAST_ACTIVE,
-                query = "UPDATE Users SET date_last_active = :" + UserDaoImpl.ATTRIBUTE_DATE_LAST_ACTIVE +
-                        " WHERE id = :" + UserDaoImpl.ATTRIBUTE_ID),
-
-
-        @NamedNativeQuery(name = UserDaoImpl.QUERY_ARE_PHONE_AND_MAIL_BUSY,
-                query = "SELECT EXISTS(SELECT 1 FROM Users WHERE phone = :" + UserDaoImpl.ATTRIBUTE_PHONE
-                        + " OR mail = :" + UserDaoImpl.ATTRIBUTE_MAIL + ")"),
-
-        @NamedNativeQuery(name = UserDaoImpl.QUERY_IS_PHONE_BUSY,
-                query = "SELECT EXISTS(SELECT 1 FROM Users WHERE phone = :" + UserDaoImpl.ATTRIBUTE_PHONE + ")"),
-
-        @NamedNativeQuery(name = UserDaoImpl.QUERY_IS_MAIL_BUSY,
-                query = "SELECT EXISTS(SELECT 1 FROM Users WHERE mail = :" + UserDaoImpl.ATTRIBUTE_MAIL + ")"),
-
-        @NamedNativeQuery(name = UserDaoImpl.QUERY_FIND_PHONE,
-                query = "SELECT phone FROM Users WHERE id = :" + UserDaoImpl.ATTRIBUTE_ID),
-
-        @NamedNativeQuery(name = UserDaoImpl.QUERY_FIND_MAIL,
-                query = "SELECT mail FROM Users WHERE id = :" + UserDaoImpl.ATTRIBUTE_ID),
-})
 public class UserDaoImpl extends Dao<User> implements UserDao {
 
-    public static final String QUERY_FIND_BY_MAIL = "findByMail";
-    public static final String QUERY_IS_USER_EXISTS = "isUserExists";
-    public static final String QUERY_IS_USERS_EXISTS = "isUsersExists";
-    public static final String QUERY_UPDATE_DATE_LAST_ACTIVE = "updateDateLastActive";
+    private static final String QUERY_FIND_BY_MAIL =
+            "SELECT * FROM Users WHERE mail = :" + UserDaoImpl.ATTRIBUTE_MAIL;
 
-    public static final String QUERY_ARE_PHONE_AND_MAIL_BUSY = "arePhoneAndMailBusy";
-    public static final String QUERY_IS_PHONE_BUSY = "isPhoneBusy";
-    public static final String QUERY_IS_MAIL_BUSY = "isMailBusy";
-    public static final String QUERY_FIND_PHONE = "findPhone";
-    public static final String QUERY_FIND_MAIL = "findMail";
+    private static final String QUERY_IS_USER_EXISTS =
+            "SELECT EXISTS(SELECT 1 FROM Users WHERE id = :" + UserDaoImpl.ATTRIBUTE_ID + ")";
 
-    public static final String ATTRIBUTE_ID = "id";
-    public static final String ATTRIBUTE_LIST_ID = "listId";
-    public static final String ATTRIBUTE_PHONE = "phone";
-    public static final String ATTRIBUTE_MAIL = "mail";
-    public static final String ATTRIBUTE_DATE_LAST_ACTIVE = "dateLastActive";
+    private static final String QUERY_IS_USERS_EXISTS =
+            "SELECT COUNT(*) FROM Users WHERE id IN :" + UserDaoImpl.ATTRIBUTE_LIST_ID;
+
+    private static final String QUERY_UPDATE_DATE_LAST_ACTIVE =
+            "UPDATE Users SET date_last_active = :" + UserDaoImpl.ATTRIBUTE_DATE_LAST_ACTIVE +
+                    " WHERE id = :" + UserDaoImpl.ATTRIBUTE_ID;
+
+
+    private static final String QUERY_ARE_PHONE_AND_MAIL_BUSY =
+            "SELECT EXISTS(SELECT 1 FROM Users WHERE phone = :" + UserDaoImpl.ATTRIBUTE_PHONE
+                    + " OR mail = :" + UserDaoImpl.ATTRIBUTE_MAIL + ")";
+
+    private static final String QUERY_IS_PHONE_BUSY =
+            "SELECT EXISTS(SELECT 1 FROM Users WHERE phone = :" + UserDaoImpl.ATTRIBUTE_PHONE + ")";
+
+    private static final String QUERY_IS_MAIL_BUSY =
+            "SELECT EXISTS(SELECT 1 FROM Users WHERE mail = :" + UserDaoImpl.ATTRIBUTE_MAIL + ")";
+
+    private static final String QUERY_FIND_PHONE =
+            "SELECT phone FROM Users WHERE id = :" + UserDaoImpl.ATTRIBUTE_ID;
+
+    private static final String QUERY_FIND_MAIL =
+            "SELECT mail FROM Users WHERE id = :" + UserDaoImpl.ATTRIBUTE_ID;
+
+
+    private static final String ATTRIBUTE_ID = "id";
+    private static final String ATTRIBUTE_LIST_ID = "listId";
+    private static final String ATTRIBUTE_PHONE = "phone";
+    private static final String ATTRIBUTE_MAIL = "mail";
+    private static final String ATTRIBUTE_DATE_LAST_ACTIVE = "dateLastActive";
 
     public UserDaoImpl() {
         super(User.class);
@@ -77,7 +61,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
     @Override
     public User findByMail(String mail) throws InternalServerException {
         try {
-            return em.createNamedQuery(QUERY_FIND_BY_MAIL, User.class)
+            return (User) em.createNativeQuery(QUERY_FIND_BY_MAIL, User.class)
                     .setParameter(ATTRIBUTE_MAIL, mail)
                     .getSingleResult();
 
@@ -91,7 +75,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
     @Override
     public boolean isUserMissing(long id) throws InternalServerException {
         try {
-            return !(boolean) em.createNamedQuery(QUERY_IS_USER_EXISTS)
+            return !(boolean) em.createNativeQuery(QUERY_IS_USER_EXISTS)
                     .setParameter(ATTRIBUTE_ID, id)
                     .getSingleResult();
 
@@ -107,7 +91,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
         if (usersIds.isEmpty()) return false;
 
         try {
-            BigInteger countExistsUsers = (BigInteger) em.createNamedQuery(QUERY_IS_USERS_EXISTS)
+            BigInteger countExistsUsers = (BigInteger) em.createNativeQuery(QUERY_IS_USERS_EXISTS)
                     .setParameter(ATTRIBUTE_LIST_ID, usersIds)
                     .getSingleResult();
 
@@ -120,7 +104,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
     @Override
     public void updateDateLastActive(long userId) throws InternalServerException {
         try {
-            em.createNamedQuery(QUERY_UPDATE_DATE_LAST_ACTIVE)
+            em.createNativeQuery(QUERY_UPDATE_DATE_LAST_ACTIVE)
                     .setParameter(ATTRIBUTE_DATE_LAST_ACTIVE, new Date())
                     .setParameter(ATTRIBUTE_ID, userId)
                     .executeUpdate();
@@ -133,7 +117,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
     @Override
     public boolean arePhoneAndMailBusy(String phone, String mail) throws InternalServerException {
         try {
-            return (boolean) em.createNamedQuery(QUERY_ARE_PHONE_AND_MAIL_BUSY)
+            return (boolean) em.createNativeQuery(QUERY_ARE_PHONE_AND_MAIL_BUSY)
                     .setParameter(ATTRIBUTE_PHONE, phone)
                     .setParameter(ATTRIBUTE_MAIL, mail)
                     .getSingleResult();
@@ -147,7 +131,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
     @Override
     public boolean isPhoneBusy(String phone) throws InternalServerException {
         try {
-            return (boolean) em.createNamedQuery(QUERY_IS_PHONE_BUSY)
+            return (boolean) em.createNativeQuery(QUERY_IS_PHONE_BUSY)
                     .setParameter(ATTRIBUTE_PHONE, phone)
                     .getSingleResult();
 
@@ -159,7 +143,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
     @Override
     public boolean isMailBusy(String mail) throws InternalServerException {
         try {
-            return (boolean) em.createNamedQuery(QUERY_IS_MAIL_BUSY)
+            return (boolean) em.createNativeQuery(QUERY_IS_MAIL_BUSY)
                     .setParameter(ATTRIBUTE_MAIL, mail)
                     .getSingleResult();
 
@@ -171,7 +155,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
     @Override
     public String findPhone(long id) throws InternalServerException {
         try {
-            return (String) em.createNamedQuery(QUERY_FIND_PHONE)
+            return (String) em.createNativeQuery(QUERY_FIND_PHONE)
                     .setParameter(ATTRIBUTE_ID, id)
                     .getSingleResult();
 
@@ -185,7 +169,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
     @Override
     public String findMail(long id) throws InternalServerException {
         try {
-            return (String) em.createNamedQuery(QUERY_FIND_MAIL)
+            return (String) em.createNativeQuery(QUERY_FIND_MAIL)
                     .setParameter(ATTRIBUTE_ID, id)
                     .getSingleResult();
 
