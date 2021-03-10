@@ -85,13 +85,13 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
                     .setParameter(ATTRIBUTE_START_FROM, startFrom)
                     .getResultList();
 
-            if (posts != null) {
-                for (Post post : posts) {
-                    Hibernate.initialize(post.getTaggedUsers());
-                }
+            if (posts == null) return new ArrayList<>();
+
+            for (Post post : posts) {
+                Hibernate.initialize(post.getTaggedUsers());
             }
 
-            return posts == null ? new ArrayList<>() : posts;
+            return posts;
         } catch (HibernateException e) {
             throw new InternalServerException("PostDaoImpl.findByUserPagePosted failed", e);
         }
@@ -107,13 +107,13 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
                     .setParameter(ATTRIBUTE_START_FROM, startFrom)
                     .getResultList();
 
-            if (posts != null) {
-                for (Post post : posts) {
-                    Hibernate.initialize(post.getTaggedUsers());
-                }
+            if (posts == null) return new ArrayList<>();
+
+            for (Post post : posts) {
+                Hibernate.initialize(post.getTaggedUsers());
             }
 
-            return posts == null ? new ArrayList<>() : posts;
+            return posts;
         } catch (HibernateException e) {
             throw new InternalServerException("PostDaoImpl.findByUserPostedAndUserPagePosted failed", e);
         }
@@ -127,13 +127,13 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
                     .setParameter(ATTRIBUTE_START_FROM, startFrom)
                     .getResultList();
 
-            if (posts != null) {
-                for (Post post : posts) {
-                    Hibernate.initialize(post.getTaggedUsers());
-                }
+            if (posts == null) return new ArrayList<>();
+
+            for (Post post : posts) {
+                Hibernate.initialize(post.getTaggedUsers());
             }
 
-            return posts == null ? new ArrayList<>() : posts;
+            return posts;
         } catch (HibernateException e) {
             throw new InternalServerException("PostDaoImpl.findByUserPagePostedOnlyFriends failed", e);
         }
@@ -147,13 +147,13 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
                     .setParameter(ATTRIBUTE_START_FROM, startFrom)
                     .getResultList();
 
-            if (posts != null) {
-                for (Post post : posts) {
-                    Hibernate.initialize(post.getTaggedUsers());
-                }
+            if (posts == null) return new ArrayList<>();
+
+            for (Post post : posts) {
+                Hibernate.initialize(post.getTaggedUsers());
             }
 
-            return posts == null ? new ArrayList<>() : posts;
+            return posts;
         } catch (HibernateException e) {
             throw new InternalServerException("PostDaoImpl.getFeedsByUser failed", e);
         }
