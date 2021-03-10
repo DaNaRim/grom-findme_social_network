@@ -36,13 +36,13 @@ public class RelationshipController {
     }
 
     @PostMapping(path = "/add")
-    public ResponseEntity<Object> addRelationship(@RequestParam String userToIdStr, HttpSession session) {
+    public ResponseEntity<Object> addRelationship(@RequestParam String userToId, HttpSession session) {
         try {
             Long actionUserId = (Long) session.getAttribute("userId");
 
-            long userToId;
+            long userToId1;
             try {
-                userToId = Long.parseLong(userToIdStr);
+                userToId1 = Long.parseLong(userToId);
 
             } catch (NumberFormatException e) {
                 throw new BadRequestException("Fields filed incorrect");
@@ -51,7 +51,7 @@ public class RelationshipController {
                 throw new UnauthorizedException("You must be authorized to do that");
             }
 
-            Relationship relationship = relationshipService.addRelationship(actionUserId, userToId);
+            Relationship relationship = relationshipService.addRelationship(actionUserId, userToId1);
 
             return new ResponseEntity<>(relationship, HttpStatus.OK);
         } catch (UnauthorizedException e) {
@@ -67,16 +67,16 @@ public class RelationshipController {
     }
 
     @PutMapping(path = "/update")
-    public ResponseEntity<Object> updateRelationship(@RequestParam String userToIdStr,
+    public ResponseEntity<Object> updateRelationship(@RequestParam String userToId,
                                                      @RequestParam String status,
                                                      HttpSession session) {
         try {
             Long actionUserId = (Long) session.getAttribute("userId");
 
-            long userToId;
+            long userToId1;
             RelationshipStatus relationshipStatus;
             try {
-                userToId = Long.parseLong(userToIdStr);
+                userToId1 = Long.parseLong(userToId);
                 relationshipStatus = RelationshipStatus.valueOf(status);
 
             } catch (IllegalArgumentException e) {
@@ -87,7 +87,7 @@ public class RelationshipController {
             }
 
             Relationship relationship =
-                    relationshipService.updateRelationShip(actionUserId, userToId, relationshipStatus);
+                    relationshipService.updateRelationShip(actionUserId, userToId1, relationshipStatus);
 
             return new ResponseEntity<>(relationship, HttpStatus.OK);
         } catch (UnauthorizedException e) {

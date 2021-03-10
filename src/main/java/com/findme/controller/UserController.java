@@ -45,31 +45,31 @@ public class UserController {
         this.postService = postService;
     }
 
-    @GetMapping(path = "/{userPageIdStr}")
-    public String profile(@PathVariable String userPageIdStr, Model model, HttpSession session) {
+    @GetMapping(path = "/{userId}")
+    public String profile(@PathVariable String userId, Model model, HttpSession session) {
         try {
             Long actionUserId = (Long) session.getAttribute("userId");
             boolean isMyPage = false;
 
-            long userPageId;
+            long userId1;
             try {
-                userPageId = Long.parseLong(userPageIdStr);
+                userId1 = Long.parseLong(userId);
 
             } catch (NumberFormatException e) {
-                throw new BadRequestException("Id`s filed incorrect");
+                throw new BadRequestException("Id filed incorrect");
             }
 
-            User user = userService.findById(userPageId);
-            List<Post> postsOnPage = postService.getPostsOnUserPage(userPageId, 0);
+            User user = userService.findById(userId1);
+            List<Post> postsOnPage = postService.getPostsOnUserPage(userId1, 0);
 
             Relationship ourRelationship = null;
             if (actionUserId != null) {
 
-                if (actionUserId == userPageId) {
+                if (actionUserId == userId1) {
                     isMyPage = true;
                 } else {
                     ourRelationship = relationshipService.getOurRelationshipToUser(
-                            (long) session.getAttribute("userId"), userPageId);
+                            (long) session.getAttribute("userId"), userId1);
                 }
             }
 
@@ -156,7 +156,6 @@ public class UserController {
 
             return new ResponseEntity<>("Login success", HttpStatus.OK);
         } catch (BadRequestException e) {
-
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             logger.error(e.getLocalizedMessage(), e);
@@ -178,7 +177,6 @@ public class UserController {
 
             return new ResponseEntity<>("Logout success", HttpStatus.OK);
         } catch (UnauthorizedException e) {
-
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
             logger.error(e.getLocalizedMessage(), e);

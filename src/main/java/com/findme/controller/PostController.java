@@ -85,13 +85,13 @@ public class PostController {
 
     @DeleteMapping(path = "/delete")
     public @ResponseBody
-    ResponseEntity<String> deletePost(@RequestParam String postIdStr, HttpSession session) {
+    ResponseEntity<String> deletePost(@RequestParam String postId, HttpSession session) {
         try {
             Long actionUserId = (Long) session.getAttribute("userId");
 
-            long postId;
+            long postId1;
             try {
-                postId = Long.parseLong(postIdStr);
+                postId1 = Long.parseLong(postId);
             } catch (NumberFormatException e) {
                 throw new BadRequestException("Fields filed incorrect");
             }
@@ -100,7 +100,7 @@ public class PostController {
                 throw new UnauthorizedException("You must be authorized to do that");
             }
 
-            postService.deletePost(actionUserId, postId);
+            postService.deletePost(actionUserId, postId1);
 
             return new ResponseEntity<>("Post deleted", HttpStatus.OK);
         } catch (BadRequestException e) {
@@ -115,18 +115,18 @@ public class PostController {
 
     @GetMapping(path = "/getByFilter")
     public @ResponseBody
-    ResponseEntity<Object> getPostsOnUserPageByFilter(@RequestParam String userIdStr,
+    ResponseEntity<Object> getPostsOnUserPageByFilter(@RequestParam String userId,
                                                       @RequestBody PostFilter postFilter) {
         try {
-            long userId;
+            long userId1;
 
             try {
-                userId = Long.parseLong(userIdStr);
+                userId1 = Long.parseLong(userId);
             } catch (NumberFormatException e) {
                 throw new BadRequestException("Fields filed incorrect");
             }
 
-            List<Post> posts = postService.getPostsOnUserPageByFilter(userId, postFilter);
+            List<Post> posts = postService.getPostsOnUserPageByFilter(userId1, postFilter);
 
             return new ResponseEntity<>(posts, HttpStatus.OK);
         } catch (BadRequestException e) {
@@ -141,22 +141,22 @@ public class PostController {
 
     @GetMapping(path = "/feed")
     public @ResponseBody
-    ResponseEntity<Object> getFeeds(@RequestParam String startFromStr, HttpSession session) {
+    ResponseEntity<Object> getFeeds(@RequestParam String startFrom, HttpSession session) {
         try {
             Long actionUserId = (Long) session.getAttribute("userId");
-            long startFrom;
+            long startFrom1;
 
             if (actionUserId == null) {
                 throw new UnauthorizedException("You must be authorized to do that");
             }
 
             try {
-                startFrom = Long.parseLong(startFromStr);
+                startFrom1 = Long.parseLong(startFrom);
             } catch (NumberFormatException e) {
                 throw new BadRequestException("Fields filed incorrect");
             }
 
-            List<Post> posts = postService.getFeeds(actionUserId, startFrom);
+            List<Post> posts = postService.getFeeds(actionUserId, startFrom1);
 
             return new ResponseEntity<>(posts, HttpStatus.OK);
         } catch (NotFoundException e) {
