@@ -2,7 +2,6 @@ package com.findme.dao;
 
 import com.findme.exception.InternalServerException;
 import com.findme.model.Post;
-import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 
 import javax.persistence.NoResultException;
@@ -13,37 +12,53 @@ import java.util.List;
 public class PostDaoImpl extends Dao<Post> implements PostDao {
 
     private static final String QUERY_FIND_BY_USER_PAGE_POSTED =
-            "SELECT * FROM Post"
+            "SELECT p.* , array_agg(u.id) AS tagged_users"
+                    + " FROM Post p"
+                    + "     JOIN Post_tagged_users ptu ON p.id = ptu.post_id"
+                    + "     JOIN Users u ON u.id = ptu.tagged_user_id"
                     + " WHERE user_page_posted = :" + PostDaoImpl.ATTRIBUTE_USER_PAGE_POSTED_ID
-                    + " ORDER BY date_posted"
+                    + " GROUP BY p.id"
+                    + " ORDER BY max(p.date_posted)"
                     + " OFFSET :" + PostDaoImpl.ATTRIBUTE_START_FROM
                     + " LIMIT 10";
 
     private static final String QUERY_FIND_BY_USER_POSTED_AND_USER_PAGE_POSTED =
-            "SELECT * FROM Post"
+            "SELECT p.* , array_agg(u.id) AS tagged_users"
+                    + " FROM Post p"
+                    + "     JOIN Post_tagged_users ptu ON p.id = ptu.post_id"
+                    + "     JOIN Users u ON u.id = ptu.tagged_user_id"
                     + " WHERE user_posted = :" + PostDaoImpl.ATTRIBUTE_USER_POSTED_ID
-                    + " AND user_page_posted = :" + PostDaoImpl.ATTRIBUTE_USER_PAGE_POSTED_ID
-                    + " ORDER BY date_posted"
+                    + "   AND user_page_posted = :" + PostDaoImpl.ATTRIBUTE_USER_PAGE_POSTED_ID
+                    + " GROUP BY p.id"
+                    + " ORDER BY max(p.date_posted)"
                     + " OFFSET :" + PostDaoImpl.ATTRIBUTE_START_FROM
                     + " LIMIT 10";
 
     private static final String QUERY_FIND_BY_USER_PAGE_POSTED_ONLY_FRIENDS =
-            "SELECT * FROM Post"
+            "SELECT p.* , array_agg(u.id) AS tagged_users"
+                    + " FROM Post p"
+                    + "     JOIN Post_tagged_users ptu ON p.id = ptu.post_id"
+                    + "     JOIN Users u ON u.id = ptu.tagged_user_id"
                     + " WHERE user_page_posted = :" + PostDaoImpl.ATTRIBUTE_USER_PAGE_POSTED_ID
-                    + " AND user_posted != :" + PostDaoImpl.ATTRIBUTE_USER_PAGE_POSTED_ID
-                    + " ORDER BY date_posted"
+                    + "   AND user_posted != :" + PostDaoImpl.ATTRIBUTE_USER_PAGE_POSTED_ID
+                    + " GROUP BY p.id"
+                    + " ORDER BY max(p.date_posted)"
                     + " OFFSET :" + PostDaoImpl.ATTRIBUTE_START_FROM
                     + " LIMIT 10";
 
     private static final String QUERY_GET_FEEDS_BY_USER =
-            "SELECT p.* FROM Post p"
-                    + " JOIN Relationship r"
-                    + "   ON r.user_from = :" + PostDaoImpl.ATTRIBUTE_USER_ID
-                    + "       AND r.user_to = p.user_posted"
-                    + "     OR r.user_from = p.user_posted"
-                    + "       AND r.user_to = :" + PostDaoImpl.ATTRIBUTE_USER_ID
+            "SELECT p.* , array_agg(u.id) AS tagged_users"
+                    + " FROM Post p"
+                    + "     JOIN Post_tagged_users ptu ON p.id = ptu.post_id"
+                    + "     JOIN Users u ON u.id = ptu.tagged_user_id"
+                    + "     JOIN Relationship r"
+                    + "          ON r.user_from = :" + PostDaoImpl.ATTRIBUTE_USER_ID
+                    + "              AND r.user_to = p.user_posted"
+                    + "            OR r.user_from = p.user_posted"
+                    + "              AND r.user_to = :" + PostDaoImpl.ATTRIBUTE_USER_ID
                     + " WHERE r.status = 'FRIENDS'"
-                    + " ORDER BY p.date_posted"
+                    + " GROUP BY p.id"
+                    + " ORDER BY max(p.date_posted)"
                     + " OFFSET :" + PostDaoImpl.ATTRIBUTE_START_FROM
                     + " LIMIT 10";
 
@@ -85,13 +100,7 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
                     .setParameter(ATTRIBUTE_START_FROM, startFrom)
                     .getResultList();
 
-            if (posts == null) return new ArrayList<>();
-
-            for (Post post : posts) {
-                Hibernate.initialize(post.getTaggedUsers());
-            }
-
-            return posts;
+            return posts == null ? new ArrayList<>() : posts;
         } catch (HibernateException e) {
             throw new InternalServerException("PostDaoImpl.findByUserPagePosted failed", e);
         }
@@ -107,13 +116,7 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
                     .setParameter(ATTRIBUTE_START_FROM, startFrom)
                     .getResultList();
 
-            if (posts == null) return new ArrayList<>();
-
-            for (Post post : posts) {
-                Hibernate.initialize(post.getTaggedUsers());
-            }
-
-            return posts;
+            return posts == null ? new ArrayList<>() : posts;
         } catch (HibernateException e) {
             throw new InternalServerException("PostDaoImpl.findByUserPostedAndUserPagePosted failed", e);
         }
@@ -127,13 +130,7 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
                     .setParameter(ATTRIBUTE_START_FROM, startFrom)
                     .getResultList();
 
-            if (posts == null) return new ArrayList<>();
-
-            for (Post post : posts) {
-                Hibernate.initialize(post.getTaggedUsers());
-            }
-
-            return posts;
+            return posts == null ? new ArrayList<>() : posts;
         } catch (HibernateException e) {
             throw new InternalServerException("PostDaoImpl.findByUserPagePostedOnlyFriends failed", e);
         }
@@ -147,13 +144,7 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
                     .setParameter(ATTRIBUTE_START_FROM, startFrom)
                     .getResultList();
 
-            if (posts == null) return new ArrayList<>();
-
-            for (Post post : posts) {
-                Hibernate.initialize(post.getTaggedUsers());
-            }
-
-            return posts;
+            return posts == null ? new ArrayList<>() : posts;
         } catch (HibernateException e) {
             throw new InternalServerException("PostDaoImpl.getFeedsByUser failed", e);
         }

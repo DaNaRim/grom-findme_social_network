@@ -2,6 +2,7 @@ package com.findme.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -27,7 +28,7 @@ public class Post {
     @Column(name = "tagged_location")
     private String taggedLocation;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "Post_tagged_users",
             joinColumns = {@JoinColumn(name = "post_id", nullable = false, updatable = false)},
             inverseJoinColumns = {@JoinColumn(name = "tagged_user_id", nullable = false, updatable = false)})
