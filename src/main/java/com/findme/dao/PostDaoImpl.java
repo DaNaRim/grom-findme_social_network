@@ -20,7 +20,7 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
                     + " GROUP BY p.id"
                     + " ORDER BY max(p.date_posted)"
                     + " OFFSET :" + PostDaoImpl.ATTRIBUTE_START_FROM
-                    + " LIMIT 10";
+                    + " LIMIT " + PostDaoImpl.ATTRIBUTE_RESULT_LIMIT;
 
     private static final String QUERY_FIND_BY_USER_POSTED_AND_USER_PAGE_POSTED =
             "SELECT p.* , array_agg(u.id) AS tagged_users"
@@ -32,7 +32,7 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
                     + " GROUP BY p.id"
                     + " ORDER BY max(p.date_posted)"
                     + " OFFSET :" + PostDaoImpl.ATTRIBUTE_START_FROM
-                    + " LIMIT 10";
+                    + " LIMIT " + PostDaoImpl.ATTRIBUTE_RESULT_LIMIT;
 
     private static final String QUERY_FIND_BY_USER_PAGE_POSTED_ONLY_FRIENDS =
             "SELECT p.* , array_agg(u.id) AS tagged_users"
@@ -44,7 +44,7 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
                     + " GROUP BY p.id"
                     + " ORDER BY max(p.date_posted)"
                     + " OFFSET :" + PostDaoImpl.ATTRIBUTE_START_FROM
-                    + " LIMIT 10";
+                    + " LIMIT " + PostDaoImpl.ATTRIBUTE_RESULT_LIMIT;
 
     private static final String QUERY_GET_FEEDS_BY_USER =
             "SELECT p.* , array_agg(u.id) AS tagged_users"
@@ -60,7 +60,7 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
                     + " GROUP BY p.id"
                     + " ORDER BY max(p.date_posted)"
                     + " OFFSET :" + PostDaoImpl.ATTRIBUTE_START_FROM
-                    + " LIMIT 10";
+                    + " LIMIT " + PostDaoImpl.ATTRIBUTE_RESULT_LIMIT;
 
 
     private static final String QUERY_IS_EXISTS =
@@ -76,9 +76,10 @@ public class PostDaoImpl extends Dao<Post> implements PostDao {
     private static final String ATTRIBUTE_ID = "id";
     private static final String ATTRIBUTE_USER_PAGE_POSTED_ID = "userPagePosted";
     private static final String ATTRIBUTE_USER_POSTED_ID = "userPosted";
-    private static final String ATTRIBUTE_USER_ID = "userId"; // for feeds
+    private static final String ATTRIBUTE_USER_ID = "userId"; //for feeds (Relationship: userFrom and userTo)
 
     private static final String ATTRIBUTE_START_FROM = "startFrom";
+    private static final int ATTRIBUTE_RESULT_LIMIT = 10;
 
     public PostDaoImpl() {
         super(Post.class);
