@@ -1,103 +1,39 @@
-package com.findme.controller;
+package com.findme.controller.restController;
 
 import com.findme.exception.BadRequestException;
-import com.findme.exception.NotFoundException;
 import com.findme.exception.UnauthorizedException;
-import com.findme.model.Post;
-import com.findme.model.Relationship;
 import com.findme.model.User;
-import com.findme.service.PostService;
-import com.findme.service.RelationshipService;
 import com.findme.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
-import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping(path = "/user")
 public class UserController {
 
     private final UserService userService;
-    private final RelationshipService relationshipService;
-    private final PostService postService;
 
     private static final Logger logger = LogManager.getLogger(UserController.class);
 
     @Autowired
-    public UserController(UserService userService, RelationshipService relationshipService, PostService postService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.relationshipService = relationshipService;
-        this.postService = postService;
-    }
-
-    @GetMapping(path = "/{userId}")
-    public String profile(@PathVariable String userId, Model model, HttpSession session) {
-        try {
-            Long actionUserId = (Long) session.getAttribute("userId");
-            boolean isMyPage = false;
-
-            long userId1;
-            try {
-                userId1 = Long.parseLong(userId);
-
-            } catch (NumberFormatException e) {
-                throw new BadRequestException("Id filed incorrect");
-            }
-
-            User user = userService.findById(userId1);
-            List<Post> postsOnPage = postService.getPostsOnUserPage(userId1, 0);
-
-            Relationship ourRelationship = null;
-            if (actionUserId != null) {
-
-                if (actionUserId == userId1) {
-                    isMyPage = true;
-                } else {
-                    ourRelationship = relationshipService.getOurRelationshipToUser(
-                            (long) session.getAttribute("userId"), userId1);
-                }
-            }
-
-            model.addAttribute("user", user);
-            model.addAttribute("isMyPage", isMyPage);
-            model.addAttribute("ourRelationship", ourRelationship);
-            model.addAttribute("postsOnPage", postsOnPage);
-            return "profile";
-        } catch (NotFoundException e) {
-            model.addAttribute("error", e.getMessage());
-            return "404";
-        } catch (BadRequestException e) {
-            model.addAttribute("error", e.getMessage());
-            return "400";
-        } catch (Exception e) {
-            logger.error(e.getLocalizedMessage(), e);
-            model.addAttribute("error", "Something went wrong");
-            return "500";
-        }
-    }
-
-    @GetMapping(path = "/registration")
-    public String registrationForm() {
-        return "registration";
     }
 
     @PostMapping(path = "/registration")
-    public @ResponseBody
+    public
     ResponseEntity<Object> registerUser(@RequestBody User user) {
         try {
             User newUser = userService.registerUser(user);
@@ -112,7 +48,7 @@ public class UserController {
     }
 
     @PutMapping(path = "/updateUser")
-    public @ResponseBody
+    public
     ResponseEntity<Object> updateUser(@RequestBody User user, HttpSession session) {
         try {
             Long actionUserId = (Long) session.getAttribute("userId");
@@ -135,13 +71,8 @@ public class UserController {
         }
     }
 
-    @GetMapping(path = "/login")
-    public String loginForm() {
-        return "login";
-    }
-
     @PostMapping(path = "/login")
-    public @ResponseBody
+    public
     ResponseEntity<String> login(@RequestParam String mail,
                                  @RequestParam String password,
                                  HttpSession session) {
@@ -164,8 +95,7 @@ public class UserController {
     }
 
     @GetMapping(path = "/logout")
-    public @ResponseBody
-    ResponseEntity<String> logout(HttpSession session) {
+    public ResponseEntity<String> logout(HttpSession session) {
         try {
             Long actionUserId = (Long) session.getAttribute("userId");
 

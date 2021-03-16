@@ -1,4 +1,4 @@
-package com.findme.controller;
+package com.findme.controller.restController;
 
 import com.findme.exception.BadRequestException;
 import com.findme.exception.NotFoundException;
@@ -11,7 +11,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,12 +18,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping(path = "/post")
 public class PostController {
 
@@ -38,8 +37,7 @@ public class PostController {
     }
 
     @PostMapping(path = "/create")
-    public @ResponseBody
-    ResponseEntity<Object> createPost(@RequestBody Post post, HttpSession session) {
+    public ResponseEntity<Object> createPost(@RequestBody Post post, HttpSession session) {
         try {
             Long actionUserId = (Long) session.getAttribute("userId");
 
@@ -61,8 +59,7 @@ public class PostController {
     }
 
     @PutMapping(path = "/update")
-    public @ResponseBody
-    ResponseEntity<Object> updatePost(@RequestBody Post post, HttpSession session) {
+    public ResponseEntity<Object> updatePost(@RequestBody Post post, HttpSession session) {
         try {
             Long actionUserId = (Long) session.getAttribute("userId");
 
@@ -84,8 +81,7 @@ public class PostController {
     }
 
     @DeleteMapping(path = "/delete")
-    public @ResponseBody
-    ResponseEntity<String> deletePost(@RequestParam String postId, HttpSession session) {
+    public ResponseEntity<String> deletePost(@RequestParam String postId, HttpSession session) {
         try {
             Long actionUserId = (Long) session.getAttribute("userId");
 
@@ -114,9 +110,8 @@ public class PostController {
     }
 
     @GetMapping(path = "/getByFilter")
-    public @ResponseBody
-    ResponseEntity<Object> getPostsOnUserPageByFilter(@RequestParam String userId,
-                                                      @RequestBody PostFilter postFilter) {
+    public ResponseEntity<Object> getPostsOnUserPageByFilter(@RequestParam String userId,
+                                                             @RequestBody PostFilter postFilter) {
         try {
             long userId1;
 
@@ -140,8 +135,7 @@ public class PostController {
     }
 
     @GetMapping(path = "/feed")
-    public @ResponseBody
-    ResponseEntity<Object> getFeeds(@RequestParam String startFrom, HttpSession session) {
+    public ResponseEntity<Object> getFeeds(@RequestParam String startFrom, HttpSession session) {
         try {
             Long actionUserId = (Long) session.getAttribute("userId");
             long startFrom1;

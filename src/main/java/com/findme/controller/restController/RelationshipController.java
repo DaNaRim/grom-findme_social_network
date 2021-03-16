@@ -1,4 +1,4 @@
-package com.findme.controller;
+package com.findme.controller.restController;
 
 import com.findme.exception.BadRequestException;
 import com.findme.exception.NotFoundException;
@@ -11,18 +11,15 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
-import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping(path = "/relationship")
 public class RelationshipController {
 
@@ -101,57 +98,4 @@ public class RelationshipController {
             return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    @GetMapping(path = "/incomeRequests")
-    public String getIncomeRequests(HttpSession session, Model model) {
-        try {
-            Long actionUserId = (Long) session.getAttribute("userId");
-
-            if (actionUserId == null) {
-                throw new UnauthorizedException("You must be authorized to do that");
-            }
-
-            List<Relationship> relationships = relationshipService.getIncomeRequests(actionUserId);
-
-            model.addAttribute("incomeRequests", relationships);
-            return "incomeRequests";
-        } catch (UnauthorizedException e) {
-            model.addAttribute("error", e.getMessage());
-            return "401";
-        } catch (NotFoundException e) {
-            model.addAttribute("error", e.getMessage());
-            return "404";
-        } catch (Exception e) {
-            logger.error(e.getLocalizedMessage(), e);
-            model.addAttribute("error", "Something went wrong");
-            return "500";
-        }
-    }
-
-    @GetMapping(path = "/outcomeRequests")
-    public String getOutcomeRequests(HttpSession session, Model model) {
-        try {
-            Long actionUserId = (Long) session.getAttribute("userId");
-
-            if (actionUserId == null) {
-                throw new UnauthorizedException("You must be authorized to do that");
-            }
-
-            List<Relationship> relationships = relationshipService.getOutcomeRequests(actionUserId);
-
-            model.addAttribute("outcomeRequests", relationships);
-            return "outcomeRequests";
-        } catch (UnauthorizedException e) {
-            model.addAttribute("error", e.getMessage());
-            return "401";
-        } catch (NotFoundException e) {
-            model.addAttribute("error", e.getMessage());
-            return "404";
-        } catch (Exception e) {
-            logger.error(e.getLocalizedMessage(), e);
-            model.addAttribute("error", "Something went wrong");
-            return "500";
-        }
-    }
-
 }
