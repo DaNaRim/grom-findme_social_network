@@ -23,6 +23,7 @@ public class LoggerConfig extends ConfigurationFactory {
         builder.setMonitorInterval("5");
 
         AppenderComponentBuilder console = builder.newAppender("stdout", "Console")
+                .addAttribute("target", "SYSTEM_ERR")
                 .add(builder.newLayout("PatternLayout")
                         .addAttribute("pattern", "%d [%t] %-5p %c - %m%n %throwable{short}%n"));
         builder.add(console);
