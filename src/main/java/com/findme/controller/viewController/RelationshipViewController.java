@@ -24,7 +24,8 @@ public class RelationshipViewController {
     }
 
     @GetMapping(path = "/incomeRequests")
-    public String getIncomeRequests(@SessionAttribute Long userId, Model model) throws Exception {
+    public String getIncomeRequests(@SessionAttribute(required = false) Long userId,
+                                    Model model) throws Exception {
 
         if (userId == null) {
             throw new UnauthorizedException("You must be authorized to do that");
@@ -37,7 +38,8 @@ public class RelationshipViewController {
     }
 
     @GetMapping(path = "/outcomeRequests")
-    public String getOutcomeRequests(@SessionAttribute Long userId, Model model) throws Exception {
+    public String getOutcomeRequests(@SessionAttribute(required = false) Long userId,
+                                     Model model) throws Exception {
 
         if (userId == null) {
             throw new UnauthorizedException("You must be authorized to do that");

@@ -1,6 +1,5 @@
 package com.findme.controller.restController;
 
-import com.findme.exception.BadRequestException;
 import com.findme.exception.UnauthorizedException;
 import com.findme.model.Relationship;
 import com.findme.model.RelationshipStatus;
@@ -26,40 +25,24 @@ public class RelationshipController {
 
     @PostMapping(path = "/add")
     public Relationship addRelationship(@RequestParam String userToId,
-                                        @SessionAttribute Long userId) throws Exception {
+                                        @SessionAttribute(required = false) Long userId) throws Exception {
 
-        long userToId1;
-        try {
-            userToId1 = Long.parseLong(userToId);
-
-        } catch (NumberFormatException e) {
-            throw new BadRequestException("Fields filed incorrect");
-        }
         if (userId == null) {
             throw new UnauthorizedException("You must be authorized to do that");
         }
-
-        return relationshipService.addRelationship(userId, userToId1);
+        return relationshipService.addRelationship(userId, Long.parseLong(userToId));
     }
 
     @PutMapping(path = "/update")
     public Relationship updateRelationship(@RequestParam String userToId,
                                            @RequestParam String status,
-                                           @SessionAttribute Long userId) throws Exception {
+                                           @SessionAttribute(required = false) Long userId) throws Exception {
 
-        long userToId1;
-        RelationshipStatus relationshipStatus;
-        try {
-            userToId1 = Long.parseLong(userToId);
-            relationshipStatus = RelationshipStatus.valueOf(status);
-
-        } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Fields filed incorrect");
-        }
         if (userId == null) {
             throw new UnauthorizedException("You must be authorized to do that");
         }
-
-        return relationshipService.updateRelationShip(userId, userToId1, relationshipStatus);
+        return relationshipService.updateRelationShip(userId,
+                Long.parseLong(userToId),
+                RelationshipStatus.valueOf(status));
     }
 }

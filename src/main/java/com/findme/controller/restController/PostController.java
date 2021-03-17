@@ -1,6 +1,5 @@
 package com.findme.controller.restController;
 
-import com.findme.exception.BadRequestException;
 import com.findme.exception.UnauthorizedException;
 import com.findme.model.Post;
 import com.findme.model.PostFilter;
@@ -34,73 +33,48 @@ public class PostController {
     @PostMapping(path = "/create")
     @ResponseStatus(HttpStatus.CREATED)
     public Post createPost(@RequestBody Post post,
-                           @SessionAttribute Long userId) throws Exception {
+                           @SessionAttribute(required = false) Long userId) throws Exception {
 
         if (userId == null) {
             throw new UnauthorizedException("You must be authorized to do that");
         }
-
         return postService.createPost(userId, post);
     }
 
     @PutMapping(path = "/update")
     public Post updatePost(@RequestBody Post post,
-                           @SessionAttribute Long userId) throws Exception {
+                           @SessionAttribute(required = false) Long userId) throws Exception {
 
         if (userId == null) {
             throw new UnauthorizedException("You must be authorized to do that");
         }
-
         return postService.updatePost(userId, post);
     }
 
     @DeleteMapping(path = "/delete")
     public void deletePost(@RequestParam String postId,
-                           @SessionAttribute Long userId) throws Exception {
-
-        long postId1;
-        try {
-            postId1 = Long.parseLong(postId);
-        } catch (NumberFormatException e) {
-            throw new BadRequestException("Fields filed incorrect");
-        }
+                           @SessionAttribute(required = false) Long userId) throws Exception {
 
         if (userId == null) {
             throw new UnauthorizedException("You must be authorized to do that");
         }
-
-        postService.deletePost(userId, postId1);
+        postService.deletePost(userId, Long.parseLong(postId));
     }
 
     @GetMapping(path = "/getByFilter")
     public List<Post> getPostsOnUserPageByFilter(@RequestParam String userId,
                                                  @RequestBody PostFilter postFilter) throws Exception {
 
-        long userId1;
-        try {
-            userId1 = Long.parseLong(userId);
-        } catch (NumberFormatException e) {
-            throw new BadRequestException("Fields filed incorrect");
-        }
-
-        return postService.getPostsOnUserPageByFilter(userId1, postFilter);
+        return postService.getPostsOnUserPageByFilter(Long.parseLong(userId), postFilter);
     }
 
     @GetMapping(path = "/feed")
-    public List<Post> getFeeds(@RequestParam String startFrom,
-                               @SessionAttribute Long userId) throws Exception {
-
-        long startFrom1;
-        try {
-            startFrom1 = Long.parseLong(startFrom);
-        } catch (NumberFormatException e) {
-            throw new BadRequestException("Fields filed incorrect");
-        }
+    public List<Post> getFeeds(@RequestParam(required = false, defaultValue = "0") String startFrom,
+                               @SessionAttribute(required = false) Long userId) throws Exception {
 
         if (userId == null) {
             throw new UnauthorizedException("You must be authorized to do that");
         }
-
-        return postService.getFeeds(userId, startFrom1);
+        return postService.getFeeds(userId, Long.parseLong(startFrom));
     }
 }

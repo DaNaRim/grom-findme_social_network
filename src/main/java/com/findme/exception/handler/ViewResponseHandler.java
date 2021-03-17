@@ -17,6 +17,13 @@ public class ViewResponseHandler {
         return mav;
     }
 
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    public ModelAndView badRequestHandler2() {
+        ModelAndView mav = new ModelAndView("400");
+        mav.addObject("error", "Fields filed incorrect");
+        return mav;
+    }
+
     @ExceptionHandler(value = UnauthorizedException.class)
     public ModelAndView unauthorizedHandler(Exception e) {
         ModelAndView mav = new ModelAndView("401");

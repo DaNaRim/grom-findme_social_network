@@ -16,6 +16,11 @@ public class ResponseHandler {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    public ResponseEntity<String> badRequestHandler2() {
+        return new ResponseEntity<>("Fields filed incorrect", HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(value = UnauthorizedException.class)
     public ResponseEntity<String> unauthorizedHandler(Exception e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);

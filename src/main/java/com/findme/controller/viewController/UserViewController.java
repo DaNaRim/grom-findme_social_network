@@ -1,6 +1,5 @@
 package com.findme.controller.viewController;
 
-import com.findme.exception.BadRequestException;
 import com.findme.model.Post;
 import com.findme.model.Relationship;
 import com.findme.model.User;
@@ -13,8 +12,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -33,34 +32,23 @@ public class UserViewController {
     }
 
     @GetMapping(path = "/{userId}")
-    public String profile(@PathVariable String userId, Model model, HttpSession session) throws Exception {
-        Long actionUserId = (Long) session.getAttribute("userId");
-        boolean isMyPage = false;
+    public String profile(@PathVariable String userId,
+                          @SessionAttribute(required = false) Long actionUserId,
+                          Model model) throws Exception {
 
-        long userId1;
-        try {
-            userId1 = Long.parseLong(userId);
-
-        } catch (NumberFormatException e) {
-            throw new BadRequestException("Id filed incorrect");
-        }
+        long userId1 = Long.parseLong(userId);
 
         User user = userService.findById(userId1);
-        List<Post> postsOnPage = postService.getPostsOnUserPage(userId1, 0);
 
         Relationship ourRelationship = null;
-        if (actionUserId != null) {
+        if (actionUserId != null && actionUserId != userId1) {
 
-            if (actionUserId == userId1) {
-                isMyPage = true;
-            } else {
-                ourRelationship = relationshipService.getOurRelationshipToUser(
-                        (long) session.getAttribute("userId"), userId1);
-            }
+            ourRelationship = relationshipService.getOurRelationshipToUser(actionUserId, userId1);
         }
 
+        List<Post> postsOnPage = postService.getPostsOnUserPage(userId1, 0);
+
         model.addAttribute("user", user);
-        model.addAttribute("isMyPage", isMyPage);
         model.addAttribute("ourRelationship", ourRelationship);
         model.addAttribute("postsOnPage", postsOnPage);
         return "profile";
