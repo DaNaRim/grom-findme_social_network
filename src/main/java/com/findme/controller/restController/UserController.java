@@ -38,7 +38,7 @@ public class UserController {
 
     @PutMapping(path = "/updateUser")
     public User updateUser(@RequestBody User user,
-                           @SessionAttribute Long userId) throws Exception {
+                           @SessionAttribute(required = false) Long userId) throws Exception {
 
         if (userId == null) {
             throw new UnauthorizedException("You must be authorized to do that");
