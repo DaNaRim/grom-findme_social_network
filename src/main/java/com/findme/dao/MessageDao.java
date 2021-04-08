@@ -1,0 +1,31 @@
+package com.findme.dao;
+
+import com.findme.exception.InternalServerException;
+import com.findme.model.Message;
+import org.springframework.stereotype.Repository;
+
+import java.util.Date;
+import java.util.List;
+
+@Repository
+public interface MessageDao {
+
+    Message save(Message message) throws InternalServerException;
+
+    Message findById(long id) throws InternalServerException;
+
+    Message update(Message message) throws InternalServerException;
+
+    void delete(Message message) throws InternalServerException;
+
+    void updateDateReadByIds(List<Long> Ids) throws InternalServerException;
+
+    List<Message> findByUserIds(long userOneId, long userTwoId, long startFrom) throws InternalServerException;
+
+    Long findUserFromById(long messageId) throws InternalServerException;
+
+    Date findDateReadById(long messageId) throws InternalServerException;
+
+    boolean isMessageMissing(long id) throws InternalServerException;
+
+}

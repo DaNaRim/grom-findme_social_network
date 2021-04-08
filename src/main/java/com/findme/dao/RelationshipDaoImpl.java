@@ -11,9 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.findme.model.RelationshipStatus.CANCELED;
-import static com.findme.model.RelationshipStatus.DELETED;
-import static com.findme.model.RelationshipStatus.REQUESTED;
+import static com.findme.model.RelationshipStatus.*;
 
 public class RelationshipDaoImpl extends Dao<Relationship> implements RelationshipDao {
 

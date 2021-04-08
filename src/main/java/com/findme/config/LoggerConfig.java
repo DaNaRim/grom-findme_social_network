@@ -29,8 +29,8 @@ public class LoggerConfig extends ConfigurationFactory {
         builder.add(console);
 
         AppenderComponentBuilder rolling = builder.newAppender("rolling", "RollingFile")
-                .addAttribute("fileName", "C:/Users/Назар/IdeaProjects/findme/logs/rolling.log")
-                .addAttribute("filePattern", "C:/Users/Назар/IdeaProjects/findme/logs/rolling-%d{yy-MM-dd}-%i.log.gz")
+                .addAttribute("fileName", "C:/Users/user/IdeaProjects/grom-findme_social_network/logs/rolling.log")
+                .addAttribute("filePattern", "C:/Users/user/IdeaProjects/grom-findme_social_network/logs/rolling-%d{yy-MM-dd}-%i.log.gz")
                 .add(builder.newLayout("PatternLayout")
                         .addAttribute("pattern", "%d [%t] %-5p %c - %m%n %throwable%n"))
                 .addComponent(builder.newComponent("Policies")

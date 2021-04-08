@@ -3,6 +3,8 @@ package com.findme.exception.handler;
 import com.findme.exception.BadRequestException;
 import com.findme.exception.NotFoundException;
 import com.findme.exception.UnauthorizedException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class ResponseHandler {
+
+    private static final Logger logger = LogManager.getLogger(ResponseHandler.class);
 
     @ExceptionHandler(value = BadRequestException.class)
     public ResponseEntity<String> badRequestHandler(Exception e) {
@@ -32,7 +36,8 @@ public class ResponseHandler {
     }
 
     @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<String> internalServerErrorHandler() {
+    public ResponseEntity<String> internalServerErrorHandler(Exception e) {
+        logger.error(e);
         return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

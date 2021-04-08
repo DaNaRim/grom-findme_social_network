@@ -7,12 +7,7 @@ import com.findme.exception.NotFoundException;
 import com.findme.model.Post;
 import com.findme.model.PostFilter;
 import com.findme.model.User;
-import com.findme.validator.postValidator.MessageValidator;
-import com.findme.validator.postValidator.PostValidator;
-import com.findme.validator.postValidator.PostValidatorParams;
-import com.findme.validator.postValidator.TaggedLocationValidator;
-import com.findme.validator.postValidator.TaggedUsersValidator;
-import com.findme.validator.postValidator.UserPagePostedValidator;
+import com.findme.validator.postValidator.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,7 +92,10 @@ public class PostServiceImpl implements PostService {
 
     private void validatePostFields(Post post) throws BadRequestException, InternalServerException {
 
-        List<Long> taggedUserIds = post.getTaggedUsers().stream().map(User::getId).collect(Collectors.toList());
+        List<Long> taggedUserIds = null;
+        if (post.getTaggedUsers() != null) {
+            taggedUserIds = post.getTaggedUsers().stream().map(User::getId).collect(Collectors.toList());
+        }
 
         PostValidator postValidator = new MessageValidator();
         postValidator.linkWith(new TaggedLocationValidator())

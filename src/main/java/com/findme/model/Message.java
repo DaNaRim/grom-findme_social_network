@@ -1,13 +1,6 @@
 package com.findme.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -18,14 +11,8 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "TEXT")
+    @Column(name = "TEXT", nullable = false, length = 140)
     private String text;
-
-    @Column(name = "DATE_SENT")
-    private Date dateSent;
-
-    @Column(name = "DATE_READ")
-    private Date dateRead;
 
     @ManyToOne
     @JoinColumn(name = "USER_FROM", nullable = false, updatable = false)
@@ -34,6 +21,24 @@ public class Message {
     @ManyToOne
     @JoinColumn(name = "USER_TO", nullable = false, updatable = false)
     private User userTo;
+
+    @Column(name = "DATE_SENT", insertable = false, updatable = false)
+    private Date dateSent;
+
+    @Column(name = "DATE_READ")
+    private Date dateRead;
+
+    @Column(name = "DATE_EDITED")
+    private Date dateEdited;
+
+    public Message() {
+    }
+
+    public Message(String text, User userFrom, User userTo) {
+        this.text = text;
+        this.userFrom = userFrom;
+        this.userTo = userTo;
+    }
 
     public Long getId() {
         return id;
@@ -49,6 +54,22 @@ public class Message {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public User getUserFrom() {
+        return userFrom;
+    }
+
+    public void setUserFrom(User userFrom) {
+        this.userFrom = userFrom;
+    }
+
+    public User getUserTo() {
+        return userTo;
+    }
+
+    public void setUserTo(User userTo) {
+        this.userTo = userTo;
     }
 
     public Date getDateSent() {
@@ -67,19 +88,11 @@ public class Message {
         this.dateRead = new Date(dateRead.getTime());
     }
 
-    public User getUserFrom() {
-        return userFrom;
+    public Date getDateEdited() {
+        return new Date(dateEdited.getTime());
     }
 
-    public void setUserFrom(User userFrom) {
-        this.userFrom = userFrom;
-    }
-
-    public User getUserTo() {
-        return userTo;
-    }
-
-    public void setUserTo(User userTo) {
-        this.userTo = userTo;
+    public void setDateEdited(Date dateEdited) {
+        this.dateEdited = new Date(dateEdited.getTime());
     }
 }

@@ -1,17 +1,7 @@
 package com.findme.config;
 
-import com.findme.dao.PostDao;
-import com.findme.dao.PostDaoImpl;
-import com.findme.dao.RelationshipDao;
-import com.findme.dao.RelationshipDaoImpl;
-import com.findme.dao.UserDao;
-import com.findme.dao.UserDaoImpl;
-import com.findme.service.PostService;
-import com.findme.service.PostServiceImpl;
-import com.findme.service.RelationshipService;
-import com.findme.service.RelationshipServiceImpl;
-import com.findme.service.UserService;
-import com.findme.service.UserServiceImpl;
+import com.findme.dao.*;
+import com.findme.service.*;
 import com.findme.util.UpdateUserDateLastActiveInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -26,10 +16,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.*;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
@@ -54,8 +41,9 @@ public class AppConfig implements WebMvcConfigurer {
     public SpringResourceTemplateResolver templateResolver() {
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
         templateResolver.setApplicationContext(applicationContext);
-        templateResolver.setPrefix("classpath:/views/");
+        templateResolver.setPrefix("classpath:/templates/");
         templateResolver.setSuffix(".html");
+        templateResolver.setCacheable(false);
         return templateResolver;
     }
 
@@ -72,6 +60,12 @@ public class AppConfig implements WebMvcConfigurer {
         ThymeleafViewResolver resolver = new ThymeleafViewResolver();
         resolver.setTemplateEngine(templateEngine());
         registry.viewResolver(resolver);
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/js/**").addResourceLocations("classpath:/static/js/");
+        registry.addResourceHandler("/css/**").addResourceLocations("classpath:/static/css/");
     }
 
     @Bean
@@ -138,6 +132,10 @@ public class AppConfig implements WebMvcConfigurer {
         return new PostDaoImpl();
     }
 
+    @Bean
+    public MessageDao messageDao() {
+        return new MessageDaoImpl();
+    }
 
     @Bean
     public UserService userService() {
@@ -154,4 +152,8 @@ public class AppConfig implements WebMvcConfigurer {
         return new PostServiceImpl(postDao(), userService(), relationshipService());
     }
 
+    @Bean
+    public MessageService messageService() {
+        return new MessageServiceImpl(messageDao(), userService(), relationshipService());
+    }
 }

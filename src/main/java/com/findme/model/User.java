@@ -1,14 +1,7 @@
 package com.findme.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -63,14 +56,6 @@ public class User {
 
     @Column(name = "date_last_active", insertable = false, nullable = false)
     private Date dateLastActive;
-
-    //unrealized fields
-
-    @OneToMany(mappedBy = "userFrom")
-    private List<Message> messagesSent;
-
-    @OneToMany(mappedBy = "userTo")
-    private List<Message> messagesReceived;
 
 //    private String[] interests;
 
