@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean isUsersMissing(List<Long> usersIds) throws InternalServerException {
-        return userdao.isUsersMissing(usersIds);
+        return userdao.areUsersMissing(usersIds);
     }
 
     @Override

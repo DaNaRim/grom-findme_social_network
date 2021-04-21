@@ -20,12 +20,22 @@ public interface MessageDao {
 
     void updateDateReadByIds(List<Long> Ids) throws InternalServerException;
 
+    void deleteByIds(List<Long> ids) throws InternalServerException;
+
+    void deleteByUsersIds(long userOneId, long UserTwoId) throws InternalServerException;
+
     List<Message> findByUserIds(long userOneId, long userTwoId, long startFrom) throws InternalServerException;
+
+    boolean areMessagesBelongUser(List<Long> messagesIds, Long userId) throws InternalServerException;
 
     Long findUserFromById(long messageId) throws InternalServerException;
 
     Date findDateReadById(long messageId) throws InternalServerException;
 
+    boolean areMessagesRead(List<Long> ids) throws InternalServerException;
+
     boolean isMessageMissing(long id) throws InternalServerException;
+
+    boolean areMessagesMissing(List<Long> ids) throws InternalServerException;
 
 }

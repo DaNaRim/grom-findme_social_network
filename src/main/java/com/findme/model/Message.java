@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "MESSAGE")
+@Table(name = "MESSAGE", schema = "public")
 public class Message {
 
     @Id
@@ -73,26 +73,26 @@ public class Message {
     }
 
     public Date getDateSent() {
-        return new Date(dateSent.getTime());
+        return dateSent == null ? null : new Date(dateSent.getTime());
     }
 
     public void setDateSent(Date dateSent) {
-        this.dateSent = new Date(dateSent.getTime());
+        this.dateSent = dateSent == null ? null : new Date(dateSent.getTime());
     }
 
     public Date getDateRead() {
-        return new Date(dateRead.getTime());
+        return dateRead == null ? null : new Date(dateRead.getTime());
     }
 
     public void setDateRead(Date dateRead) {
-        this.dateRead = new Date(dateRead.getTime());
+        this.dateRead = dateRead == null ? null : new Date(dateRead.getTime());
     }
 
     public Date getDateEdited() {
-        return new Date(dateEdited.getTime());
+        return dateEdited == null ? null : new Date(dateEdited.getTime());
     }
 
     public void setDateEdited(Date dateEdited) {
-        this.dateEdited = new Date(dateEdited.getTime());
+        this.dateEdited = dateEdited == null ? null : new Date(dateEdited.getTime());
     }
 }

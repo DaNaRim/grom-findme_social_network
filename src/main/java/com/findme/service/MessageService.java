@@ -14,7 +14,9 @@ public interface MessageService {
 
     Message update(Long id, String text, long actionUserId) throws BadRequestException, InternalServerException;
 
-    void delete(long id, long actionUserId) throws BadRequestException, InternalServerException;
+    void delete(List<Long> ids, long actionUserId) throws BadRequestException, InternalServerException;
+
+    void deleteChat(long userToId, long actionUserId) throws BadRequestException, InternalServerException;
 
     List<Message> getMessagesWithUser(long userOneId, long actionUserId, long startFrom) throws InternalServerException;
 }

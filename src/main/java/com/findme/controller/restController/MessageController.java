@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping(path = "/message")
@@ -45,15 +47,31 @@ public class MessageController {
         return messageService.update(Long.parseLong(id), text, userId);
     }
 
-    @DeleteMapping(path = "/delete")
-    public void delete(@RequestParam String id,
-                       @SessionAttribute(required = false) Long userId) throws Exception {
+    @DeleteMapping(path = "/deleteMessages")
+    public void deleteMessages(@RequestParam String[] ids,
+                               @SessionAttribute(required = false) Long userId) throws Exception {
 
         if (userId == null) {
             throw new UnauthorizedException("You must be authorized to do that");
         }
 
-        messageService.delete(Long.parseLong(id), userId);
+        List<Long> ids0 = Stream.of(ids)
+                .mapToLong(Long::parseLong)
+                .boxed()
+                .collect(Collectors.toList());
+
+        messageService.delete(ids0, userId);
+    }
+
+    @DeleteMapping(path = "/deleteChat")
+    public void deleteChat(@RequestParam String userToId,
+                           @SessionAttribute(required = false) Long userId) throws Exception {
+
+        if (userId == null) {
+            throw new UnauthorizedException("You must be authorized to do that");
+        }
+
+        messageService.deleteChat(Long.parseLong(userToId), userId);
     }
 
     @GetMapping(path = "/getMessages")

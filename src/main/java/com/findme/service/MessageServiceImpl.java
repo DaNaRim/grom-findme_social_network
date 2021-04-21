@@ -48,11 +48,21 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public void delete(long id, long actionUserId) throws BadRequestException, InternalServerException {
+    public void delete(List<Long> ids, long actionUserId) throws BadRequestException, InternalServerException {
 
-        validateDelete(id, actionUserId);
+        validateDelete(ids, actionUserId);
 
-        messageDao.delete(messageDao.findById(id));
+        messageDao.deleteByIds(ids);
+    }
+
+    @Override
+    public void deleteChat(long userToId, long actionUserId) throws BadRequestException, InternalServerException {
+
+        if (userService.isUserMissing(userToId)) {
+            throw new BadRequestException("UserTo id filed incorrect");
+        }
+
+        messageDao.deleteByUsersIds(userToId, actionUserId);
     }
 
     @Override
@@ -114,16 +124,19 @@ public class MessageServiceImpl implements MessageService {
         }
     }
 
-    private void validateDelete(long id, long actionUserId) throws BadRequestException, InternalServerException {
+    private void validateDelete(List<Long> ids, long actionUserId) throws BadRequestException, InternalServerException {
 
-        if (messageDao.isMessageMissing(id)) {
-            throw new BadRequestException("Message id filed incorrect");
+        if (ids.size() > 10) {
+            throw new BadRequestException("You can delete up to 10 messages at a time");
 
-        } else if (messageDao.findUserFromById(id) != actionUserId) {
-            throw new BadRequestException("You can`t delete not your message");
+        } else if (messageDao.areMessagesMissing(ids)) {
+            throw new BadRequestException("Messages ids filed incorrect");
 
-        } else if (messageDao.findDateReadById(id) != null) {
-            throw new BadRequestException("You can`t delete message because user read it");
+        } else if (!messageDao.areMessagesBelongUser(ids, actionUserId)) {
+            throw new BadRequestException("You can`t delete not your messages");
+
+        } else if (messageDao.areMessagesRead(ids)) {
+            throw new BadRequestException("You can`t delete messages because user read it");
         }
     }
 }

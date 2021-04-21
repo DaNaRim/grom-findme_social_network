@@ -86,9 +86,9 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
 
 
     @Override
-    public boolean isUsersMissing(List<Long> usersIds) throws InternalServerException {
+    public boolean areUsersMissing(List<Long> usersIds) throws InternalServerException {
 
-        if (usersIds.isEmpty()) return false;
+        if (usersIds.isEmpty()) return true;
 
         try {
             BigInteger countExistsUsers = (BigInteger) em.createNativeQuery(QUERY_IS_USERS_EXISTS)
@@ -97,7 +97,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
 
             return countExistsUsers.intValue() != usersIds.size();
         } catch (HibernateException e) {
-            throw new InternalServerException("UserDaoImpl.isUsersMissing failed", e);
+            throw new InternalServerException("UserDaoImpl.areUsersMissing failed", e);
         }
     }
 
