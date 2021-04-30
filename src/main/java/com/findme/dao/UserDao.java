@@ -15,7 +15,9 @@ public interface UserDao {
 
     User update(User user) throws InternalServerException;
 
-    User findByMail(String mail) throws InternalServerException;
+    User findByUsername(String username);
+
+//    User findByMail(String mail) throws InternalServerException;
 
     boolean isUserMissing(long id) throws InternalServerException;
 

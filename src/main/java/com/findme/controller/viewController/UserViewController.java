@@ -6,18 +6,18 @@ import com.findme.model.User;
 import com.findme.service.PostService;
 import com.findme.service.RelationshipService;
 import com.findme.service.UserService;
+import com.findme.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.SessionAttribute;
 
 import java.util.List;
 
 @Controller
-@RequestMapping(path = "/user")
+@RequestMapping("/user")
 public class UserViewController {
 
     private final UserService userService;
@@ -31,17 +31,16 @@ public class UserViewController {
         this.postService = postService;
     }
 
-    @GetMapping(path = "/{userId}")
-    public String profile(@PathVariable String userId,
-                          @SessionAttribute(required = false) Long actionUserId,
-                          Model model) throws Exception {
+    @GetMapping("/{userId}")
+    public String profile(@PathVariable String userId, Model model) throws Exception {
 
+        long actionUserId = SecurityUtil.getAuthorizedUserId();
         long userId1 = Long.parseLong(userId);
 
         User user = userService.findById(userId1);
 
         Relationship ourRelationship = null;
-        if (actionUserId != null && actionUserId != userId1) {
+        if (actionUserId != 0 && actionUserId != userId1) {
 
             ourRelationship = relationshipService.getOurRelationshipToUser(actionUserId, userId1);
         }
@@ -54,14 +53,4 @@ public class UserViewController {
         return "profile";
     }
 
-    @GetMapping(path = "/registration")
-    public String registrationForm() {
-        return "registration";
-    }
-
-
-    @GetMapping(path = "/login")
-    public String loginForm() {
-        return "login";
-    }
 }

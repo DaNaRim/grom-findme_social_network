@@ -27,9 +27,9 @@ public class UpdateUserDateLastActiveInterceptor implements HandlerInterceptor {
                              HttpServletResponse response,
                              Object handler) {
 
-        Long userId = (Long) request.getSession().getAttribute("userId");
+        long userId = SecurityUtil.getAuthorizedUserId();
 
-        if (userId != null) {
+        if (userId != 0) {
             try {
                 userService.updateDateLastActive(userId);
             } catch (Exception e) {

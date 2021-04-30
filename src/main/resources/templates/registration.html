@@ -11,9 +11,11 @@
 <form id="registration-form">
     <p>firstName <input name="firstName" required type="text">
     <p>lastName <input name="lastName" required type="text"></p>
-    <p>phone <input name="phone" required type="text"></p>
-    <p>mail <input name="mail" required type="text"></p>
+    <p>username <input name="username" required type="text"></p>
     <p>password <input name="password" required type="password"></p>
+    <p>phone <input name="phone" required type="text"></p>
+    <p>email <input name="email" required type="text"></p>
+
 
     <button type="submit">Register</button>
 </form>
@@ -30,7 +32,7 @@
         $.ajax({
             type: "POST",
             contentType: "application/json",
-            url: home + "user/registration",
+            url: home + "registerUser",
             data: JSON.stringify($("#registration-form").serializeJSON()),
             dataType: 'json',
             success: function () {

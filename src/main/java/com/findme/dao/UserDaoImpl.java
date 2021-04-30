@@ -11,8 +11,13 @@ import java.util.List;
 
 public class UserDaoImpl extends Dao<User> implements UserDao {
 
-    private static final String QUERY_FIND_BY_MAIL =
-            "SELECT * FROM Users WHERE mail = :" + UserDaoImpl.ATTRIBUTE_MAIL;
+    private static final String QUERY_FIND_BY_USERNAME =
+            "SELECT u.*, array_agg(r.user_role) AS user_role"
+                    + " FROM Users u"
+                    + "     JOIN User_role ur ON (u.id = ur.user_id)"
+                    + "     JOIN Role r ON (ur.role_id = r.id)"
+                    + " WHERE u.username = :" + UserDaoImpl.ATTRIBUTE_USERNAME
+                    + " GROUP BY u.id";
 
     private static final String QUERY_IS_USER_EXISTS =
             "SELECT EXISTS(SELECT 1 FROM Users WHERE id = :" + UserDaoImpl.ATTRIBUTE_ID + ")";
@@ -27,23 +32,24 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
 
     private static final String QUERY_ARE_PHONE_AND_MAIL_BUSY =
             "SELECT EXISTS(SELECT 1 FROM Users WHERE phone = :" + UserDaoImpl.ATTRIBUTE_PHONE
-                    + " OR mail = :" + UserDaoImpl.ATTRIBUTE_MAIL + ")";
+                    + " OR email = :" + UserDaoImpl.ATTRIBUTE_MAIL + ")";
 
     private static final String QUERY_IS_PHONE_BUSY =
             "SELECT EXISTS(SELECT 1 FROM Users WHERE phone = :" + UserDaoImpl.ATTRIBUTE_PHONE + ")";
 
     private static final String QUERY_IS_MAIL_BUSY =
-            "SELECT EXISTS(SELECT 1 FROM Users WHERE mail = :" + UserDaoImpl.ATTRIBUTE_MAIL + ")";
+            "SELECT EXISTS(SELECT 1 FROM Users WHERE email = :" + UserDaoImpl.ATTRIBUTE_MAIL + ")";
 
     private static final String QUERY_FIND_PHONE =
             "SELECT phone FROM Users WHERE id = :" + UserDaoImpl.ATTRIBUTE_ID;
 
     private static final String QUERY_FIND_MAIL =
-            "SELECT mail FROM Users WHERE id = :" + UserDaoImpl.ATTRIBUTE_ID;
+            "SELECT email FROM Users WHERE id = :" + UserDaoImpl.ATTRIBUTE_ID;
 
 
     private static final String ATTRIBUTE_ID = "id";
     private static final String ATTRIBUTE_LIST_ID = "listId";
+    private static final String ATTRIBUTE_USERNAME = "username"; //system field
     private static final String ATTRIBUTE_PHONE = "phone";
     private static final String ATTRIBUTE_MAIL = "mail";
     private static final String ATTRIBUTE_DATE_LAST_ACTIVE = "dateLastActive";
@@ -59,16 +65,14 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
     }
 
     @Override
-    public User findByMail(String mail) throws InternalServerException {
+    public User findByUsername(String username) {
         try {
-            return (User) em.createNativeQuery(QUERY_FIND_BY_MAIL, User.class)
-                    .setParameter(ATTRIBUTE_MAIL, mail)
+            return (User) em.createNativeQuery(QUERY_FIND_BY_USERNAME, User.class)
+                    .setParameter(ATTRIBUTE_USERNAME, username)
                     .getSingleResult();
 
         } catch (NoResultException e) {
             return null;
-        } catch (HibernateException e) {
-            throw new InternalServerException("UserDaoImpl.findByMail failed", e);
         }
     }
 

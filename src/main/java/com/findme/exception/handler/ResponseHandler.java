@@ -2,7 +2,6 @@ package com.findme.exception.handler;
 
 import com.findme.exception.BadRequestException;
 import com.findme.exception.NotFoundException;
-import com.findme.exception.UnauthorizedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -23,11 +22,6 @@ public class ResponseHandler {
     @ExceptionHandler(value = IllegalArgumentException.class)
     public ResponseEntity<String> badRequestHandler2() {
         return new ResponseEntity<>("Fields filed incorrect", HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(value = UnauthorizedException.class)
-    public ResponseEntity<String> unauthorizedHandler(Exception e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(value = NotFoundException.class)

@@ -1,39 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Find me</title>
 </head>
-<!--<header>Header</header>-->
 <body>
 
 <h1>Welcome to Find me!</h1>
-<a href="user/registration">Registration</a>|
-<a href="user/login">Login</a>|
-<a href="user/profile">Profile</a>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<a href="registration">Registration</a>|
+<a href="login">Login</a>|
+<a href="user/1">ProfileUser1</a>
+<div>
+    <form method="POST" th:action="@{/logout}">
+        <button type="submit">Logout</button>
+    </form>
+</div>
 </body>
-<!--<footer>Footer</footer>-->
-
-<!--<script>
-    //selector by id = #
-    //selector by class = .
-    //alert($("#test-ajax").text());
-
-    $("#test-ajax").click(function () {
-        $.ajax({
-            type: "GET",
-            url: "test-ajax",
-            data: {},
-            success: function success() {
-                alert("success!");
-            },
-            error: function error(xhr) {
-                alert("error!")
-            }
-        });
-    });
-</script>-->
 
 </html>

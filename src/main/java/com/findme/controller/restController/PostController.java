@@ -1,9 +1,9 @@
 package com.findme.controller.restController;
 
-import com.findme.exception.UnauthorizedException;
 import com.findme.model.Post;
 import com.findme.model.PostFilter;
 import com.findme.service.PostService;
+import com.findme.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/post")
+@RequestMapping("/post")
 public class PostController {
 
     private final PostService postService;
@@ -21,51 +21,30 @@ public class PostController {
         this.postService = postService;
     }
 
-    @PostMapping(path = "/create")
+    @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public Post createPost(@RequestBody Post post,
-                           @SessionAttribute(required = false) Long userId) throws Exception {
+    public Post createPost(@RequestBody Post post) throws Exception {
 
-        if (userId == null) {
-            throw new UnauthorizedException("You must be authorized to do that");
-        }
-        return postService.createPost(userId, post);
+        return postService.createPost(SecurityUtil.getAuthorizedUserId(), post);
     }
 
-    @PutMapping(path = "/update")
-    public Post updatePost(@RequestBody Post post,
-                           @SessionAttribute(required = false) Long userId) throws Exception {
+    @PutMapping("/update")
+    public Post updatePost(@RequestBody Post post) throws Exception {
 
-        if (userId == null) {
-            throw new UnauthorizedException("You must be authorized to do that");
-        }
-        return postService.updatePost(userId, post);
+        return postService.updatePost(SecurityUtil.getAuthorizedUserId(), post);
     }
 
-    @DeleteMapping(path = "/delete")
-    public void deletePost(@RequestParam String postId,
-                           @SessionAttribute(required = false) Long userId) throws Exception {
+    @DeleteMapping("/delete")
+    public void deletePost(@RequestParam String postId) throws Exception {
 
-        if (userId == null) {
-            throw new UnauthorizedException("You must be authorized to do that");
-        }
-        postService.deletePost(userId, Long.parseLong(postId));
+        postService.deletePost(SecurityUtil.getAuthorizedUserId(), Long.parseLong(postId));
     }
 
-    @GetMapping(path = "/getByFilter")
+    @GetMapping("/getByFilter")
     public List<Post> getPostsOnUserPageByFilter(@RequestParam String userId,
                                                  @RequestBody PostFilter postFilter) throws Exception {
 
         return postService.getPostsOnUserPageByFilter(Long.parseLong(userId), postFilter);
     }
 
-    @GetMapping(path = "/feed")
-    public List<Post> getFeeds(@RequestParam(required = false, defaultValue = "0") String startFrom,
-                               @SessionAttribute(required = false) Long userId) throws Exception {
-
-        if (userId == null) {
-            throw new UnauthorizedException("You must be authorized to do that");
-        }
-        return postService.getFeeds(userId, Long.parseLong(startFrom));
-    }
 }

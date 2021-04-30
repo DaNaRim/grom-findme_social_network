@@ -1,5 +1,6 @@
 package com.findme.config;
 
+import com.findme.config.security.SecurityConfig;
 import com.findme.dao.*;
 import com.findme.service.*;
 import com.findme.util.UpdateUserDateLastActiveInterceptor;
@@ -117,6 +118,14 @@ public class AppConfig implements WebMvcConfigurer {
         registry.addInterceptor(new UpdateUserDateLastActiveInterceptor(userService()));
     }
 
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/").setViewName("index");
+        registry.addViewController("/registration").setViewName("registration");
+        registry.addViewController("/login").setViewName("login");
+        registry.addViewController("/error/403").setViewName("error/403");
+    }
+
     @Bean
     public UserDao userDao() {
         return new UserDaoImpl();
@@ -138,8 +147,13 @@ public class AppConfig implements WebMvcConfigurer {
     }
 
     @Bean
+    public RoleDao roleDao() {
+        return new RoleDaoImpl();
+    }
+
+    @Bean
     public UserService userService() {
-        return new UserServiceImpl(userDao());
+        return new UserServiceImpl(userDao(), SecurityConfig.passwordEncoder());
     }
 
     @Bean
@@ -155,5 +169,15 @@ public class AppConfig implements WebMvcConfigurer {
     @Bean
     public MessageService messageService() {
         return new MessageServiceImpl(messageDao(), userService(), relationshipService());
+    }
+
+    @Bean
+    public AdminService adminService() {
+        return new AdminServiceImpl(postDao());
+    }
+
+    @Bean
+    public SuperAdminService superAdminService() {
+        return new SuperAdminServiceImpl(userDao(), roleDao());
     }
 }

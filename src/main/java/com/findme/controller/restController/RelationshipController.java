@@ -1,14 +1,16 @@
 package com.findme.controller.restController;
 
-import com.findme.exception.UnauthorizedException;
 import com.findme.model.Relationship;
 import com.findme.model.RelationshipStatus;
 import com.findme.service.RelationshipService;
+import com.findme.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping(path = "/relationship")
+@RequestMapping("/relationship")
 public class RelationshipController {
 
     private final RelationshipService relationshipService;
@@ -18,26 +20,31 @@ public class RelationshipController {
         this.relationshipService = relationshipService;
     }
 
-    @PostMapping(path = "/add")
-    public Relationship addRelationship(@RequestParam String userToId,
-                                        @SessionAttribute(required = false) Long userId) throws Exception {
+    @PostMapping("/add")
+    public Relationship addRelationship(@RequestParam String userToId) throws Exception {
 
-        if (userId == null) {
-            throw new UnauthorizedException("You must be authorized to do that");
-        }
-        return relationshipService.addRelationship(userId, Long.parseLong(userToId));
+        return relationshipService.addRelationship(SecurityUtil.getAuthorizedUserId(), Long.parseLong(userToId));
     }
 
-    @PutMapping(path = "/update")
+    @PutMapping("/update")
     public Relationship updateRelationship(@RequestParam String userToId,
-                                           @RequestParam String status,
-                                           @SessionAttribute(required = false) Long userId) throws Exception {
+                                           @RequestParam String status) throws Exception {
 
-        if (userId == null) {
-            throw new UnauthorizedException("You must be authorized to do that");
-        }
-        return relationshipService.updateRelationShip(userId,
+        return relationshipService.updateRelationShip(SecurityUtil.getAuthorizedUserId(),
                 Long.parseLong(userToId),
                 RelationshipStatus.valueOf(status));
     }
+
+    @GetMapping("/incomeRequests")
+    public List<Relationship> getIncomeRequests() throws Exception {
+
+        return relationshipService.getIncomeRequests(SecurityUtil.getAuthorizedUserId());
+    }
+
+    @GetMapping("/outcomeRequests")
+    public List<Relationship> getOutcomeRequests() throws Exception {
+
+        return relationshipService.getOutcomeRequests(SecurityUtil.getAuthorizedUserId());
+    }
+
 }
