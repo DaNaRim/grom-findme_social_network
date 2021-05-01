@@ -153,7 +153,7 @@ public class AppConfig implements WebMvcConfigurer {
 
     @Bean
     public UserService userService() {
-        return new UserServiceImpl(userDao(), SecurityConfig.passwordEncoder());
+        return new UserServiceImpl(userDao(), roleService(), SecurityConfig.passwordEncoder());
     }
 
     @Bean
@@ -163,7 +163,7 @@ public class AppConfig implements WebMvcConfigurer {
 
     @Bean
     public PostService postService() {
-        return new PostServiceImpl(postDao(), userService(), relationshipService());
+        return new PostServiceImpl(postDao(), userService(), relationshipService(), roleService());
     }
 
     @Bean
@@ -172,12 +172,8 @@ public class AppConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public AdminService adminService() {
-        return new AdminServiceImpl(postDao());
+    public RoleService roleService() {
+        return new RoleServiceImpl(roleDao(), userService());
     }
 
-    @Bean
-    public SuperAdminService superAdminService() {
-        return new SuperAdminServiceImpl(userDao(), roleDao());
-    }
 }

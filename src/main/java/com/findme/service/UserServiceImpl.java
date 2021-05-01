@@ -4,7 +4,6 @@ import com.findme.dao.UserDao;
 import com.findme.exception.BadRequestException;
 import com.findme.exception.InternalServerException;
 import com.findme.exception.NotFoundException;
-import com.findme.model.Role;
 import com.findme.model.User;
 import com.findme.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +20,13 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserDao userdao;
+    private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserDao userdao, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserDao userdao, RoleService roleService, PasswordEncoder passwordEncoder) {
         this.userdao = userdao;
+        this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -64,7 +65,7 @@ public class UserServiceImpl implements UserService {
     public User registerUser(User user) throws BadRequestException, InternalServerException {
         validateCreateUser(user);
 
-        user.setRoles(Collections.singleton(new Role(UserRole.USER)));
+        user.setRoles(Collections.singleton(roleService.findByUserRole(UserRole.USER)));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         return userdao.save(user);

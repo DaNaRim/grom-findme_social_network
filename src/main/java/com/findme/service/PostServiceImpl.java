@@ -7,6 +7,7 @@ import com.findme.exception.NotFoundException;
 import com.findme.model.Post;
 import com.findme.model.PostFilter;
 import com.findme.model.User;
+import com.findme.model.UserRole;
 import com.findme.validator.postValidator.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,12 +21,17 @@ public class PostServiceImpl implements PostService {
     private final PostDao postDao;
     private final UserService userService;
     private final RelationshipService relationshipService;
+    private final RoleService roleService;
 
     @Autowired
-    public PostServiceImpl(PostDao postDao, UserService userService, RelationshipService relationshipService) {
+    public PostServiceImpl(PostDao postDao,
+                           UserService userService,
+                           RelationshipService relationshipService,
+                           RoleService roleService) {
         this.postDao = postDao;
         this.userService = userService;
         this.relationshipService = relationshipService;
+        this.roleService = roleService;
     }
 
     @Override
@@ -149,8 +155,9 @@ public class PostServiceImpl implements PostService {
         if (postDao.isPostMissing(postId)) {
             throw new BadRequestException("Post id filed incorrect");
 
-        } else if (actionUserId != postDao.findUserPostedId(postId)
-                && actionUserId != postDao.findUserPagePostedId(postId)) {
+        } else if ((actionUserId != postDao.findUserPostedId(postId)
+                && actionUserId != postDao.findUserPagePostedId(postId))
+                || roleService.hasUserRole(actionUserId, UserRole.ADMIN)) {
 
             throw new BadRequestException("Can`t delete post because you don`t post it or it posted not in your page");
         }

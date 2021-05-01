@@ -12,23 +12,13 @@ public class Role implements GrantedAuthority {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_role", nullable = false)
+    @Column(name = "user_role", unique = true, nullable = false, updatable = false)
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
-
-    public Role() {
-    }
-
-    public Role(UserRole userRole) {
-        this.userRole = userRole;
-    }
 
     @Override
     public String getAuthority() {
         return userRole.toString();
     }
 
-    public UserRole getUserRole() {
-        return userRole;
-    }
 }

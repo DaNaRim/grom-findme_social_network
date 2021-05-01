@@ -1,6 +1,7 @@
 package com.findme.controller.restController;
 
-import com.findme.service.SuperAdminService;
+import com.findme.model.UserRole;
+import com.findme.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,20 +12,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/superAdmin")
 public class SuperAdminController {
 
-    private final SuperAdminService superAdminService;
+    private final RoleService roleService;
 
     @Autowired
-    public SuperAdminController(SuperAdminService superAdminService) {
-        this.superAdminService = superAdminService;
+    public SuperAdminController(RoleService roleService) {
+        this.roleService = roleService;
     }
 
     @PutMapping("/makeAdmin")
     public void makeAdmin(@RequestParam String userId) throws Exception {
-        superAdminService.makeAdmin(Long.parseLong(userId));
+
+        roleService.addRoleByUserId(Long.parseLong(userId), UserRole.ADMIN);
     }
 
     @PutMapping("/removeAdmin")
     public void removeAdmin(@RequestParam String userId) throws Exception {
-        superAdminService.removeAdmin(Long.parseLong(userId));
+
+        roleService.removeRoleByUserId(Long.parseLong(userId), UserRole.ADMIN);
     }
 }
