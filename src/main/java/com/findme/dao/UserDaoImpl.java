@@ -2,7 +2,6 @@ package com.findme.dao;
 
 import com.findme.exception.InternalServerException;
 import com.findme.model.User;
-import org.hibernate.HibernateException;
 
 import javax.persistence.NoResultException;
 import java.math.BigInteger;
@@ -12,7 +11,7 @@ import java.util.List;
 public class UserDaoImpl extends Dao<User> implements UserDao {
 
     private static final String QUERY_FIND_BY_USERNAME =
-            "SELECT u.*, array_agg(r.user_role) AS user_role"
+            "SELECT u.*, array_agg(r.role_name) AS user_role"
                     + " FROM Users u"
                     + "     JOIN User_role ur ON (u.id = ur.user_id)"
                     + "     JOIN Role r ON (ur.role_id = r.id)"
@@ -60,6 +59,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
 
     @Override
     public User update(User user) throws InternalServerException {
+
         user.setDateLastActive(new Date());
         return super.update(user);
     }
@@ -77,87 +77,63 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
     }
 
     @Override
-    public boolean isUserMissing(long id) throws InternalServerException {
-        try {
-            return !(boolean) em.createNativeQuery(QUERY_IS_USER_EXISTS)
-                    .setParameter(ATTRIBUTE_ID, id)
-                    .getSingleResult();
+    public boolean isUserMissing(long id) {
 
-        } catch (HibernateException e) {
-            throw new InternalServerException("UserDaoImpl.isUserMissing failed", e);
-        }
+        return !(boolean) em.createNativeQuery(QUERY_IS_USER_EXISTS)
+                .setParameter(ATTRIBUTE_ID, id)
+                .getSingleResult();
     }
 
 
     @Override
-    public boolean areUsersMissing(List<Long> usersIds) throws InternalServerException {
+    public boolean areUsersMissing(List<Long> usersIds) {
 
         if (usersIds.isEmpty()) return true;
 
-        try {
-            BigInteger countExistsUsers = (BigInteger) em.createNativeQuery(QUERY_IS_USERS_EXISTS)
-                    .setParameter(ATTRIBUTE_LIST_ID, usersIds)
-                    .getSingleResult();
+        BigInteger countExistsUsers = (BigInteger) em.createNativeQuery(QUERY_IS_USERS_EXISTS)
+                .setParameter(ATTRIBUTE_LIST_ID, usersIds)
+                .getSingleResult();
 
-            return countExistsUsers.intValue() != usersIds.size();
-        } catch (HibernateException e) {
-            throw new InternalServerException("UserDaoImpl.areUsersMissing failed", e);
-        }
+        return countExistsUsers.intValue() != usersIds.size();
     }
 
     @Override
-    public void updateDateLastActive(long userId) throws InternalServerException {
-        try {
-            em.createNativeQuery(QUERY_UPDATE_DATE_LAST_ACTIVE)
-                    .setParameter(ATTRIBUTE_DATE_LAST_ACTIVE, new Date())
-                    .setParameter(ATTRIBUTE_ID, userId)
-                    .executeUpdate();
+    public void updateDateLastActive(long userId) {
 
-        } catch (HibernateException e) {
-            throw new InternalServerException("UserDaoImpl.updateDateLastActive failed", e);
-        }
+        em.createNativeQuery(QUERY_UPDATE_DATE_LAST_ACTIVE)
+                .setParameter(ATTRIBUTE_DATE_LAST_ACTIVE, new Date())
+                .setParameter(ATTRIBUTE_ID, userId)
+                .executeUpdate();
     }
 
     @Override
-    public boolean arePhoneAndMailBusy(String phone, String mail) throws InternalServerException {
-        try {
-            return (boolean) em.createNativeQuery(QUERY_ARE_PHONE_AND_MAIL_BUSY)
-                    .setParameter(ATTRIBUTE_PHONE, phone)
-                    .setParameter(ATTRIBUTE_MAIL, mail)
-                    .getSingleResult();
+    public boolean arePhoneAndMailBusy(String phone, String mail) {
 
-        } catch (HibernateException e) {
-            throw new InternalServerException("UserDaoImpl.arePhoneAndMailBusy failed", e);
-        }
+        return (boolean) em.createNativeQuery(QUERY_ARE_PHONE_AND_MAIL_BUSY)
+                .setParameter(ATTRIBUTE_PHONE, phone)
+                .setParameter(ATTRIBUTE_MAIL, mail)
+                .getSingleResult();
     }
 
 
     @Override
-    public boolean isPhoneBusy(String phone) throws InternalServerException {
-        try {
-            return (boolean) em.createNativeQuery(QUERY_IS_PHONE_BUSY)
-                    .setParameter(ATTRIBUTE_PHONE, phone)
-                    .getSingleResult();
+    public boolean isPhoneBusy(String phone) {
 
-        } catch (HibernateException e) {
-            throw new InternalServerException("UserDaoImpl.isPhoneBusy failed", e);
-        }
+        return (boolean) em.createNativeQuery(QUERY_IS_PHONE_BUSY)
+                .setParameter(ATTRIBUTE_PHONE, phone)
+                .getSingleResult();
     }
 
     @Override
-    public boolean isMailBusy(String mail) throws InternalServerException {
-        try {
-            return (boolean) em.createNativeQuery(QUERY_IS_MAIL_BUSY)
-                    .setParameter(ATTRIBUTE_MAIL, mail)
-                    .getSingleResult();
+    public boolean isMailBusy(String mail) {
 
-        } catch (HibernateException e) {
-            throw new InternalServerException("UserDaoImpl.isMailBusy failed", e);
-        }
+        return (boolean) em.createNativeQuery(QUERY_IS_MAIL_BUSY)
+                .setParameter(ATTRIBUTE_MAIL, mail)
+                .getSingleResult();
     }
 
     @Override
-    public String findPhone(long id) throws InternalServerException {
+    public String findPhone(long id) {
         try {
             return (String) em.createNativeQuery(QUERY_FIND_PHONE)
                     .setParameter(ATTRIBUTE_ID, id)
@@ -165,13 +141,11 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
 
         } catch (NoResultException e) {
             return null;
-        } catch (HibernateException e) {
-            throw new InternalServerException("UserDaoImpl.findPhone failed", e);
         }
     }
 
     @Override
-    public String findMail(long id) throws InternalServerException {
+    public String findMail(long id) {
         try {
             return (String) em.createNativeQuery(QUERY_FIND_MAIL)
                     .setParameter(ATTRIBUTE_ID, id)
@@ -179,8 +153,6 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
 
         } catch (NoResultException e) {
             return null;
-        } catch (HibernateException e) {
-            throw new InternalServerException("UserDaoImpl.findMail failed", e);
         }
     }
 }

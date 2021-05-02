@@ -48,6 +48,7 @@ public class RoleDaoImpl extends Dao<Role> implements RoleDao {
 
     @Override
     public void removeRoleByUserId(long userId, RoleName roleName) {
+
         em.createNativeQuery(QUERY_REMOVE_ROLE_BY_USER_ID)
                 .setParameter(ATTRIBUTE_USER_ID, userId)
                 .setParameter(ATTRIBUTE_USER_ROLE, roleName.name())
@@ -68,6 +69,7 @@ public class RoleDaoImpl extends Dao<Role> implements RoleDao {
 
     @Override
     public boolean hasUserRole(long userId, RoleName roleName) {
+
         List<String> roles = em.createNativeQuery(QUERY_FIND_USER_ROLE_BY_USER_ID)
                 .setParameter(ATTRIBUTE_USER_ID, userId)
                 .getResultList();

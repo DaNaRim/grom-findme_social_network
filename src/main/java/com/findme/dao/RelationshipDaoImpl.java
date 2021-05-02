@@ -1,9 +1,7 @@
 package com.findme.dao;
 
-import com.findme.exception.InternalServerException;
 import com.findme.model.Relationship;
 import com.findme.model.RelationshipStatus;
-import org.hibernate.HibernateException;
 
 import javax.persistence.NoResultException;
 import java.math.BigInteger;
@@ -86,7 +84,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     }
 
     @Override
-    public Relationship save(Relationship relationship) throws InternalServerException {
+    public Relationship save(Relationship relationship) {
 
         long userFromId = relationship.getUserFrom().getId();
         long userToId = relationship.getUserTo().getId();
@@ -106,7 +104,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     }
 
     @Override
-    public Relationship update(Relationship relationship) throws InternalServerException {
+    public Relationship update(Relationship relationship) {
 
         long userFromId = relationship.getUserFrom().getId();
         long userToId = relationship.getUserTo().getId();
@@ -123,7 +121,7 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     }
 
     @Override
-    public Relationship findByUsers(long userFromId, long userToId) throws InternalServerException {
+    public Relationship findByUsers(long userFromId, long userToId) {
         try {
             return (Relationship) em.createNativeQuery(QUERY_FIND_BY_USERS, Relationship.class)
                     .setParameter(ATTRIBUTE_USER_FROM_ID, userFromId)
@@ -132,13 +130,11 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
 
         } catch (NoResultException e) {
             return null;
-        } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.findByUsers failed", e);
         }
     }
 
     @Override
-    public RelationshipStatus findStatus(long userFromId, long userToId) throws InternalServerException {
+    public RelationshipStatus findStatus(long userFromId, long userToId) {
         try {
             String relationshipStatus = (String) em.createNativeQuery(QUERY_FIND_STATUS_BY_USERS)
                     .setParameter(ATTRIBUTE_USER_FROM_ID, userFromId)
@@ -148,42 +144,34 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
             return RelationshipStatus.valueOf(relationshipStatus);
         } catch (NoResultException e) {
             return null;
-        } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.findStatus failed", e);
         }
     }
 
     @Override
-    public List<Relationship> getIncomeRequests(long userId) throws InternalServerException {
-        try {
-            List<Relationship> incomeRequests =
-                    em.createNativeQuery(QUERY_GET_INCOME_REQUESTS_BY_ACTION_USER_ID, Relationship.class)
-                            .setParameter(ATTRIBUTE_ACTION_USER_ID, userId)
-                            .getResultList();
+    public List<Relationship> getIncomeRequests(long userId) {
 
-            return incomeRequests == null ? new ArrayList<>() : incomeRequests;
-        } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.getIncomeRequests failed", e);
-        }
+        List<Relationship> incomeRequests =
+                em.createNativeQuery(QUERY_GET_INCOME_REQUESTS_BY_ACTION_USER_ID, Relationship.class)
+                        .setParameter(ATTRIBUTE_ACTION_USER_ID, userId)
+                        .getResultList();
+
+        return incomeRequests == null ? new ArrayList<>() : incomeRequests;
     }
 
     @Override
-    public List<Relationship> getOutcomeRequests(long userId) throws InternalServerException {
-        try {
-            List<Relationship> outcomeRequests =
-                    em.createNativeQuery(QUERY_GET_OUTCOME_REQUESTS_BY_ACTION_USER_ID, Relationship.class)
-                            .setParameter(ATTRIBUTE_ACTION_USER_ID, userId)
-                            .getResultList();
+    public List<Relationship> getOutcomeRequests(long userId) {
 
-            return outcomeRequests == null ? new ArrayList<>() : outcomeRequests;
-        } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.getOutcomeRequests failed", e);
-        }
+        List<Relationship> outcomeRequests =
+                em.createNativeQuery(QUERY_GET_OUTCOME_REQUESTS_BY_ACTION_USER_ID, Relationship.class)
+                        .setParameter(ATTRIBUTE_ACTION_USER_ID, userId)
+                        .getResultList();
+
+        return outcomeRequests == null ? new ArrayList<>() : outcomeRequests;
     }
 
 
     @Override
-    public Long findActionUserId(long userFromId, long userToId) throws InternalServerException {
+    public Long findActionUserId(long userFromId, long userToId) {
         try {
             Integer actionUserId = (Integer) em.createNativeQuery(QUERY_FIND_ACTION_USER_ID_BY_USERS)
                     .setParameter(ATTRIBUTE_USER_FROM_ID, userFromId)
@@ -193,13 +181,11 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
             return actionUserId.longValue();
         } catch (NoResultException e) {
             return null;
-        } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.findActionUserId failed", e);
         }
     }
 
     @Override
-    public Date findDateModify(long userFromId, long userToId) throws InternalServerException {
+    public Date findDateModify(long userFromId, long userToId) {
         try {
             return (Date) em.createNativeQuery(QUERY_FIND_DATE_MODIFY_BY_USERS)
                     .setParameter(ATTRIBUTE_USER_FROM_ID, userFromId)
@@ -208,39 +194,31 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
 
         } catch (NoResultException e) {
             return null;
-        } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.findDateModify failed", e);
         }
     }
 
     @Override
-    public int countOutcomeRequests(long userId) throws InternalServerException {
-        try {
-            BigInteger outcomeRequests =
-                    (BigInteger) em.createNativeQuery(QUERY_COUNT_OUTCOME_REQUESTS_BY_ACTION_USER_ID)
-                            .setParameter(ATTRIBUTE_ACTION_USER_ID, userId)
-                            .getSingleResult();
+    public int countOutcomeRequests(long userId) {
 
-            return outcomeRequests.intValue();
-        } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.countOutcomeRequests failed", e);
-        }
+        BigInteger outcomeRequests =
+                (BigInteger) em.createNativeQuery(QUERY_COUNT_OUTCOME_REQUESTS_BY_ACTION_USER_ID)
+                        .setParameter(ATTRIBUTE_ACTION_USER_ID, userId)
+                        .getSingleResult();
+
+        return outcomeRequests.intValue();
     }
 
     @Override
-    public int countFriends(long userId) throws InternalServerException {
-        try {
-            BigInteger friends = (BigInteger) em.createNativeQuery(QUERY_COUNT_FRIENDS_BY_USER_ID)
-                    .setParameter(ATTRIBUTE_USER_ID, userId)
-                    .getSingleResult();
+    public int countFriends(long userId) {
 
-            return friends.intValue();
-        } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.countFriends failed", e);
-        }
+        BigInteger friends = (BigInteger) em.createNativeQuery(QUERY_COUNT_FRIENDS_BY_USER_ID)
+                .setParameter(ATTRIBUTE_USER_ID, userId)
+                .getSingleResult();
+
+        return friends.intValue();
     }
 
-    private Long findIdByUsers(long userFromId, long userToId) throws InternalServerException {
+    private Long findIdByUsers(long userFromId, long userToId) {
         try {
             Integer id = (Integer) em.createNativeQuery(QUERY_FIND_ID_BY_USERS)
                     .setParameter(ATTRIBUTE_USER_FROM_ID, userFromId)
@@ -250,8 +228,6 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
             return Long.valueOf(id);
         } catch (NoResultException e) {
             return null;
-        } catch (HibernateException e) {
-            throw new InternalServerException("RelationshipDaoImpl.findIdByUsers failed", e);
         }
     }
 }

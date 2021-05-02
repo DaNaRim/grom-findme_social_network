@@ -1,6 +1,5 @@
 package com.findme.dao;
 
-import com.findme.exception.InternalServerException;
 import com.findme.model.Relationship;
 import com.findme.model.RelationshipStatus;
 import org.springframework.stereotype.Repository;
@@ -11,25 +10,24 @@ import java.util.List;
 @Repository
 public interface RelationshipDao {
 
-    Relationship save(Relationship relationship) throws InternalServerException;
+    Relationship save(Relationship relationship);
 
-    Relationship update(Relationship relationship) throws InternalServerException;
+    Relationship update(Relationship relationship);
 
-    Relationship findByUsers(long userFromId, long userToId) throws InternalServerException;
+    Relationship findByUsers(long userFromId, long userToId);
 
-    RelationshipStatus findStatus(long userFromId, long userToId) throws InternalServerException;
+    RelationshipStatus findStatus(long userFromId, long userToId);
 
-    List<Relationship> getIncomeRequests(long userId) throws InternalServerException;
+    List<Relationship> getIncomeRequests(long userId);
 
-    List<Relationship> getOutcomeRequests(long userId) throws InternalServerException;
+    List<Relationship> getOutcomeRequests(long userId);
 
+    Long findActionUserId(long userFromId, long userToId);
 
-    Long findActionUserId(long userFromId, long userToId) throws InternalServerException;
+    Date findDateModify(long userFromId, long userToId);
 
-    Date findDateModify(long userFromId, long userToId) throws InternalServerException;
+    int countOutcomeRequests(long userId);
 
-    int countOutcomeRequests(long userId) throws InternalServerException;
-
-    int countFriends(long userId) throws InternalServerException;
+    int countFriends(long userId);
 
 }

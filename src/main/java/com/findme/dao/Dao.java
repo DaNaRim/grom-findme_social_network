@@ -1,8 +1,5 @@
 package com.findme.dao;
 
-import com.findme.exception.InternalServerException;
-import org.hibernate.HibernateException;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -17,40 +14,20 @@ public abstract class Dao<T> {
         this.tClass = tClass;
     }
 
-    public T save(T entity) throws InternalServerException {
-        try {
-            em.persist(entity);
-
-            return entity;
-        } catch (HibernateException e) {
-            throw new InternalServerException("Dao.save failed", e);
-        }
+    public T save(T entity) {
+        em.persist(entity);
+        return entity;
     }
 
-    public T findById(long id) throws InternalServerException {
-        try {
-            return em.find(this.tClass, id);
-
-        } catch (HibernateException e) {
-            throw new InternalServerException("Dao.findById failed", e);
-        }
+    public T findById(long id) {
+        return em.find(this.tClass, id);
     }
 
-    public T update(T entity) throws InternalServerException {
-        try {
-            return em.merge(entity);
-
-        } catch (HibernateException e) {
-            throw new InternalServerException("Dao.update failed", e);
-        }
+    public T update(T entity) {
+        return em.merge(entity);
     }
 
-    public void delete(T entity) throws InternalServerException {
-        try {
-            em.remove(em.merge(entity));
-
-        } catch (HibernateException e) {
-            throw new InternalServerException("Dao.delete failed", e);
-        }
+    public void delete(T entity) {
+        em.remove(em.merge(entity));
     }
 }
