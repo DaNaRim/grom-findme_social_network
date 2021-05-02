@@ -128,7 +128,7 @@ public class PostServiceImpl implements PostService {
         long userPagePostedId = post.getUserPagePosted().getId();
 
         if (userPosted != userPagePostedId
-                && !relationshipService.areUsersFriends(userPosted, userPagePostedId)) {
+                && relationshipService.areUsersNotFriends(userPosted, userPagePostedId)) {
 
             throw new BadRequestException("You can create posts only on your page and your friends pages");
         }

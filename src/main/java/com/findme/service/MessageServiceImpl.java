@@ -102,7 +102,7 @@ public class MessageServiceImpl implements MessageService {
 
         validateMessageFields(text, userToId);
 
-        if (!relationshipService.areUsersFriends(userToId, actionUserId)) {
+        if (relationshipService.areUsersNotFriends(userToId, actionUserId)) {
             throw new BadRequestException("You can send messages only to your friends");
         }
     }
