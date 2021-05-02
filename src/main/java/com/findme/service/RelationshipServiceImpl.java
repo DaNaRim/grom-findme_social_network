@@ -88,11 +88,11 @@ public class RelationshipServiceImpl implements RelationshipService {
     }
 
     @Override
-    public boolean areUsersFriends(long userFromId, long userToId) throws InternalServerException {
+    public boolean areUsersNotFriends(long userFromId, long userToId) throws InternalServerException {
 
         RelationshipStatus status = relationshipDao.findStatus(userFromId, userToId);
 
-        return status == FRIENDS;
+        return status != FRIENDS;
     }
 
     private void validateFields(long userFromId, long userToId)
