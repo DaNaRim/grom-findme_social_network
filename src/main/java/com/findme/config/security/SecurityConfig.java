@@ -14,7 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.concurrent.TimeUnit;
 
-import static com.findme.model.UserRole.*;
+import static com.findme.model.RoleName.*;
 
 @Configuration
 @EnableWebSecurity
@@ -42,7 +42,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/registration",
                         "/registerUser",
                         "/login").permitAll()
-                .mvcMatchers("/user/**",
+                .mvcMatchers("/feeds",
+                        "/user/**",
                         "/relationship/**",
                         "/post/**",
                         "/message/**").hasRole(USER.name())
@@ -70,7 +71,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .clearAuthentication(true)
                 .invalidateHttpSession(true)
                 .logoutUrl("/logout")
-//                .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
                 .logoutSuccessUrl("/login")
                 .deleteCookies("JSESSIONID", "remember-me")
 

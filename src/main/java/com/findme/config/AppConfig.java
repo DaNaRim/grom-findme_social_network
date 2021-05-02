@@ -153,7 +153,7 @@ public class AppConfig implements WebMvcConfigurer {
 
     @Bean
     public UserService userService() {
-        return new UserServiceImpl(userDao(), roleService(), SecurityConfig.passwordEncoder());
+        return new UserServiceImpl(userDao(), roleDao(), SecurityConfig.passwordEncoder());
     }
 
     @Bean

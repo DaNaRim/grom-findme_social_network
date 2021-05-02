@@ -1,10 +1,9 @@
 package com.findme.model;
 
-public enum UserRole {
+public enum RoleName {
     USER,
     ADMIN,
     SUPER_ADMIN;
-
 
     @Override
     public String toString() {

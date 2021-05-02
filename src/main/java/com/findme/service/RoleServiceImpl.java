@@ -4,7 +4,7 @@ import com.findme.dao.RoleDao;
 import com.findme.exception.BadRequestException;
 import com.findme.exception.InternalServerException;
 import com.findme.model.Role;
-import com.findme.model.UserRole;
+import com.findme.model.RoleName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,40 +21,40 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void addRoleByUserId(long userId, UserRole userRole)
+    public void addRoleByUserId(long userId, RoleName roleName)
             throws BadRequestException, InternalServerException {
 
         if (userService.isUserMissing(userId)) {
             throw new BadRequestException("Missing user with this id");
 
-        } else if (roleDao.hasUserRole(userId, userRole)) {
+        } else if (roleDao.hasUserRole(userId, roleName)) {
             throw new BadRequestException("User already has this role");
         }
 
-        roleDao.addRoleByUserId(userId, userRole);
+        roleDao.addRoleByUserId(userId, roleName);
     }
 
     @Override
-    public void removeRoleByUserId(long userId, UserRole userRole)
+    public void removeRoleByUserId(long userId, RoleName roleName)
             throws BadRequestException, InternalServerException {
 
         if (userService.isUserMissing(userId)) {
             throw new BadRequestException("Missing user with this id");
 
-        } else if (!roleDao.hasUserRole(userId, userRole)) {
+        } else if (!roleDao.hasUserRole(userId, roleName)) {
             throw new BadRequestException("User hasn't this role");
         }
 
-        roleDao.removeRoleByUserId(userId, userRole);
+        roleDao.removeRoleByUserId(userId, roleName);
     }
 
     @Override
-    public Role findByUserRole(UserRole userRole) throws InternalServerException {
-        return roleDao.findByUserRole(userRole);
+    public Role findByUserRole(RoleName roleName) throws InternalServerException {
+        return roleDao.findByUserRole(roleName);
     }
 
     @Override
-    public boolean hasUserRole(long userId, UserRole userRole) {
-        return roleDao.hasUserRole(userId, userRole);
+    public boolean hasUserRole(long userId, RoleName roleName) {
+        return roleDao.hasUserRole(userId, roleName);
     }
 }
