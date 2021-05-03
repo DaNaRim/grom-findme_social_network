@@ -76,6 +76,8 @@ public class UserServiceImpl implements UserService {
     public User updateUser(User user) throws BadRequestException, InternalServerException {
         validateUpdateUser(user);
 
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         return userdao.update(user);
     }
 
@@ -116,8 +118,11 @@ public class UserServiceImpl implements UserService {
 
         validateUserFields(user);
 
-        if (userdao.arePhoneAndMailBusy(user.getPhone(), user.getEmail())) { //TODO rework
-            throw new BadRequestException("mail or phone is busy");
+        if (userdao.isPhoneBusy(user.getPhone())) {
+            throw new BadRequestException("phone is busy");
+
+        } else if (userdao.isEmailBusy(user.getEmail())) {
+            throw new BadRequestException("email is busy");
         }
     }
 
@@ -131,7 +136,7 @@ public class UserServiceImpl implements UserService {
         if (!user.getPhone().equals(oldPhone) && userdao.isPhoneBusy(user.getPhone())) {
             throw new BadRequestException("phone is busy");
 
-        } else if (!user.getEmail().equals(oldMail) && userdao.isMailBusy(user.getEmail())) {
+        } else if (!user.getEmail().equals(oldMail) && userdao.isEmailBusy(user.getEmail())) {
             throw new BadRequestException("mail is busy");
         }
     }

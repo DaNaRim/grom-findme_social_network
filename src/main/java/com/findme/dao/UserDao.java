@@ -23,11 +23,9 @@ public interface UserDao {
     void updateDateLastActive(long userId);
 
 
-    boolean arePhoneAndMailBusy(String phone, String mail);
-
     boolean isPhoneBusy(String phone);
 
-    boolean isMailBusy(String mail);
+    boolean isEmailBusy(String mail);
 
     String findPhone(long id);
 

@@ -29,10 +29,6 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
                     " WHERE id = :" + UserDaoImpl.ATTRIBUTE_ID;
 
 
-    private static final String QUERY_ARE_PHONE_AND_MAIL_BUSY =
-            "SELECT EXISTS(SELECT 1 FROM Users WHERE phone = :" + UserDaoImpl.ATTRIBUTE_PHONE
-                    + " OR email = :" + UserDaoImpl.ATTRIBUTE_MAIL + ")";
-
     private static final String QUERY_IS_PHONE_BUSY =
             "SELECT EXISTS(SELECT 1 FROM Users WHERE phone = :" + UserDaoImpl.ATTRIBUTE_PHONE + ")";
 
@@ -106,15 +102,6 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
                 .executeUpdate();
     }
 
-    @Override
-    public boolean arePhoneAndMailBusy(String phone, String mail) {
-
-        return (boolean) em.createNativeQuery(QUERY_ARE_PHONE_AND_MAIL_BUSY)
-                .setParameter(ATTRIBUTE_PHONE, phone)
-                .setParameter(ATTRIBUTE_MAIL, mail)
-                .getSingleResult();
-    }
-
 
     @Override
     public boolean isPhoneBusy(String phone) {
@@ -125,7 +112,7 @@ public class UserDaoImpl extends Dao<User> implements UserDao {
     }
 
     @Override
-    public boolean isMailBusy(String mail) {
+    public boolean isEmailBusy(String mail) {
 
         return (boolean) em.createNativeQuery(QUERY_IS_MAIL_BUSY)
                 .setParameter(ATTRIBUTE_MAIL, mail)
