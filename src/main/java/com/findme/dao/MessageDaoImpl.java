@@ -12,47 +12,62 @@ import java.util.Objects;
 public class MessageDaoImpl extends Dao<Message> implements MessageDao {
 
     private static final String QUERY_DELETE_BY_IDS =
-            "DELETE FROM Message WHERE id IN :" + MessageDaoImpl.ATTRIBUTE_LIST_ID;
+            "DELETE FROM Message"
+                    + " WHERE id IN :" + MessageDaoImpl.ATTRIBUTE_LIST_ID;
 
     private static final String QUERY_DELETE_BY_USERS_IDS =
             "DELETE FROM Message"
                     + " WHERE user_from = :" + MessageDaoImpl.ATTRIBUTE_USER_FROM_ID
-                    + " AND user_to = :" + MessageDaoImpl.ATTRIBUTE_USER_TO_ID
-                    + " OR user_from = :" + MessageDaoImpl.ATTRIBUTE_USER_TO_ID
-                    + " AND user_to = :" + MessageDaoImpl.ATTRIBUTE_USER_FROM_ID;
+                    + "         AND user_to = :" + MessageDaoImpl.ATTRIBUTE_USER_TO_ID
+                    + "    OR user_from = :" + MessageDaoImpl.ATTRIBUTE_USER_TO_ID
+                    + "         AND user_to = :" + MessageDaoImpl.ATTRIBUTE_USER_FROM_ID;
 
     private static final String QUERY_SET_DATE_READ =
-            "UPDATE Message SET date_read = CURRENT_TIMESTAMP WHERE ID IN :" + MessageDaoImpl.ATTRIBUTE_LIST_ID;
+            "UPDATE Message"
+                    + "   SET date_read = CURRENT_TIMESTAMP"
+                    + " WHERE id IN :" + MessageDaoImpl.ATTRIBUTE_LIST_ID;
 
     private static final String QUERY_FIND_BY_USER_IDS =
             "SELECT * FROM Message"
-                    + " WHERE user_from = :" + MessageDaoImpl.ATTRIBUTE_USER_FROM_ID
-                    + " AND user_to = :" + MessageDaoImpl.ATTRIBUTE_USER_TO_ID
-                    + " OR user_from = :" + MessageDaoImpl.ATTRIBUTE_USER_TO_ID
-                    + " AND user_to = :" + MessageDaoImpl.ATTRIBUTE_USER_FROM_ID
-                    + " ORDER BY date_sent"
+                    + "  WHERE user_from = :" + MessageDaoImpl.ATTRIBUTE_USER_FROM_ID
+                    + "          AND user_to = :" + MessageDaoImpl.ATTRIBUTE_USER_TO_ID
+                    + "     OR user_from = :" + MessageDaoImpl.ATTRIBUTE_USER_TO_ID
+                    + "          AND user_to = :" + MessageDaoImpl.ATTRIBUTE_USER_FROM_ID
+                    + "  ORDER BY date_sent"
                     + " OFFSET :" + MessageDaoImpl.ATTRIBUTE_START_FROM
-                    + " LIMIT " + MessageDaoImpl.ATTRIBUTE_RESULT_LIMIT;
+                    + "  LIMIT " + MessageDaoImpl.ATTRIBUTE_RESULT_LIMIT;
 
     private static final String QUERY_FIND_USER_FROM_IDS_BY_IDS =
-            "SELECT user_from FROM Message"
+            "SELECT user_from"
+                    + "  FROM Message"
                     + " WHERE id IN :" + MessageDaoImpl.ATTRIBUTE_LIST_ID
                     + " GROUP BY user_from";
 
     private static final String QUERY_IS_EXISTS =
-            "SELECT EXISTS(SELECT 1 FROM Message WHERE id = :" + MessageDaoImpl.ATTRIBUTE_ID + " )";
+            "SELECT EXISTS("
+                    + "SELECT 1 FROM Message"
+                    + " WHERE id = :" + MessageDaoImpl.ATTRIBUTE_ID
+                    + " )";
 
     private static final String QUERY_ARE_EXISTS =
-            "SELECT COUNT(*) FROM Message WHERE id IN :" + MessageDaoImpl.ATTRIBUTE_LIST_ID;
+            "SELECT COUNT(*)"
+                    + "  FROM Message"
+                    + " WHERE id IN :" + MessageDaoImpl.ATTRIBUTE_LIST_ID;
 
     private static final String QUERY_FIND_USER_FROM_BY_ID =
-            "SELECT user_from FROM Message WHERE id = :" + MessageDaoImpl.ATTRIBUTE_ID;
+            "SELECT user_from"
+                    + "  FROM Message"
+                    + " WHERE id = :" + MessageDaoImpl.ATTRIBUTE_ID;
 
     private static final String QUERY_FIND_DATE_READ_BY_ID =
-            "SELECT date_read FROM Message WHERE id =:" + MessageDaoImpl.ATTRIBUTE_ID;
+            "SELECT date_read"
+                    + "  FROM Message"
+                    + " WHERE id = :" + MessageDaoImpl.ATTRIBUTE_ID;
 
     private static final String QUERY_FIND_DATE_READ_BY_IDS =
-            "SELECT date_read FROM Message WHERE id IN :" + MessageDaoImpl.ATTRIBUTE_LIST_ID;
+            "SELECT date_read"
+                    + "  FROM Message"
+                    + " WHERE id IN :" + MessageDaoImpl.ATTRIBUTE_LIST_ID;
 
 
     private static final String ATTRIBUTE_ID = "id";

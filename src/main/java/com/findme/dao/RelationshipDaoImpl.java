@@ -16,62 +16,68 @@ public class RelationshipDaoImpl extends Dao<Relationship> implements Relationsh
     private static final String QUERY_FIND_BY_USERS =
             "SELECT * FROM Relationship"
                     + " WHERE user_from = :" + RelationshipDaoImpl.ATTRIBUTE_USER_FROM_ID
-                    + " AND user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_TO_ID
-                    + " OR user_from = :" + RelationshipDaoImpl.ATTRIBUTE_USER_TO_ID
-                    + " AND user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_FROM_ID;
+                    + "       AND user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_TO_ID
+                    + "    OR user_from = :" + RelationshipDaoImpl.ATTRIBUTE_USER_TO_ID
+                    + "       AND user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_FROM_ID;
 
     private static final String QUERY_FIND_STATUS_BY_USERS =
-            "SELECT status FROM Relationship"
+            "SELECT status"
+                    + "  FROM Relationship"
                     + " WHERE user_from = :" + RelationshipDaoImpl.ATTRIBUTE_USER_FROM_ID
-                    + " AND user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_TO_ID
-                    + " OR user_from = :" + RelationshipDaoImpl.ATTRIBUTE_USER_TO_ID
-                    + " AND user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_FROM_ID;
+                    + "       AND user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_TO_ID
+                    + "    OR user_from = :" + RelationshipDaoImpl.ATTRIBUTE_USER_TO_ID
+                    + "       AND user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_FROM_ID;
 
     private static final String QUERY_GET_INCOME_REQUESTS_BY_ACTION_USER_ID =
             "SELECT * FROM Relationship"
                     + " WHERE status = 'REQUESTED'"
-                    + " AND action_user_id != :" + RelationshipDaoImpl.ATTRIBUTE_ACTION_USER_ID
+                    + "   AND action_user_id != :" + RelationshipDaoImpl.ATTRIBUTE_ACTION_USER_ID
                     + " ORDER BY date_modify";
 
     private static final String QUERY_GET_OUTCOME_REQUESTS_BY_ACTION_USER_ID =
             "SELECT * FROM Relationship"
                     + " WHERE status = 'REQUESTED'"
-                    + " AND action_user_id = :" + RelationshipDaoImpl.ATTRIBUTE_ACTION_USER_ID
+                    + "   AND action_user_id = :" + RelationshipDaoImpl.ATTRIBUTE_ACTION_USER_ID
                     + " ORDER BY date_modify";
 
 
     private static final String QUERY_FIND_ACTION_USER_ID_BY_USERS =
-            "SELECT action_user_id FROM Relationship"
+            "SELECT action_user_id"
+                    + "  FROM Relationship"
                     + " WHERE user_from = :" + RelationshipDaoImpl.ATTRIBUTE_USER_FROM_ID
-                    + " AND user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_TO_ID
-                    + " OR user_from = :" + RelationshipDaoImpl.ATTRIBUTE_USER_TO_ID
-                    + " AND user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_FROM_ID;
+                    + "       AND user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_TO_ID
+                    + "    OR user_from = :" + RelationshipDaoImpl.ATTRIBUTE_USER_TO_ID
+                    + "       AND user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_FROM_ID;
 
     private static final String QUERY_FIND_DATE_MODIFY_BY_USERS =
-            "SELECT date_modify FROM Relationship"
+            "SELECT date_modify"
+                    + "  FROM Relationship"
                     + " WHERE user_from = :" + RelationshipDaoImpl.ATTRIBUTE_USER_FROM_ID
-                    + " AND user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_TO_ID
-                    + " OR user_from = :" + RelationshipDaoImpl.ATTRIBUTE_USER_TO_ID
-                    + " AND user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_FROM_ID;
+                    + "       AND user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_TO_ID
+                    + "    OR user_from = :" + RelationshipDaoImpl.ATTRIBUTE_USER_TO_ID
+                    + "       AND user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_FROM_ID;
 
     private static final String QUERY_COUNT_OUTCOME_REQUESTS_BY_ACTION_USER_ID =
-            "SELECT COUNT(*) FROM Relationship"
+            "SELECT COUNT(*)"
+                    + "  FROM Relationship"
                     + " WHERE status = 'REQUESTED'"
-                    + " AND action_user_id = :" + RelationshipDaoImpl.ATTRIBUTE_ACTION_USER_ID;
+                    + "   AND action_user_id = :" + RelationshipDaoImpl.ATTRIBUTE_ACTION_USER_ID;
 
     private static final String QUERY_COUNT_FRIENDS_BY_USER_ID =
-            "SELECT COUNT(*) FROM Relationship"
+            "SELECT COUNT(*)"
+                    + "  FROM Relationship"
                     + " WHERE status = 'FRIENDS'"
-                    + " AND (user_from = :" + RelationshipDaoImpl.ATTRIBUTE_USER_ID
-                    + " OR user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_ID + ")";
+                    + "       AND (user_from = :" + RelationshipDaoImpl.ATTRIBUTE_USER_ID
+                    + "    OR user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_ID + ")";
 
 
     private static final String QUERY_FIND_ID_BY_USERS =
-            "SELECT id FROM Relationship"
+            "SELECT id"
+                    + "  FROM Relationship"
                     + " WHERE user_from = :" + RelationshipDaoImpl.ATTRIBUTE_USER_FROM_ID
-                    + " AND user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_TO_ID
-                    + " OR user_from = :" + RelationshipDaoImpl.ATTRIBUTE_USER_TO_ID
-                    + " AND user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_FROM_ID;
+                    + "       AND user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_TO_ID
+                    + "    OR user_from = :" + RelationshipDaoImpl.ATTRIBUTE_USER_TO_ID
+                    + "       AND user_to = :" + RelationshipDaoImpl.ATTRIBUTE_USER_FROM_ID;
 
 
     private static final String ATTRIBUTE_USER_ID = "userId"; //userFrom and userTo

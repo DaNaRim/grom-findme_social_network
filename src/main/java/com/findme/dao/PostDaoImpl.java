@@ -10,65 +10,80 @@ import java.util.List;
 public class PostDaoImpl extends Dao<Post> implements PostDao {
 
     private static final String QUERY_FIND_BY_USER_PAGE_POSTED =
-            "SELECT p.* , array_agg(u.id) AS tagged_users"
-                    + " FROM Post p"
-                    + "     JOIN Post_tagged_users ptu ON p.id = ptu.post_id"
-                    + "     JOIN Users u ON u.id = ptu.tagged_user_id"
-                    + " WHERE user_page_posted = :" + PostDaoImpl.ATTRIBUTE_USER_PAGE_POSTED_ID
-                    + " GROUP BY p.id"
-                    + " ORDER BY max(p.date_posted)"
+            "SELECT p.*, array_agg(u.id) AS tagged_users"
+                    + "   FROM Post AS p"
+                    + "        JOIN Post_tagged_users AS ptu"
+                    + "             ON p.id = ptu.post_id"
+                    + "        JOIN Users AS u"
+                    + "             ON u.id = ptu.tagged_user_id"
+                    + "  WHERE user_page_posted = :" + PostDaoImpl.ATTRIBUTE_USER_PAGE_POSTED_ID
+                    + "  GROUP BY p.id"
+                    + "  ORDER BY max(p.date_posted)"
                     + " OFFSET :" + PostDaoImpl.ATTRIBUTE_START_FROM
-                    + " LIMIT " + PostDaoImpl.ATTRIBUTE_RESULT_LIMIT;
+                    + "  LIMIT " + PostDaoImpl.ATTRIBUTE_RESULT_LIMIT;
 
     private static final String QUERY_FIND_BY_USER_POSTED_AND_USER_PAGE_POSTED =
-            "SELECT p.* , array_agg(u.id) AS tagged_users"
-                    + " FROM Post p"
-                    + "     JOIN Post_tagged_users ptu ON p.id = ptu.post_id"
-                    + "     JOIN Users u ON u.id = ptu.tagged_user_id"
-                    + " WHERE user_posted = :" + PostDaoImpl.ATTRIBUTE_USER_POSTED_ID
-                    + "   AND user_page_posted = :" + PostDaoImpl.ATTRIBUTE_USER_PAGE_POSTED_ID
-                    + " GROUP BY p.id"
-                    + " ORDER BY max(p.date_posted)"
+            "SELECT p.*, array_agg(u.id) AS tagged_users"
+                    + "   FROM Post AS p"
+                    + "        JOIN Post_tagged_users AS ptu"
+                    + "             ON p.id = ptu.post_id"
+                    + "        JOIN Users AS u"
+                    + "             ON u.id = ptu.tagged_user_id"
+                    + "  WHERE user_posted = :" + PostDaoImpl.ATTRIBUTE_USER_POSTED_ID
+                    + "    AND user_page_posted = :" + PostDaoImpl.ATTRIBUTE_USER_PAGE_POSTED_ID
+                    + "  GROUP BY p.id"
+                    + "  ORDER BY max(p.date_posted)"
                     + " OFFSET :" + PostDaoImpl.ATTRIBUTE_START_FROM
-                    + " LIMIT " + PostDaoImpl.ATTRIBUTE_RESULT_LIMIT;
+                    + "  LIMIT " + PostDaoImpl.ATTRIBUTE_RESULT_LIMIT;
 
     private static final String QUERY_FIND_BY_USER_PAGE_POSTED_ONLY_FRIENDS =
-            "SELECT p.* , array_agg(u.id) AS tagged_users"
-                    + " FROM Post p"
-                    + "     JOIN Post_tagged_users ptu ON p.id = ptu.post_id"
-                    + "     JOIN Users u ON u.id = ptu.tagged_user_id"
-                    + " WHERE user_page_posted = :" + PostDaoImpl.ATTRIBUTE_USER_PAGE_POSTED_ID
-                    + "   AND user_posted != :" + PostDaoImpl.ATTRIBUTE_USER_PAGE_POSTED_ID
-                    + " GROUP BY p.id"
-                    + " ORDER BY max(p.date_posted)"
+            "SELECT p.*, array_agg(u.id) AS tagged_users"
+                    + "   FROM Post AS p"
+                    + "        JOIN Post_tagged_users AS ptu"
+                    + "             ON p.id = ptu.post_id"
+                    + "        JOIN Users AS u"
+                    + "             ON u.id = ptu.tagged_user_id"
+                    + "  WHERE user_page_posted = :" + PostDaoImpl.ATTRIBUTE_USER_PAGE_POSTED_ID
+                    + "    AND user_posted != :" + PostDaoImpl.ATTRIBUTE_USER_PAGE_POSTED_ID
+                    + "  GROUP BY p.id"
+                    + "  ORDER BY max(p.date_posted)"
                     + " OFFSET :" + PostDaoImpl.ATTRIBUTE_START_FROM
-                    + " LIMIT " + PostDaoImpl.ATTRIBUTE_RESULT_LIMIT;
+                    + "  LIMIT " + PostDaoImpl.ATTRIBUTE_RESULT_LIMIT;
 
     private static final String QUERY_GET_FEEDS_BY_USER =
-            "SELECT p.* , array_agg(u.id) AS tagged_users"
-                    + " FROM Post p"
-                    + "     JOIN Post_tagged_users ptu ON p.id = ptu.post_id"
-                    + "     JOIN Users u ON u.id = ptu.tagged_user_id"
-                    + "     JOIN Relationship r"
-                    + "          ON r.user_from = :" + PostDaoImpl.ATTRIBUTE_USER_ID
-                    + "              AND r.user_to = p.user_posted"
-                    + "            OR r.user_from = p.user_posted"
-                    + "              AND r.user_to = :" + PostDaoImpl.ATTRIBUTE_USER_ID
-                    + " WHERE r.status = 'FRIENDS'"
-                    + " GROUP BY p.id"
-                    + " ORDER BY max(p.date_posted)"
+            "SELECT p.*, array_agg(u.id) AS tagged_users"
+                    + "  FROM Post AS p"
+                    + "       JOIN Post_tagged_users AS ptu"
+                    + "            ON p.id = ptu.post_id"
+                    + "       JOIN Users AS u"
+                    + "            ON u.id = ptu.tagged_user_id"
+                    + "       JOIN Relationship AS r"
+                    + "            ON r.user_from = :" + PostDaoImpl.ATTRIBUTE_USER_ID
+                    + "                  AND r.user_to = p.user_posted"
+                    + "               OR r.user_from = p.user_posted"
+                    + "                  AND r.user_to = :" + PostDaoImpl.ATTRIBUTE_USER_ID
+                    + "  WHERE r.status = 'FRIENDS'"
+                    + "  GROUP BY p.id"
+                    + "  ORDER BY max(p.date_posted)"
                     + " OFFSET :" + PostDaoImpl.ATTRIBUTE_START_FROM
-                    + " LIMIT " + PostDaoImpl.ATTRIBUTE_RESULT_LIMIT;
+                    + "  LIMIT " + PostDaoImpl.ATTRIBUTE_RESULT_LIMIT;
 
 
     private static final String QUERY_IS_EXISTS =
-            "SELECT EXISTS(SELECT 1 FROM Post WHERE id = :" + PostDaoImpl.ATTRIBUTE_ID + ")";
+            "SELECT EXISTS("
+                    + "SELECT 1 FROM Post "
+                    + " WHERE id = :" + PostDaoImpl.ATTRIBUTE_ID
+                    + ")";
 
     private static final String QUERY_FIND_USER_POSTED_BY_ID =
-            "SELECT user_posted FROM Post WHERE id = :" + PostDaoImpl.ATTRIBUTE_ID;
+            "SELECT user_posted"
+                    + "  FROM Post"
+                    + " WHERE id = :" + PostDaoImpl.ATTRIBUTE_ID;
 
     private static final String QUERY_FIND_USER_PAGE_POSTED_BY_ID =
-            "SELECT user_page_posted FROM Post WHERE id = :" + PostDaoImpl.ATTRIBUTE_ID;
+            "SELECT user_page_posted"
+                    + "  FROM Post"
+                    + " WHERE id = :" + PostDaoImpl.ATTRIBUTE_ID;
 
 
     private static final String ATTRIBUTE_ID = "id";

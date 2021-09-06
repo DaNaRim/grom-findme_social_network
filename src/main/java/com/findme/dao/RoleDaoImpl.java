@@ -13,21 +13,27 @@ public class RoleDaoImpl extends Dao<Role> implements RoleDao {
             "INSERT INTO User_role (user_id, role_id)"
                     + " VALUES ("
                     + " :" + RoleDaoImpl.ATTRIBUTE_USER_ID + ", "
-                    + "(SELECT id FROM Role WHERE ROLE_NAME = :" + RoleDaoImpl.ATTRIBUTE_USER_ROLE + " )"
+                    + "   (SELECT id FROM Role"
+                    + "    WHERE ROLE_NAME = :" + RoleDaoImpl.ATTRIBUTE_USER_ROLE
+                    + "   )"
                     + ")";
 
     private static final String QUERY_REMOVE_ROLE_BY_USER_ID =
             "DELETE FROM User_role"
                     + " WHERE user_id = :" + RoleDaoImpl.ATTRIBUTE_USER_ID
-                    + "  AND role_id = "
-                    + "    (SELECT id FROM Role WHERE ROLE_NAME = :" + RoleDaoImpl.ATTRIBUTE_USER_ROLE + ")";
+                    + "   AND role_id = (SELECT id FROM Role "
+                    + "                   WHERE ROLE_NAME = :" + RoleDaoImpl.ATTRIBUTE_USER_ROLE
+                    + "                 )";
 
     private static final String QUERY_FIND_BY_USER_ROLE =
-            "SELECT * FROM Role WHERE ROLE_NAME = :" + RoleDaoImpl.ATTRIBUTE_USER_ROLE;
+            "SELECT * FROM Role"
+                    + " WHERE ROLE_NAME = :" + RoleDaoImpl.ATTRIBUTE_USER_ROLE;
 
     private static final String QUERY_FIND_USER_ROLE_BY_USER_ID =
-            "SELECT r.ROLE_NAME FROM Role r"
-                    + " JOIN User_role ur ON ur.role_id = r.id"
+            "SELECT r.ROLE_NAME"
+                    + "  FROM Role AS r"
+                    + "       JOIN User_role AS ur"
+                    + "            ON ur.role_id = r.id"
                     + " WHERE ur.user_id = :" + RoleDaoImpl.ATTRIBUTE_USER_ID;
 
     private static final String ATTRIBUTE_USER_ROLE = "userRole";
